@@ -1,0 +1,1182 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. 《动手学 AI 01：初识机器学习》 &#8212; 动手学人工智能</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/动手学 AI 01：初识机器学习';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Markdown Files" href="../markdown.html" />
+    <link rel="prev" title="Welcome to your Jupyter Book" href="../intro.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="Kong" />
+<meta name="keywords" content="" />
+<meta name="description" content=《动手学 AI 01：初识机器学习》  课程目标：从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。  学习路线：  通过一个问题导入课程  了解程序和模型的区别  学习使用机器学习解决问题的流程：  训练  推理  阶段一：如何训练模型  原理讲解：  步骤1：预测  步骤2：评估  步骤3：优化 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="《动手学 AI 01：初识机器学习》"/>
+<meta name="twitter:description" content="《动手学 AI 01：初识机器学习》  课程目标：从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。  学习路线：  通过一个问题导入课程  了解程序和模型的区别  学习使用机器学习解决问题的流程：  训练  推理  阶段一：如何训练模型  原理讲解：  步骤1：预测  步骤2：评估  步骤3：优化">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="《动手学 AI 01：初识机器学习》" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="《动手学 AI 01：初识机器学习》  课程目标：从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。  学习路线：  通过一个问题导入课程  了解程序和模型的区别  学习使用机器学习解决问题的流程：  训练  推理  阶段一：如何训练模型  原理讲解：  步骤1：预测  步骤2：评估  步骤3：优化" />
+<meta property="og:site_name" content="动手学人工智能" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/动手学 AI 01：初识机器学习>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                            On this page
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">1.1. 一、程序思维</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">1.2. 二、准备数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">1.3. 三、模型定义</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">1.4. 四、模型训练</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">1.5. 五、模型改进</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">1.5.1. 4.1 改进模型</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">1.5.2. 4.2 改进训练过程</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">1.6. 六、模型预测</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">1.7. 七、模型保存与加载</a></li>
+</ul>
+                            <p class="logo">
+                                
+                                    
+                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>
+                                    
+                                
+                            </p>
+
+                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Jupyter Book</a></p>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top"><strong>Back to top</strong></a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学人工智能</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">Kong</p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+
+
+                
+                <main class="qe-page__content" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="ai-01">
+<h1><span class="section-number">1. </span>《动手学 AI 01：初识机器学习》<a class="headerlink" href="#ai-01" title="Link to this heading">#</a></h1>
+<p>课程目标：从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。</p>
+<p>学习路线：</p>
+<ol class="arabic simple">
+<li><p>通过一个问题导入课程</p></li>
+<li><p>了解程序和模型的区别</p></li>
+<li><p>学习使用机器学习解决问题的流程：</p>
+<ul class="simple">
+<li><p>训练</p></li>
+<li><p>推理</p></li>
+</ul>
+</li>
+<li><p>阶段一：如何训练模型</p>
+<ul class="simple">
+<li><p>原理讲解：</p>
+<ul>
+<li><p>步骤1：预测</p></li>
+<li><p>步骤2：评估</p></li>
+<li><p>步骤3：优化</p></li>
+</ul>
+</li>
+<li><p>代码讲解</p>
+<ul>
+<li><p>使用代码讲解模型训练的过程：对比不同的参数更新方式【根据损失手动更新参数】</p>
+<ul>
+<li><p>固定步长更新</p></li>
+<li><p>学习率动态更新</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>阶段二：如何使用模型</p>
+<ul class="simple">
+<li><p>理论讲解：</p>
+<ul>
+<li><p>步骤1：初始化</p></li>
+<li><p>步骤2：加载参数</p></li>
+<li><p>步骤3：进行预测</p></li>
+</ul>
+</li>
+<li><p>代码讲解：</p>
+<ul>
+<li><p>使用代码讲解模型预测的过程：【根据参数预测结果】</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>课程大纲：</p>
+<ul class="simple">
+<li><p>课程导入</p>
+<ul>
+<li><p>提出一个问题：如何使用机器人判断柠檬水里加多少糖？</p></li>
+</ul>
+</li>
+<li><p>了解程序和模型的区别</p>
+<ul>
+<li><p>程序思维：</p>
+<ul>
+<li><p>程序思维的思考方式：使用if-else判断方一片或两片</p></li>
+<li><p>程序思维的缺陷：无法泛化的处理新的情况</p></li>
+</ul>
+</li>
+<li><p>模型思维：</p>
+<ul>
+<li><p>模型思维的思考方式：从数据中学习潜在的规律，用学到的经验来处理新的情况</p></li>
+<li><p>模型思维的特点：
+- 从数据中学习
+- 先归纳再演绎</p></li>
+<li><p>模型思维的总结：模型思维就是在寻找一个“大公式”。</p></li>
+<li><p>机器学习概念引入：
+- 模型思维是一种解决问题的思维方式
+- 机器学习是实现这种思维方式的具体技术途径</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用机器学习解决问题</p>
+<ul>
+<li><p>机器学习的定义：</p>
+<ul>
+<li><p>机器学习是通过数据驱动的方式，让计算机从经验中“学习”，用学到的经验来解决未见过但类似的新问题。</p></li>
+</ul>
+</li>
+<li><p>机器学习的实现：</p>
+<ul>
+<li><p>机器学习的实现可以分成两步：训练和预测，分别对应着归纳和演绎。</p>
+<ul>
+<li><p>归纳是学：通过数据总结出潜在的模式，是从具体到一般的过程</p></li>
+<li><p>演绎是用：用学到的经验来解决新问题，是从一般到具体的过程</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>用让机器人学习做柠檬水的技巧类比机器学习中的概念</p>
+<ul>
+<li><p>步骤1：请一个专家做示范【监督数据】</p></li>
+<li><p>步骤2：让机器人做柠檬水【模型预测】</p></li>
+<li><p>步骤3：让专家进行评价【模型评估】</p></li>
+<li><p>步骤4：让机器人进行修正【模型优化】</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span><span class="p">,</span> <span class="n">print_table</span><span class="p">,</span> <span class="n">print_regression_results</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span><span class="p">,</span> <span class="n">print_table</span><span class="p">,</span> <span class="n">print_regression_results</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">show_version</span><span class="p">()</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;util&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id1">
+<h2><span class="section-number">1.1. </span>一、程序思维<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用程序计算放糖量</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">col_sugar</span><span class="p">(</span><span class="n">lemon</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">lemon</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;10&quot;</span>
+    <span class="k">elif</span> <span class="n">lemon</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;20&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;没有此配方，做不了❗️&quot;</span>
+
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;用程序制作柠檬水&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;柠檬片（输入）&quot;</span><span class="p">,</span> <span class="s2">&quot;放糖量（输出）&quot;</span><span class="p">],</span>
+            <span class="p">[[</span><span class="s2">&quot;1 片&quot;</span><span class="p">,</span> <span class="n">col_sugar</span><span class="p">(</span><span class="mi">1</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;2 片&quot;</span><span class="p">,</span> <span class="n">col_sugar</span><span class="p">(</span><span class="mi">2</span><span class="p">)],</span>
+             <span class="p">[</span><span class="s2">&quot;3 片&quot;</span><span class="p">,</span> <span class="n">col_sugar</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span> <span class="p">[</span><span class="s2">&quot;4 片&quot;</span><span class="p">,</span> <span class="n">col_sugar</span><span class="p">(</span><span class="mi">4</span><span class="p">)],</span>
+             <span class="p">[</span><span class="s2">&quot;5 片&quot;</span><span class="p">,</span> <span class="n">col_sugar</span><span class="p">(</span><span class="mi">4</span><span class="p">)]])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>用程序制作柠檬水：
++----------------+----------------------+
+| 柠檬片（输入） |    放糖量（输出）    |
++----------------+----------------------+
+|      1 片      |          10          |
+|      2 片      |          20          |
+|      3 片      | 没有此配方，做不了❗️ |
+|      4 片      | 没有此配方，做不了❗️ |
+|      5 片      | 没有此配方，做不了❗️ |
++----------------+----------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2><span class="section-number">1.2. </span>二、准备数据<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 专家的示范</span>
+<span class="n">lemon</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">sugar</span> <span class="o">=</span> <span class="mi">16</span>
+
+<span class="n">print_table</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;训练数据&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;柠檬片（输入数据）&quot;</span><span class="p">,</span> <span class="s2">&quot;放糖量（结果标签）&quot;</span><span class="p">],</span>
+    <span class="p">[[</span><span class="n">lemon</span><span class="p">,</span> <span class="n">sugar</span><span class="p">]]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>训练数据：
++--------------------+--------------------+
+| 柠檬片（输入数据） | 放糖量（结果标签） |
++--------------------+--------------------+
+|         2          |         16         |
++--------------------+--------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2><span class="section-number">1.3. </span>三、模型定义<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 随机初始化糖权</span>
+        <span class="c1"># self.sugar_weight = random.uniform(0, 50)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">=</span> <span class="mf">1.88</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚀随机初始化的糖权: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 1️⃣前向传播，计算预测值</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lemon</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">*</span> <span class="n">lemon</span>
+
+    <span class="c1"># 2️⃣计算误差损失</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_sugar</span><span class="p">,</span> <span class="n">real_sugar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pred_sugar</span> <span class="o">-</span> <span class="n">real_sugar</span>
+
+    <span class="c1"># 3️⃣计算更新参数的方向和步长</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">loss</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># 如果损失值大于0，表示预测值偏大</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">0.1</span>
+        <span class="k">elif</span> <span class="n">loss</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># 如果损失值小于0，表示预测值偏小</span>
+            <span class="k">return</span> <span class="mf">0.1</span>
+
+    <span class="c1"># 4️⃣更新糖权</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">+=</span> <span class="n">step</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><span class="section-number">1.4. </span>四、模型训练<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>用训练数据对模型进行训练，通过优化算法调整参数，最小化损失函数（预测和实际结果之间的差距）。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 训练模型</span>
+
+<span class="c1"># 创建模型实例</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+
+<span class="n">training_logs</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># 训练模型</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># 1. 计算预测值</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">lemon</span><span class="p">)</span>
+    <span class="c1"># 2. 计算损失</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">sugar</span><span class="p">)</span>
+    <span class="c1"># 3. 计算更新的步长（梯度）</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="c1"># 4. 更新参数</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+    <span class="c1"># 记录训练日志，包括更新之后的权重（保留四位小数）</span>
+    <span class="c1"># 按照表头顺序调整：Epoch, 柠檬盘, 当前糖权, 预测放糖量, 真实放糖量, 误差损失, 更新步长, 更新后权重</span>
+    <span class="n">training_logs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+        <span class="n">epoch</span><span class="p">,</span>
+        <span class="n">lemon</span><span class="p">,</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">-</span> <span class="n">step</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">sugar</span><span class="p">,</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="p">])</span>
+
+<span class="c1"># 打印最终参数</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅模型学习到的糖权: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;📝训练日志&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;Epoch&quot;</span><span class="p">,</span> <span class="s2">&quot;柠檬片&quot;</span><span class="p">,</span> <span class="s2">&quot;当前的糖权&quot;</span><span class="p">,</span> <span class="s2">&quot;预测放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;真实放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;误差损失&quot;</span><span class="p">,</span> <span class="s2">&quot;更新步长&quot;</span><span class="p">,</span> <span class="s2">&quot;更新后糖权&quot;</span><span class="p">],</span>
+            <span class="n">training_logs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>🚀随机初始化的糖权: 1.88
+✅模型学习到的糖权: 8.08
+
+📝训练日志：
++-------+--------+------------+------------+------------+----------+----------+------------+
+| Epoch | 柠檬片 | 当前的糖权 | 预测放糖量 | 真实放糖量 | 误差损失 | 更新步长 | 更新后糖权 |
++-------+--------+------------+------------+------------+----------+----------+------------+
+|   0   |   2    |    1.88    |    3.76    |     16     |  -12.24  |   0.1    |    1.98    |
+|   1   |   2    |    1.98    |    3.96    |     16     |  -12.04  |   0.1    |    2.08    |
+|   2   |   2    |    2.08    |    4.16    |     16     |  -11.84  |   0.1    |    2.18    |
+|   3   |   2    |    2.18    |    4.36    |     16     |  -11.64  |   0.1    |    2.28    |
+|   4   |   2    |    2.28    |    4.56    |     16     |  -11.44  |   0.1    |    2.38    |
+|   5   |   2    |    2.38    |    4.76    |     16     |  -11.24  |   0.1    |    2.48    |
+|   6   |   2    |    2.48    |    4.96    |     16     |  -11.04  |   0.1    |    2.58    |
+|   7   |   2    |    2.58    |    5.16    |     16     |  -10.84  |   0.1    |    2.68    |
+|   8   |   2    |    2.68    |    5.36    |     16     |  -10.64  |   0.1    |    2.78    |
+|   9   |   2    |    2.78    |    5.56    |     16     |  -10.44  |   0.1    |    2.88    |
+|   10  |   2    |    2.88    |    5.76    |     16     |  -10.24  |   0.1    |    2.98    |
+|   11  |   2    |    2.98    |    5.96    |     16     |  -10.04  |   0.1    |    3.08    |
+|   12  |   2    |    3.08    |    6.16    |     16     |  -9.84   |   0.1    |    3.18    |
+|   13  |   2    |    3.18    |    6.36    |     16     |  -9.64   |   0.1    |    3.28    |
+|   14  |   2    |    3.28    |    6.56    |     16     |  -9.44   |   0.1    |    3.38    |
+|   15  |   2    |    3.38    |    6.76    |     16     |  -9.24   |   0.1    |    3.48    |
+|   16  |   2    |    3.48    |    6.96    |     16     |  -9.04   |   0.1    |    3.58    |
+|   17  |   2    |    3.58    |    7.16    |     16     |  -8.84   |   0.1    |    3.68    |
+|   18  |   2    |    3.68    |    7.36    |     16     |  -8.64   |   0.1    |    3.78    |
+|   19  |   2    |    3.78    |    7.56    |     16     |  -8.44   |   0.1    |    3.88    |
+|   20  |   2    |    3.88    |    7.76    |     16     |  -8.24   |   0.1    |    3.98    |
+|   21  |   2    |    3.98    |    7.96    |     16     |  -8.04   |   0.1    |    4.08    |
+|   22  |   2    |    4.08    |    8.16    |     16     |  -7.84   |   0.1    |    4.18    |
+|   23  |   2    |    4.18    |    8.36    |     16     |  -7.64   |   0.1    |    4.28    |
+|   24  |   2    |    4.28    |    8.56    |     16     |  -7.44   |   0.1    |    4.38    |
+|   25  |   2    |    4.38    |    8.76    |     16     |  -7.24   |   0.1    |    4.48    |
+|   26  |   2    |    4.48    |    8.96    |     16     |  -7.04   |   0.1    |    4.58    |
+|   27  |   2    |    4.58    |    9.16    |     16     |  -6.84   |   0.1    |    4.68    |
+|   28  |   2    |    4.68    |    9.36    |     16     |  -6.64   |   0.1    |    4.78    |
+|   29  |   2    |    4.78    |    9.56    |     16     |  -6.44   |   0.1    |    4.88    |
+|   30  |   2    |    4.88    |    9.76    |     16     |  -6.24   |   0.1    |    4.98    |
+|   31  |   2    |    4.98    |    9.96    |     16     |  -6.04   |   0.1    |    5.08    |
+|   32  |   2    |    5.08    |   10.16    |     16     |  -5.84   |   0.1    |    5.18    |
+|   33  |   2    |    5.18    |   10.36    |     16     |  -5.64   |   0.1    |    5.28    |
+|   34  |   2    |    5.28    |   10.56    |     16     |  -5.44   |   0.1    |    5.38    |
+|   35  |   2    |    5.38    |   10.76    |     16     |  -5.24   |   0.1    |    5.48    |
+|   36  |   2    |    5.48    |   10.96    |     16     |  -5.04   |   0.1    |    5.58    |
+|   37  |   2    |    5.58    |   11.16    |     16     |  -4.84   |   0.1    |    5.68    |
+|   38  |   2    |    5.68    |   11.36    |     16     |  -4.64   |   0.1    |    5.78    |
+|   39  |   2    |    5.78    |   11.56    |     16     |  -4.44   |   0.1    |    5.88    |
+|   40  |   2    |    5.88    |   11.76    |     16     |  -4.24   |   0.1    |    5.98    |
+|   41  |   2    |    5.98    |   11.96    |     16     |  -4.04   |   0.1    |    6.08    |
+|   42  |   2    |    6.08    |   12.16    |     16     |  -3.84   |   0.1    |    6.18    |
+|   43  |   2    |    6.18    |   12.36    |     16     |  -3.64   |   0.1    |    6.28    |
+|   44  |   2    |    6.28    |   12.56    |     16     |  -3.44   |   0.1    |    6.38    |
+|   45  |   2    |    6.38    |   12.76    |     16     |  -3.24   |   0.1    |    6.48    |
+|   46  |   2    |    6.48    |   12.96    |     16     |  -3.04   |   0.1    |    6.58    |
+|   47  |   2    |    6.58    |   13.16    |     16     |  -2.84   |   0.1    |    6.68    |
+|   48  |   2    |    6.68    |   13.36    |     16     |  -2.64   |   0.1    |    6.78    |
+|   49  |   2    |    6.78    |   13.56    |     16     |  -2.44   |   0.1    |    6.88    |
+|   50  |   2    |    6.88    |   13.76    |     16     |  -2.24   |   0.1    |    6.98    |
+|   51  |   2    |    6.98    |   13.96    |     16     |  -2.04   |   0.1    |    7.08    |
+|   52  |   2    |    7.08    |   14.16    |     16     |  -1.84   |   0.1    |    7.18    |
+|   53  |   2    |    7.18    |   14.36    |     16     |  -1.64   |   0.1    |    7.28    |
+|   54  |   2    |    7.28    |   14.56    |     16     |  -1.44   |   0.1    |    7.38    |
+|   55  |   2    |    7.38    |   14.76    |     16     |  -1.24   |   0.1    |    7.48    |
+|   56  |   2    |    7.48    |   14.96    |     16     |  -1.04   |   0.1    |    7.58    |
+|   57  |   2    |    7.58    |   15.16    |     16     |  -0.84   |   0.1    |    7.68    |
+|   58  |   2    |    7.68    |   15.36    |     16     |  -0.64   |   0.1    |    7.78    |
+|   59  |   2    |    7.78    |   15.56    |     16     |  -0.44   |   0.1    |    7.88    |
+|   60  |   2    |    7.88    |   15.76    |     16     |  -0.24   |   0.1    |    7.98    |
+|   61  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   62  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   63  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   64  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   65  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   66  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   67  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   68  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   69  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   70  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   71  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   72  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   73  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   74  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   75  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   76  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   77  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   78  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   79  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   80  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   81  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   82  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   83  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   84  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   85  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   86  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   87  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   88  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   89  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   90  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   91  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   92  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   93  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   94  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   95  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   96  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   97  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
+|   98  |   2    |    8.08    |   16.16    |     16     |   0.16   |   -0.1   |    7.98    |
+|   99  |   2    |    7.98    |   15.96    |     16     |  -0.04   |   0.1    |    8.08    |
++-------+--------+------------+------------+------------+----------+----------+------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><span class="section-number">1.5. </span>五、模型改进<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>存在的问题：</p>
+<ol class="arabic simple">
+<li><p>学习速度慢</p></li>
+<li><p>学习存在震荡</p></li>
+</ol>
+<p>改进思路：使用动态学习率，差得多学的多，差的少学的少。</p>
+<section id="id6">
+<h3><span class="section-number">1.5.1. </span>4.1 改进模型<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 随机初始化糖权</span>
+        <span class="c1"># self.sugar_weight = random.uniform(0, 50)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">=</span> <span class="mf">1.88</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🚀随机初始化的糖权: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 1️⃣前向传播，计算预测值</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lemon</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">*</span> <span class="n">lemon</span>
+
+    <span class="c1"># 2️⃣计算误差损失</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_sugar</span><span class="p">,</span> <span class="n">real_sugar</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pred_sugar</span> <span class="o">-</span> <span class="n">real_sugar</span>
+
+    <span class="c1"># 3️⃣计算更新参数的方向和步长</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">loss</span>
+
+    <span class="c1"># 4️⃣更新糖权</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">+=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">learning_rate</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h3><span class="section-number">1.5.2. </span>4.2 改进训练过程<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 训练模型</span>
+
+<span class="c1"># 创建模型实例</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+
+<span class="n">training_logs</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1"># 训练模型</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># 1. 计算预测值</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">lemon</span><span class="p">)</span>
+    <span class="c1"># 2. 计算损失</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">sugar</span><span class="p">)</span>
+    <span class="c1"># 3. 计算更新的步长（梯度）</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="c1"># 4. 更新参数</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">)</span>
+
+    <span class="c1"># 记录训练日志，包括更新之后的权重（保留四位小数）</span>
+    <span class="c1"># 按照表头顺序调整：Epoch, 柠檬盘, 当前糖权, 预测放糖量, 真实放糖量, 误差损失, 更新步长, 更新后权重</span>
+    <span class="n">training_logs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+        <span class="n">epoch</span><span class="p">,</span>
+        <span class="n">lemon</span><span class="p">,</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">-</span> <span class="n">step</span> <span class="o">*</span> <span class="n">learning_rate</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="n">sugar</span><span class="p">,</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="p">])</span>
+
+<span class="c1"># 打印最终参数</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅模型学习到的糖权: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;📝训练日志&quot;</span><span class="p">,</span>
+            <span class="p">[</span><span class="s2">&quot;Epoch&quot;</span><span class="p">,</span> <span class="s2">&quot;柠檬片&quot;</span><span class="p">,</span> <span class="s2">&quot;当前的糖权&quot;</span><span class="p">,</span> <span class="s2">&quot;预测放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;真实放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;误差损失&quot;</span><span class="p">,</span> <span class="s2">&quot;更新步长&quot;</span><span class="p">,</span> <span class="s2">&quot;更新后糖权&quot;</span><span class="p">],</span>
+            <span class="n">training_logs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>🚀随机初始化的糖权: 1.88
+✅模型学习到的糖权: 8.0
+
+📝训练日志：
++-------+--------+------------+------------+------------+----------+----------+------------+
+| Epoch | 柠檬片 | 当前的糖权 | 预测放糖量 | 真实放糖量 | 误差损失 | 更新步长 | 更新后糖权 |
++-------+--------+------------+------------+------------+----------+----------+------------+
+|   0   |   2    |    1.88    |    3.76    |     16     |  -12.24  |  12.24   |   3.104    |
+|   1   |   2    |   3.104    |   6.208    |     16     |  -9.792  |  9.792   |   4.0832   |
+|   2   |   2    |   4.0832   |   8.1664   |     16     | -7.8336  |  7.8336  |   4.8666   |
+|   3   |   2    |   4.8666   |   9.7331   |     16     | -6.2669  |  6.2669  |   5.4932   |
+|   4   |   2    |   5.4932   |  10.9865   |     16     | -5.0135  |  5.0135  |   5.9946   |
+|   5   |   2    |   5.9946   |  11.9892   |     16     | -4.0108  |  4.0108  |   6.3957   |
+|   6   |   2    |   6.3957   |  12.7914   |     16     | -3.2086  |  3.2086  |   6.7165   |
+|   7   |   2    |   6.7165   |  13.4331   |     16     | -2.5669  |  2.5669  |   6.9732   |
+|   8   |   2    |   6.9732   |  13.9465   |     16     | -2.0535  |  2.0535  |   7.1786   |
+|   9   |   2    |   7.1786   |  14.3572   |     16     | -1.6428  |  1.6428  |   7.3429   |
+|   10  |   2    |   7.3429   |  14.6857   |     16     | -1.3143  |  1.3143  |   7.4743   |
+|   11  |   2    |   7.4743   |  14.9486   |     16     | -1.0514  |  1.0514  |   7.5794   |
+|   12  |   2    |   7.5794   |  15.1589   |     16     | -0.8411  |  0.8411  |   7.6635   |
+|   13  |   2    |   7.6635   |  15.3271   |     16     | -0.6729  |  0.6729  |   7.7308   |
+|   14  |   2    |   7.7308   |  15.4617   |     16     | -0.5383  |  0.5383  |   7.7847   |
+|   15  |   2    |   7.7847   |  15.5693   |     16     | -0.4307  |  0.4307  |   7.8277   |
+|   16  |   2    |   7.8277   |  15.6555   |     16     | -0.3445  |  0.3445  |   7.8622   |
+|   17  |   2    |   7.8622   |  15.7244   |     16     | -0.2756  |  0.2756  |   7.8898   |
+|   18  |   2    |   7.8898   |  15.7795   |     16     | -0.2205  |  0.2205  |   7.9118   |
+|   19  |   2    |   7.9118   |  15.8236   |     16     | -0.1764  |  0.1764  |   7.9294   |
+|   20  |   2    |   7.9294   |  15.8589   |     16     | -0.1411  |  0.1411  |   7.9436   |
+|   21  |   2    |   7.9436   |  15.8871   |     16     | -0.1129  |  0.1129  |   7.9548   |
+|   22  |   2    |   7.9548   |  15.9097   |     16     | -0.0903  |  0.0903  |   7.9639   |
+|   23  |   2    |   7.9639   |  15.9277   |     16     | -0.0723  |  0.0723  |   7.9711   |
+|   24  |   2    |   7.9711   |  15.9422   |     16     | -0.0578  |  0.0578  |   7.9769   |
+|   25  |   2    |   7.9769   |  15.9538   |     16     | -0.0462  |  0.0462  |   7.9815   |
+|   26  |   2    |   7.9815   |   15.963   |     16     |  -0.037  |  0.037   |   7.9852   |
+|   27  |   2    |   7.9852   |  15.9704   |     16     | -0.0296  |  0.0296  |   7.9882   |
+|   28  |   2    |   7.9882   |  15.9763   |     16     | -0.0237  |  0.0237  |   7.9905   |
+|   29  |   2    |   7.9905   |  15.9811   |     16     | -0.0189  |  0.0189  |   7.9924   |
+|   30  |   2    |   7.9924   |  15.9848   |     16     | -0.0152  |  0.0152  |   7.9939   |
+|   31  |   2    |   7.9939   |  15.9879   |     16     | -0.0121  |  0.0121  |   7.9952   |
+|   32  |   2    |   7.9952   |  15.9903   |     16     | -0.0097  |  0.0097  |   7.9961   |
+|   33  |   2    |   7.9961   |  15.9922   |     16     | -0.0078  |  0.0078  |   7.9969   |
+|   34  |   2    |   7.9969   |  15.9938   |     16     | -0.0062  |  0.0062  |   7.9975   |
+|   35  |   2    |   7.9975   |   15.995   |     16     |  -0.005  |  0.005   |   7.998    |
+|   36  |   2    |   7.998    |   15.996   |     16     |  -0.004  |  0.004   |   7.9984   |
+|   37  |   2    |   7.9984   |  15.9968   |     16     | -0.0032  |  0.0032  |   7.9987   |
+|   38  |   2    |   7.9987   |  15.9975   |     16     | -0.0025  |  0.0025  |   7.999    |
+|   39  |   2    |   7.999    |   15.998   |     16     |  -0.002  |  0.002   |   7.9992   |
+|   40  |   2    |   7.9992   |  15.9984   |     16     | -0.0016  |  0.0016  |   7.9993   |
+|   41  |   2    |   7.9993   |  15.9987   |     16     | -0.0013  |  0.0013  |   7.9995   |
+|   42  |   2    |   7.9995   |   15.999   |     16     |  -0.001  |  0.001   |   7.9996   |
+|   43  |   2    |   7.9996   |  15.9992   |     16     | -0.0008  |  0.0008  |   7.9997   |
+|   44  |   2    |   7.9997   |  15.9993   |     16     | -0.0007  |  0.0007  |   7.9997   |
+|   45  |   2    |   7.9997   |  15.9995   |     16     | -0.0005  |  0.0005  |   7.9998   |
+|   46  |   2    |   7.9998   |  15.9996   |     16     | -0.0004  |  0.0004  |   7.9998   |
+|   47  |   2    |   7.9998   |  15.9997   |     16     | -0.0003  |  0.0003  |   7.9999   |
+|   48  |   2    |   7.9999   |  15.9997   |     16     | -0.0003  |  0.0003  |   7.9999   |
+|   49  |   2    |   7.9999   |  15.9998   |     16     | -0.0002  |  0.0002  |   7.9999   |
+|   50  |   2    |   7.9999   |  15.9998   |     16     | -0.0002  |  0.0002  |   7.9999   |
+|   51  |   2    |   7.9999   |  15.9999   |     16     | -0.0001  |  0.0001  |   7.9999   |
+|   52  |   2    |   7.9999   |  15.9999   |     16     | -0.0001  |  0.0001  |    8.0     |
+|   53  |   2    |    8.0     |  15.9999   |     16     | -0.0001  |  0.0001  |    8.0     |
+|   54  |   2    |    8.0     |  15.9999   |     16     | -0.0001  |  0.0001  |    8.0     |
+|   55  |   2    |    8.0     |  15.9999   |     16     | -0.0001  |  0.0001  |    8.0     |
+|   56  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   57  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   58  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   59  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   60  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   61  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   62  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   63  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   64  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   65  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   66  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   67  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   68  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   69  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   70  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   71  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   72  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   73  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   74  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   75  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   76  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   77  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   78  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   79  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   80  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   81  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   82  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   83  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   84  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   85  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   86  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   87  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   88  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   89  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   90  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   91  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   92  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   93  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   94  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   95  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   96  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   97  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   98  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
+|   99  |   2    |    8.0     |    16.0    |     16     |   -0.0   |   0.0    |    8.0     |
++-------+--------+------------+------------+------------+----------+----------+------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2><span class="section-number">1.6. </span>六、模型预测<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用预训练的模型进行预测未见过的样本</span>
+<span class="n">lemons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">real_sugars</span> <span class="o">=</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">40</span><span class="p">]</span>
+<span class="n">pred_sugars</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">lemon</span><span class="p">)</span> <span class="k">for</span> <span class="n">lemon</span> <span class="ow">in</span> <span class="n">lemons</span><span class="p">]</span>
+
+<span class="n">print_regression_results</span><span class="p">(</span><span class="n">lemons</span><span class="p">,</span> <span class="n">real_sugars</span><span class="p">,</span> <span class="n">pred_sugars</span><span class="p">,</span> <span class="s2">&quot;制作新的柠檬水&quot;</span><span class="p">,</span>
+                         <span class="p">[</span><span class="s2">&quot;柠檬片&quot;</span><span class="p">,</span> <span class="s2">&quot;真实放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;预测放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;预测偏差&quot;</span><span class="p">,</span> <span class="s2">&quot;预测精度&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>制作新的柠檬水：
++--------+------------+------------+----------+----------+
+| 柠檬片 | 真实放糖量 | 预测放糖量 | 预测偏差 | 预测精度 |
++--------+------------+------------+----------+----------+
+|   3    |     24     |    24.0    | -0.0000  | 100.00%  |
+|   4    |     32     |    32.0    | -0.0000  | 100.00%  |
+|   5    |     40     |    40.0    | -0.0000  | 100.00%  |
++--------+------------+------------+----------+----------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><span class="section-number">1.7. </span>七、模型保存与加载<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+    <span class="c1"># 保存模型参数</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;模型参数保存到 </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+    <span class="c1"># 加载模型参数</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;从 </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> 加载模型参数&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 保存模型参数</span>
+<span class="n">save_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>模型参数保存到 model.pkl
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 加载训练好的模型</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="n">load_parameters</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;model.pkl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅加载学习到的糖权: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>🚀随机初始化的糖权: 1.88
+从 model.pkl 加载模型参数
+✅加载学习到的糖权: 8.0000
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用预训练的模型进行预测未见过的样本</span>
+<span class="n">lemons</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">real_sugars</span> <span class="o">=</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">40</span><span class="p">]</span>
+<span class="n">pred_sugars</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">lemon</span><span class="p">)</span> <span class="k">for</span> <span class="n">lemon</span> <span class="ow">in</span> <span class="n">lemons</span><span class="p">]</span>
+
+<span class="n">print_regression_results</span><span class="p">(</span><span class="n">lemons</span><span class="p">,</span> <span class="n">real_sugars</span><span class="p">,</span> <span class="n">pred_sugars</span><span class="p">,</span> <span class="s2">&quot;制作新的柠檬水&quot;</span><span class="p">,</span>
+                         <span class="p">[</span><span class="s2">&quot;柠檬片&quot;</span><span class="p">,</span> <span class="s2">&quot;真实放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;预测放糖量&quot;</span><span class="p">,</span> <span class="s2">&quot;预测偏差&quot;</span><span class="p">,</span> <span class="s2">&quot;预测精度&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>制作新的柠檬水：
++--------+------------+------------+----------+----------+
+| 柠檬片 | 真实放糖量 | 预测放糖量 | 预测偏差 | 预测精度 |
++--------+------------+------------+----------+----------+
+|   3    |     24     |    24.0    | -0.0000  | 100.00%  |
+|   4    |     32     |    32.0    | -0.0000  | 100.00%  |
+|   5    |     40     |    40.0    | -0.0000  | 100.00%  |
++--------+------------+------------+----------+----------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                    <p><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="https://licensebuttons.net/l/by-sa/4.0/80x15.png"></a></p>
+
+                    <p>Creative Commons License &ndash; This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International.</p>
+
+                    <p>A theme by <a href="https://quantecon.org">QuantEcon</a></p>
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    Contents
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../intro.html">
+   Welcome to your Jupyter Book
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   1. 《动手学 AI 01：初识机器学习》
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Name of Not-numbered Part 2
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../markdown.html">
+   Markdown Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks.html">
+   Content with notebooks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../markdown-notebooks.html">
+   Notebooks with MyST Markdown
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="Table of Contents" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="Home"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    <li class="btn__qelogo"><a href="" title=""><span class="show-for-sr"></span></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="Fullscreen" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="Increase font size" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="Decrease font size" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>
+                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/executablebooks/jupyter-book/notebooks/动手学 AI 01：初识机器学习.ipynb" download><i data-feather="github"></i></a></li>
+                    -->
+                    <li data-tippy-content="View Source"><a target="_blank" href="https://github.com/executablebooks/jupyter-book" download><i data-feather="github"></i></a></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "notebooks/动手学 AI 01：初识机器学习";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
