@@ -1,0 +1,2024 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. 表示的困境：OneHot编码与模型局限 &#8212; 动手学大模型：写给程序员的手搓LLM实战指南</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+    <script id="tilt-loader">
+        // 封装成一个简单的初始化函数
+        function initTiltCards() {
+            // 如果库未加载，则动态加载
+            if (typeof VanillaTilt === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+                script.onload = initCards;
+                document.head.appendChild(script);
+            } else {
+                initCards();
+            }
+
+            function initCards() {
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                    max: 4,
+                    speed: 200,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+            }
+        }
+        // 当页面内容加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTiltCards);
+        } else {
+            initTiltCards();
+        }
+    </script>
+
+
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=78c257c0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/06_表示的困境';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. 记忆的萌芽：RNN与序列建模入门" href="07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html" />
+    <link rel="prev" title="5. 语言的序章：分词与情感分析初探" href="05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=表示的困境：OneHot编码与模型局限  基于OneHot的文本分类模型  介绍  知识点  环境版本  from util import show_version  show_version()  +------+---------------------------------------------------- />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="表示的困境：OneHot编码与模型局限"/>
+<meta name="twitter:description" content="表示的困境：OneHot编码与模型局限  基于OneHot的文本分类模型  介绍  知识点  环境版本  from util import show_version  show_version()  +------+----------------------------------------------------">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="表示的困境：OneHot编码与模型局限" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="表示的困境：OneHot编码与模型局限  基于OneHot的文本分类模型  介绍  知识点  环境版本  from util import show_version  show_version()  +------+----------------------------------------------------" />
+<meta property="og:site_name" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+<style>
+a {
+    color: #313131;
+}
+a:hover {
+    color: #313131;
+}
+a:visited {
+  color: #111111;
+}
+
+.main-index {
+  #qe-page-author-links {
+    border-bottom: 5px solid #313131;
+  }
+}
+
+.qe-page__header {
+  border-bottom: 5px solid #313131;
+}
+
+.qe-page__footer {
+    border-top: 5px solid #313131;
+}
+
+.toctree-wrapper {
+    .caption-text {
+        color: #111111
+    }
+}
+</style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/06_表示的困境>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+
+<!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">6.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">6.2. 知识点</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">6.3. 环境版本</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">6.4. 观察数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">6.5. 自定义分词器</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">6.6. 数据转换</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">6.7. 构造数据集</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">6.8. 初始化数据模组</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">6.9. 构建模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">6.10. 训练前评估</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">6.11. 训练模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">6.12. 训练后评估</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">6.13. 使用模型进行预测</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">6.14. 模型测试</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">6.15. 拓展阅读</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">6.16. 存在的问题</a></li>
+</ul>
+<!--                            <p class="logo">-->
+<!--                                -->
+<!--                                    -->
+<!--                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    -->
+<!--                                -->
+<!--                            </p>-->
+<!---->
+<!--                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Fasterer</a></p>-->
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+<!--                            <p><a href="#top"><strong>Back to top</strong></a></p>-->
+
+                            <p><a href="#top">
+                                <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0" type="button">
+                                    <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z"></path></svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com --> 返回顶部
+                                </button>
+                            </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+                            
+                            更新于：2026-01-01 12:13:14
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+                
+
+                <div class="alert alert-light simple-tilt">
+                    <a href="https://t.zsxq.com/snpV8">
+                        <div>
+                            <div style="display: flex; align-items: center">
+                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
+                                <div style="margin-left: 20px">
+                                    <h4 class="card-title mt-3">答疑讨论</h4>
+                                    <p class="card-text">
+                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+
+<!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
+<!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
+<!--                        <strong>调试信息：</strong><br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.10.15"}, "wordcount": {"minutes": 0, "words": 17}}<br>-->
+<!--                        cover 字段是否存在：否<br>-->
+<!--                        -->
+<!--                        -->
+<!--                    </div>-->
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="onehot">
+<h1><span class="section-number">6. </span>表示的困境：OneHot编码与模型局限<a class="headerlink" href="#onehot" title="Link to this heading">#</a></h1>
+<p>基于OneHot的文本分类模型</p>
+<section id="id1">
+<h2><span class="section-number">6.1. </span>介绍<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+</section>
+<section id="id2">
+<h2><span class="section-number">6.2. </span>知识点<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+</section>
+<section id="id3">
+<h2><span class="section-number">6.3. </span>环境版本<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+------+----------------------------------------------------------------------------------------+
+| Info |                                   《动手学人工智能》                                   |
++------+----------------------------------------------------------------------------------------+
+| 作者 |                                       吾辈亦有感                                       |
+| 哔站 |                      https://space.bilibili.com/3461565265217538                       |
+| 定位 |      基于&#39;从零构建&#39;的理念，用实战降低学习大模型的门槛，帮助程序员快速入门大模型。      |
+| 愿景 | 若我的经验能让你的AI学习之路走的更容易一点，让你的生活变得更美好，我将倍感荣幸！祝好😄 |
++------+----------------------------------------------------------------------------------------+
+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.9.1     |         2.6.0          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><span class="section-number">6.4. </span>观察数据<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 打开文件并读取前5行</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_first_n_lines</span>
+
+<span class="n">show_first_n_lines</span><span class="p">(</span><span class="s1">&#39;../dataset/shopping_comments/train.txt&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>行数</th>
+      <th>内容</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1\t布料一般，尺码合适，总体来说还算可以</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>1\t裤子收到了 质量超级好 穿起来也很正式男朋友很喜欢</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>0\t根本就不是纯棉的，客服还一再跟我死硬，说就是纯棉的！</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>0\t看着还行，可是不怎么好用 怀疑是不是假的</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>1\t裤子质量非常好 特别满意的一次购物 卖家服务超好</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># def analyze_text_lengths(file_path, max_length=128):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     统计文本数据集中样本长度的分布情况</span>
+<span class="c1">#     </span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         file_path (str): 数据文件路径</span>
+<span class="c1">#         max_length (int): 最大序列长度（用于统计截断情况）</span>
+<span class="c1">#     </span>
+<span class="c1">#     Returns:</span>
+<span class="c1">#         dict: 包含长度统计信息的字典</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     import matplotlib.pyplot as plt</span>
+<span class="c1">#     import pandas as pd</span>
+<span class="c1">#     import numpy as np</span>
+<span class="c1">#     </span>
+<span class="c1">#     lengths = []</span>
+<span class="c1">#     labels = []</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 读取数据并统计长度</span>
+<span class="c1">#     with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f:</span>
+<span class="c1">#         for line in f:</span>
+<span class="c1">#             line = line.strip()</span>
+<span class="c1">#             if line:</span>
+<span class="c1">#                 parts = line.split(&#39;\t&#39;)</span>
+<span class="c1">#                 if len(parts) &gt;= 2:</span>
+<span class="c1">#                     label = int(parts[0])</span>
+<span class="c1">#                     text = &#39;\t&#39;.join(parts[1:])</span>
+<span class="c1">#                     lengths.append(len(text))</span>
+<span class="c1">#                     labels.append(label)</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 转换为numpy数组便于计算</span>
+<span class="c1">#     lengths = np.array(lengths)</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 计算统计信息</span>
+<span class="c1">#     stats = {</span>
+<span class="c1">#         &#39;total_samples&#39;: len(lengths),</span>
+<span class="c1">#         &#39;min_length&#39;: np.min(lengths),</span>
+<span class="c1">#         &#39;max_length&#39;: np.max(lengths),</span>
+<span class="c1">#         &#39;mean_length&#39;: np.mean(lengths),</span>
+<span class="c1">#         &#39;median_length&#39;: np.median(lengths),</span>
+<span class="c1">#         &#39;std_length&#39;: np.std(lengths),</span>
+<span class="c1">#         &#39;lengths_below_max&#39;: np.sum(lengths &lt;= max_length),</span>
+<span class="c1">#         &#39;lengths_above_max&#39;: np.sum(lengths &gt; max_length),</span>
+<span class="c1">#         &#39;percentage_below_max&#39;: np.sum(lengths &lt;= max_length) / len(lengths) * 100</span>
+<span class="c1">#     }</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 按标签分组统计</span>
+<span class="c1">#     positive_lengths = [lengths[i] for i, label in enumerate(labels) if label == 1]</span>
+<span class="c1">#     negative_lengths = [lengths[i] for i, label in enumerate(labels) if label == 0]</span>
+<span class="c1">#     </span>
+<span class="c1">#     stats[&#39;positive_samples&#39;] = len(positive_lengths)</span>
+<span class="c1">#     stats[&#39;negative_samples&#39;] = len(negative_lengths)</span>
+<span class="c1">#     stats[&#39;positive_mean_length&#39;] = np.mean(positive_lengths) if positive_lengths else 0</span>
+<span class="c1">#     stats[&#39;negative_mean_length&#39;] = np.mean(negative_lengths) if negative_lengths else 0</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 打印统计结果</span>
+<span class="c1">#     print(f&quot;📊 Text Length Analysis ({file_path}):&quot;)</span>
+<span class="c1">#     print(&quot;=&quot; * 50)</span>
+<span class="c1">#     print(f&quot;Total samples: {stats[&#39;total_samples&#39;]}&quot;)</span>
+<span class="c1">#     print(f&quot;Text length range: {stats[&#39;min_length&#39;]} - {stats[&#39;max_length&#39;]} characters&quot;)</span>
+<span class="c1">#     print(f&quot;Average length: {stats[&#39;mean_length&#39;]:.2f} characters&quot;)</span>
+<span class="c1">#     print(f&quot;Median length: {stats[&#39;median_length&#39;]:.2f} characters&quot;)</span>
+<span class="c1">#     print(f&quot;Length standard deviation: {stats[&#39;std_length&#39;]:.2f}&quot;)</span>
+<span class="c1">#     print(&quot;-&quot; * 30)</span>
+<span class="c1">#     print(f&quot;Positive samples: {stats[&#39;positive_samples&#39;]} ({stats[&#39;positive_samples&#39;]/stats[&#39;total_samples&#39;]*100:.2f}%)&quot;)</span>
+<span class="c1">#     print(f&quot;Negative samples: {stats[&#39;negative_samples&#39;]} ({stats[&#39;negative_samples&#39;]/stats[&#39;total_samples&#39;]*100:.2f}%)&quot;)</span>
+<span class="c1">#     print(f&quot;Average length of positive samples: {stats[&#39;positive_mean_length&#39;]:.2f} characters&quot;)</span>
+<span class="c1">#     print(f&quot;Average length of negative samples: {stats[&#39;negative_mean_length&#39;]:.2f} characters&quot;)</span>
+<span class="c1">#     print(&quot;-&quot; * 30)</span>
+<span class="c1">#     print(f&quot;Samples with length ≤ {max_length}: {stats[&#39;lengths_below_max&#39;]} ({stats[&#39;percentage_below_max&#39;]:.2f}%)&quot;)</span>
+<span class="c1">#     print(f&quot;Samples with length &gt; {max_length}: {stats[&#39;lengths_above_max&#39;]} ({100-stats[&#39;percentage_below_max&#39;]:.2f}%)&quot;)</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 绘制长度分布直方图</span>
+<span class="c1">#     fig, axes = plt.subplots(1, 2, figsize=(15, 5))</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 总体长度分布</span>
+<span class="c1">#     axes[0].hist(lengths, bins=50, alpha=0.7, color=&#39;skyblue&#39;, edgecolor=&#39;black&#39;)</span>
+<span class="c1">#     axes[0].axvline(stats[&#39;mean_length&#39;], color=&#39;red&#39;, linestyle=&#39;--&#39;, </span>
+<span class="c1">#                    label=f&#39;Mean length: {stats[&quot;mean_length&quot;]:.2f}&#39;)</span>
+<span class="c1">#     axes[0].axvline(max_length, color=&#39;orange&#39;, linestyle=&#39;-&#39;, </span>
+<span class="c1">#                    label=f&#39;Max length limit: {max_length}&#39;)</span>
+<span class="c1">#     axes[0].set_xlabel(&#39;Text Length (characters)&#39;)</span>
+<span class="c1">#     axes[0].set_ylabel(&#39;Frequency&#39;)</span>
+<span class="c1">#     axes[0].set_title(&#39;Text Length Distribution&#39;)</span>
+<span class="c1">#     axes[0].legend()</span>
+<span class="c1">#     axes[0].grid(True, alpha=0.3)</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 正负样本长度对比</span>
+<span class="c1">#     axes[1].hist(positive_lengths, bins=30, alpha=0.7, label=&#39;Positive samples&#39;, color=&#39;green&#39;)</span>
+<span class="c1">#     axes[1].hist(negative_lengths, bins=30, alpha=0.7, label=&#39;Negative samples&#39;, color=&#39;red&#39;)</span>
+<span class="c1">#     axes[1].axvline(stats[&#39;positive_mean_length&#39;], color=&#39;darkgreen&#39;, linestyle=&#39;--&#39;,</span>
+<span class="c1">#                    label=f&#39;Positive mean: {stats[&quot;positive_mean_length&quot;]:.2f}&#39;)</span>
+<span class="c1">#     axes[1].axvline(stats[&#39;negative_mean_length&#39;], color=&#39;darkred&#39;, linestyle=&#39;--&#39;,</span>
+<span class="c1">#                    label=f&#39;Negative mean: {stats[&quot;negative_mean_length&quot;]:.2f}&#39;)</span>
+<span class="c1">#     axes[1].set_xlabel(&#39;Text Length (characters)&#39;)</span>
+<span class="c1">#     axes[1].set_ylabel(&#39;Frequency&#39;)</span>
+<span class="c1">#     axes[1].set_title(&#39;Text Length Distribution by Label&#39;)</span>
+<span class="c1">#     axes[1].legend()</span>
+<span class="c1">#     axes[1].grid(True, alpha=0.3)</span>
+<span class="c1">#     </span>
+<span class="c1">#     plt.tight_layout()</span>
+<span class="c1">#     plt.show()</span>
+<span class="c1">#     </span>
+<span class="c1">#     return stats</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># # 分析训练集文本长度分布</span>
+<span class="c1"># train_stats = analyze_text_lengths(&quot;../dataset/shopping_comments/train_filtered.txt&quot;, max_length=20)</span>
+<span class="c1"># </span>
+<span class="c1"># # 分析验证集文本长度分布</span>
+<span class="c1"># dev_stats = analyze_text_lengths(&quot;../dataset/shopping_comments/dev_filtered.txt&quot;, max_length=20)</span>
+<span class="c1"># </span>
+<span class="c1"># # 分析测试集文本长度分布</span>
+<span class="c1"># test_stats = analyze_text_lengths(&quot;../dataset/shopping_comments/test_filtered.txt&quot;, max_length=20)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># def filter_short_texts(input_file_path, output_file_path, max_length=30):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     过滤长度超过指定长度的文本样本，将符合条件的样本保存到新文件中</span>
+<span class="c1">#     </span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         input_file_path (str): 输入文件路径</span>
+<span class="c1">#         output_file_path (str): 输出文件路径</span>
+<span class="c1">#         max_length (int): 最大文本长度阈值，默认为30</span>
+<span class="c1">#     </span>
+<span class="c1">#     Returns:</span>
+<span class="c1">#         dict: 过滤统计信息</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     filtered_count = 0</span>
+<span class="c1">#     total_count = 0</span>
+<span class="c1">#     </span>
+<span class="c1">#     with open(input_file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as infile, \</span>
+<span class="c1">#          open(output_file_path, &#39;w&#39;, encoding=&#39;utf-8&#39;) as outfile:</span>
+<span class="c1">#         </span>
+<span class="c1">#         for line in infile:</span>
+<span class="c1">#             line = line.strip()</span>
+<span class="c1">#             if line:</span>
+<span class="c1">#                 total_count += 1</span>
+<span class="c1">#                 parts = line.split(&#39;\t&#39;)</span>
+<span class="c1">#                 if len(parts) &gt;= 2:</span>
+<span class="c1">#                     label = parts[0]</span>
+<span class="c1">#                     text = &#39;\t&#39;.join(parts[1:])</span>
+<span class="c1">#                     </span>
+<span class="c1">#                     # 只保留长度小于等于max_length的样本</span>
+<span class="c1">#                     if len(text) &lt;= max_length:</span>
+<span class="c1">#                         outfile.write(line + &#39;\n&#39;)</span>
+<span class="c1">#                         filtered_count += 1</span>
+<span class="c1">#     </span>
+<span class="c1">#     stats = {</span>
+<span class="c1">#         &#39;total_samples&#39;: total_count,</span>
+<span class="c1">#         &#39;filtered_samples&#39;: filtered_count,</span>
+<span class="c1">#         &#39;removed_samples&#39;: total_count - filtered_count,</span>
+<span class="c1">#         &#39;filter_ratio&#39;: filtered_count / total_count if total_count &gt; 0 else 0</span>
+<span class="c1">#     }</span>
+<span class="c1">#     </span>
+<span class="c1">#     # 打印统计信息</span>
+<span class="c1">#     print(f&quot;📊 文本过滤统计:&quot;)</span>
+<span class="c1">#     print(&quot;=&quot; * 40)</span>
+<span class="c1">#     print(f&quot;原始样本数: {stats[&#39;total_samples&#39;]}&quot;)</span>
+<span class="c1">#     print(f&quot;过滤后样本数: {stats[&#39;filtered_samples&#39;]}&quot;)</span>
+<span class="c1">#     print(f&quot;移除样本数: {stats[&#39;removed_samples&#39;]}&quot;)</span>
+<span class="c1">#     print(f&quot;保留比例: {stats[&#39;filter_ratio&#39;]:.2%}&quot;)</span>
+<span class="c1">#     print(f&quot;输出文件: {output_file_path}&quot;)</span>
+<span class="c1">#     </span>
+<span class="c1">#     return stats</span>
+<span class="c1"># </span>
+<span class="c1"># # 使用示例</span>
+<span class="c1"># filter_short_texts(&quot;../dataset/shopping_comments/train.txt&quot;, &quot;../dataset/shopping_comments/train_filtered.txt&quot;, 30)</span>
+<span class="c1"># filter_short_texts(&quot;../dataset/shopping_comments/dev.txt&quot;, &quot;../dataset/shopping_comments/dev_filtered.txt&quot;, 30)</span>
+<span class="c1"># filter_short_texts(&quot;../dataset/shopping_comments/test.txt&quot;, &quot;../dataset/shopping_comments/test_filtered.txt&quot;, 30)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2><span class="section-number">6.5. </span>自定义分词器<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>如何将文字转化为计算机可以理解的数字？</p></li>
+<li><p>如何处理长短不一的文本？</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleTokenizer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化简单分词器</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 特殊token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s1">&#39;[PAD]&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span> <span class="o">=</span> <span class="s1">&#39;[UNK]&#39;</span>
+
+        <span class="c1"># 特殊token ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># 构建词汇表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># 反向词汇表 (id -&gt; token)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># 词汇表大小</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        根据文本构建词汇表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>  <span class="c1"># 将每个汉字作为独立token</span>
+
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">word</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_vocab_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从文件中构建词汇表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将文本编码为token ids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># 转换为IDs</span>
+        <span class="n">token_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">:</span>
+                <span class="n">token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">token_ids</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将token ids解码为文本</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">token_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">:</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">[</span><span class="n">token_id</span><span class="p">]</span>
+                <span class="c1"># 过滤特殊token（可根据需要调整）</span>
+                <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]:</span>
+                    <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pad_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        对序列进行填充或截断</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">padded_sequences</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+                <span class="c1"># 截断</span>
+                <span class="n">padded_seq</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 填充</span>
+                <span class="n">pad_length</span> <span class="o">=</span> <span class="n">max_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+                <span class="n">padded_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">pad_length</span>
+
+            <span class="n">padded_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">padded_seq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">padded_sequences</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        分词器主调用函数</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">texts</span><span class="p">]</span>
+
+        <span class="c1"># 编码所有文本</span>
+        <span class="n">all_token_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">all_token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span>
+
+        <span class="c1"># 填充或截断到统一长度</span>
+        <span class="n">padded_token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">all_token_ids</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_single_text</span><span class="p">:</span>
+            <span class="n">padded_token_ids</span> <span class="o">=</span> <span class="n">padded_token_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">padded_token_ids</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用 print_table 展示结果</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="c1"># 示例文本</span>
+<span class="n">sample_texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;动手学 AI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;吾辈亦有感&quot;</span>
+<span class="p">]</span>
+
+<span class="c1"># 创建分词器实例</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+
+<span class="c1"># 构建词汇表</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">)</span>
+
+<span class="c1"># 构建词汇表信息表格</span>
+<span class="n">vocab_info</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;Vocabulary Size&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">]]</span>
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;分词器信息&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;项目&quot;</span><span class="p">,</span> <span class="s2">&quot;值&quot;</span><span class="p">],</span> <span class="n">vocab_info</span><span class="p">)</span>
+
+<span class="c1"># 显示词表</span>
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;字符到ID的映射表&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="s2">&quot;Token ID&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">[</span><span class="n">token</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Red">分词器信息：</span>
++-----------------+----+
+|       项目      | 值 |
++-----------------+----+
+| Vocabulary Size | 13 |
++-----------------+----+
+
+<span class=" -Color -Color-Red">字符到ID的映射表：</span>
++-------+----------+
+| Token | Token ID |
++-------+----------+
+| [PAD] |    0     |
+| [UNK] |    1     |
+|   动  |    2     |
+|   手  |    3     |
+|   学  |    4     |
+|       |    5     |
+|   A   |    6     |
+|   I   |    7     |
+|   吾  |    8     |
+|   辈  |    9     |
+|   亦  |    10    |
+|   有  |    11    |
+|   感  |    12    |
++-------+----------+
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用示例</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="c1"># 示例文本</span>
+<span class="n">sample_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;动手学人工智能&quot;</span><span class="p">)</span>
+
+<span class="c1"># 编码文本</span>
+<span class="n">encoded_token_ids</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;编码结果&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;原始文本&quot;</span><span class="p">,</span> <span class="s2">&quot;编码序列&quot;</span><span class="p">,</span> <span class="s2">&quot;解码结果&quot;</span><span class="p">],</span> <span class="p">[</span>
+    <span class="p">[</span><span class="n">sample_texts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">encoded_token_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded_token_ids</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">))</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Red">编码结果：</span>
++----------------+-----------------------+-----------------------+
+|    原始文本    |        编码序列       |        解码结果       |
++----------------+-----------------------+-----------------------+
+|   动手学 AI    |   [2, 3, 4, 5, 6, 7]  |       动手学 AI       |
+|   吾辈亦有感   | [8, 9, 10, 11, 12, 0] |       吾辈亦有感      |
+| 动手学人工智能 |   [2, 3, 4, 1, 1, 1]  | 动手学[UNK][UNK][UNK] |
++----------------+-----------------------+-----------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><span class="section-number">6.6. </span>数据转换<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextTransform</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">vocab_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+        <span class="c1"># 需要知道词汇表大小来创建 one-hot 向量</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">=</span> <span class="n">vocab_size</span> <span class="ow">or</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="c1"># 使用 tokenizer 对文本进行编码，并自动完成截断与填充</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span>  <span class="c1"># 最大序列长度</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 将 input_ids 转换为 one-hot 向量</span>
+        <span class="c1"># 注意：这里假设 input_ids 是一个列表或者一维张量</span>
+        <span class="c1"># 如果 input_ids 不是 tensor，则转换为 tensor</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+        <span class="c1"># 转换为 one-hot 向量</span>
+        <span class="n">one_hot</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">one_hot</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># TextTransform 使用示例</span>
+<span class="n">text_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">sample_text</span> <span class="o">=</span> <span class="s2">&quot;动手学 AI&quot;</span>
+<span class="n">encoded_token_ids</span> <span class="o">=</span> <span class="n">text_transform</span><span class="p">(</span><span class="n">sample_text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encoded Shape:&quot;</span><span class="p">,</span> <span class="n">encoded_token_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encoded:&quot;</span><span class="p">,</span> <span class="n">encoded_token_ids</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Encoded Shape: torch.Size([10, 13])
+Encoded: tensor([[0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.],
+        [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><span class="section-number">6.7. </span>构造数据集<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextClassificationDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="n">texts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">input_ids</span><span class="p">,</span>
+            <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从txt文件加载数据集</span>
+<span class="sd">        txt格式应包含标签和文本，使用制表符分隔</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 读取txt文件</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="c1"># 使用制表符分割</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># 第一列是标签</span>
+                        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># 剩余部分是文本（处理文本中可能包含制表符的情况）</span>
+                        <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="c1"># 创建数据集实例</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="n">dataset</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;input_ids&#39;: tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]],
+
+        [[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.]]]),
+ &#39;labels&#39;: tensor([1, 0])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h2><span class="section-number">6.8. </span>初始化数据模组<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextDataModule</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">train_data_file</span><span class="o">=</span><span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span><span class="p">,</span>
+                 <span class="n">val_data_file</span><span class="o">=</span><span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span><span class="p">,</span>
+                 <span class="n">test_data_file</span><span class="o">=</span><span class="s2">&quot;../dataset/shopping_comments/test.txt&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span> <span class="o">=</span> <span class="n">train_data_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span> <span class="o">=</span> <span class="n">val_data_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span> <span class="o">=</span> <span class="n">test_data_file</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 下载或准备数据集的操作（如果需要）</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span><span class="p">,</span>
+                                                                 <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_length</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1"># 创建 DataModule 实例并设置</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span><span class="p">)</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+<span class="n">text_datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+<span class="c1"># 调用 setup 方法初始化数据集</span>
+<span class="n">text_datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+<span class="c1"># 获取训练数据加载器</span>
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">text_datamodule</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+
+<span class="c1"># 打印一个批次的数据</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;打印一个批次的数据：&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">sort_dicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>打印一个批次的数据：
+{&#39;input_ids&#39;: tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.]],
+
+        [[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         ...,
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.],
+         [1., 0., 0.,  ..., 0., 0., 0.]]]),
+ &#39;labels&#39;: tensor([1, 0])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h2><span class="section-number">6.9. </span>构建模型<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextClassifier</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TextClassifier</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+
+        <span class="c1"># 定义网络层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+        <span class="c1"># 存储每个训练步骤和训练循环的损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 用于存储验证步骤的结果</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 示例输入</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_input_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span>
+
+        <span class="c1"># 标签id到标签的映射，用于预测解码</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;训练步骤&quot;&quot;&quot;</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+
+        <span class="c1"># 前向传播</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="c1"># 计算准确率</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="c1"># 记录日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;train_loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;train_acc&#39;</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
+
+        <span class="c1"># 存储损失以便后续使用</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_train_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在每个训练epoch结束时计算整体损失&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="p">:</span>  <span class="c1"># 确保列表不为空</span>
+            <span class="c1"># 计算并记录平均训练损失</span>
+            <span class="n">avg_train_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span><span class="p">,</span>
+                <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">avg_train_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># 转换为 Python 数值</span>
+            <span class="p">})</span>
+
+            <span class="c1"># 清空列表为下一个 epoch 做准备</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;验证步骤&quot;&quot;&quot;</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">target_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+
+        <span class="c1"># 前向传播</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+
+        <span class="c1"># 计算准确率</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 保存结果供epoch结束时使用</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;preds&#39;</span><span class="p">:</span> <span class="n">preds</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">target_ids</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在每个验证epoch结束时计算整体准确率&quot;&quot;&quot;</span>
+        <span class="c1"># 汇总所有预测结果和标签</span>
+        <span class="n">all_preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;preds&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="p">])</span>
+        <span class="n">all_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="p">])</span>
+
+        <span class="c1"># 计算整体准确率</span>
+        <span class="n">val_overall_acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="c1"># 记录整体准确率</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;total_samples&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_labels</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;total_correct&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;val_overall_acc&#39;</span><span class="p">,</span> <span class="n">val_overall_acc</span><span class="p">)</span>
+
+        <span class="c1"># 将评估结果保存到 eval_accuracies 列表中</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span><span class="p">,</span>  <span class="c1"># epoch编号</span>
+            <span class="s2">&quot;总样本数&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_labels</span><span class="p">),</span>  <span class="c1"># 验证集总样本数</span>
+            <span class="s2">&quot;正确样本数&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">((</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>  <span class="c1"># 预测正确的样本数</span>
+            <span class="s2">&quot;准确率&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">val_overall_acc</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># 准确率</span>
+        <span class="p">})</span>
+
+        <span class="c1"># 清空缓存</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;清除缓存&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;配置优化器&quot;&quot;&quot;</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">optimizer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_label_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;根据数据集设置标签映射&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_map</span> <span class="o">=</span> <span class="n">label_map</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        对新数据进行预测</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            input_ids: 输入特征，可以是单个样本或批量样本</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            predictions: 预测的标签索引</span>
+<span class="sd">            decoded_predictions: 解码后的标签名称</span>
+<span class="sd">            probabilities: 预测概率</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 确保模型处于评估模式</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># 【新增】判断输入类型并处理</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>  <span class="c1"># 转换为张量</span>
+
+        <span class="c1"># 确保输入是tensor格式</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># 展平处理，与训练时保持一致</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 预测</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># 解码预测结果</span>
+        <span class="n">decoded_predictions</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_map</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">decoded_predictions</span><span class="p">,</span> <span class="n">probabilities</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将标签ID解码为标签名称</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            label_ids: 标签ID列表</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            decoded_labels: 解码后的标签名称列表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">label_ids</span> <span class="o">=</span> <span class="n">label_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_map</span><span class="p">[</span><span class="n">label_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">label_id</span> <span class="ow">in</span> <span class="n">label_ids</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">lightning.pytorch.utilities.model_summary</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelSummary</span>
+
+<span class="n">vocab_size</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">TextClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">vocab_size</span> <span class="o">*</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                       <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">example_input_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">ModelSummary</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>torch.Size([32, 34500])
+  | Name         | Type   | Params | Mode  | FLOPs  | In sizes    | Out sizes
+-----------------------------------------------------------------------------------
+0 | input_layer  | Linear | 4.4 M  | train | 282 M  | [32, 34500] | [32, 128]
+1 | relu1        | ReLU   | 0      | train | 0      | [32, 128]   | [32, 128]
+2 | hidden_layer | Linear | 16.5 K | train | 1.0 M  | [32, 128]   | [32, 128]
+3 | relu2        | ReLU   | 0      | train | 0      | [32, 128]   | [32, 128]
+4 | output_layer | Linear | 258    | train | 16.4 K | [32, 128]   | [32, 2]  
+-----------------------------------------------------------------------------------
+4.4 M     Trainable params
+0         Non-trainable params
+4.4 M     Total params
+17.732    Total estimated model params size (MB)
+5         Modules in train mode
+0         Modules in eval mode
+283 M     Total Flops
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h2><span class="section-number">6.10. </span>训练前评估<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">max_length</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span><span class="p">)</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+
+<span class="c1"># 创建 DataModule 实例并设置</span>
+<span class="n">datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+<span class="c1"># 创建 TextClassifier 实例并设置</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">TextClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">*</span> <span class="n">max_length</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                       <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_sanity_val_steps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">enable_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>💡 Tip: For seamless cloud uploads and versioning, try installing [litmodels](https://pypi.org/project/litmodels/) to enable LitModelCheckpoint, which syncs automatically with the Lightning model registry.
+GPU available: True (mps), used: True
+TPU available: False, using: 0 TPU cores
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 直接调用验证函数进行训练前评估</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          1327.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">    0.48643696308135986    </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2728.0,
+  &#39;total_correct&#39;: 1327.0,
+  &#39;val_overall_acc&#39;: 0.48643696308135986}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id11">
+<h2><span class="section-number">6.11. </span>训练模型<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━┳━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Name         </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Type   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Params </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Mode  </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">  FLOPs </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">    In sizes </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Out sizes </span>┃
+┡━━━╇━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 0 </span>│ input_layer  │ Linear │  4.4 M │ train │  282 M │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 34500] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 1 </span>│ relu1        │ ReLU   │      0 │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 2 </span>│ hidden_layer │ Linear │ 16.5 K │ train │  1.0 M │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 3 </span>│ relu2        │ ReLU   │      0 │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 4 </span>│ output_layer │ Linear │    258 │ train │ 16.4 K │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 2] </span>│
+└───┴──────────────┴────────┴────────┴───────┴────────┴─────────────┴───────────┘
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Trainable params</span>: 4.4 M                                                                                            
+<span style="font-weight: bold">Non-trainable params</span>: 0                                                                                            
+<span style="font-weight: bold">Total params</span>: 4.4 M                                                                                                
+<span style="font-weight: bold">Total estimated model params size (MB)</span>: 17                                                                         
+<span style="font-weight: bold">Modules in train mode</span>: 5                                                                                           
+<span style="font-weight: bold">Modules in eval mode</span>: 0                                                                                            
+<span style="font-weight: bold">Total FLOPs</span>: 283 M                                                                                                 
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>`Trainer.fit` stopped: `max_epochs=12` reached.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_training_loss</span>
+
+<span class="n">plot_training_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cf5da3e8efb0cde101fec470e13547a703e29aad3bacd228971bcd60abe07eb0.png" src="../_images/cf5da3e8efb0cde101fec470e13547a703e29aad3bacd228971bcd60abe07eb0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_table</span>
+
+<span class="n">show_table</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>epoch</th>
+      <th>总样本数</th>
+      <th>正确样本数</th>
+      <th>准确率</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>2728</td>
+      <td>2608</td>
+      <td>0.9560</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>2728</td>
+      <td>2713</td>
+      <td>0.9945</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>2728</td>
+      <td>2727</td>
+      <td>0.9996</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>2728</td>
+      <td>2728</td>
+      <td>1.0000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="id12">
+<h2><span class="section-number">6.12. </span>训练后评估<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 直接调用验证函数进行训练前评估</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">            1.0            </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2728.0, &#39;total_correct&#39;: 2728.0, &#39;val_overall_acc&#39;: 1.0}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id13">
+<h2><span class="section-number">6.13. </span>使用模型进行预测<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">setup_label_map</span><span class="p">(</span><span class="n">label_map</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;负面&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;正面&quot;</span><span class="p">})</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_classification_results</span>
+
+<span class="c1"># 1. 准备需要预测的文本（长短不一）</span>
+<span class="n">new_texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># 短文本（5-10个字符）</span>
+    <span class="s2">&quot;非常好&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;质量差&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;推荐购买&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;不建议买&quot;</span><span class="p">,</span>
+
+    <span class="c1"># 中等长度文本（10-20个字符）</span>
+    <span class="s2">&quot;这个产品还不错&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;物流速度太慢了&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;性价比很高值得推荐&quot;</span><span class="p">,</span>
+
+    <span class="c1"># 长文本（20个字符以上）</span>
+    <span class="s2">&quot;包装很精美，产品和描述一致，非常满意这次购物体验&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;卖家服务态度不好，发货速度慢，产品质量也不如预期&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;虽然价格有点贵，但是品质确实不错，使用效果很满意&quot;</span>
+<span class="p">]</span>
+
+<span class="n">true_labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+
+<span class="c1"># 2. 使用与训练时统一的 transform 方法对文本进行处理</span>
+<span class="n">input_ids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">new_texts</span><span class="p">:</span>
+    <span class="c1"># 使用训练时相同的 transform 方法</span>
+    <span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">input_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+
+
+<span class="c1"># 3. 使用模型进行预测</span>
+<span class="n">predictions</span><span class="p">,</span> <span class="n">decoded_predictions</span><span class="p">,</span> <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+
+<span class="c1"># 4. 输出预测结果</span>
+<span class="n">print_classification_results</span><span class="p">(</span><span class="n">new_texts</span><span class="p">,</span> <span class="n">true_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">label_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Red">🎯 分类预测结果 (准确率: 9/10 = 90.00%)：</span>
++--------------------------------------------------+----------+----------+----------+------+
+|                       输入                       | 真实标签 | 预测标签 | 最高概率 | 标记 |
++--------------------------------------------------+----------+----------+----------+------+
+|                      非常好                      |   正面   |   正面   |  1.0000  |  ☑   |
+|                      质量差                      |   负面   |   负面   |  0.9997  |  ☑   |
+|                     推荐购买                     |   正面   |   正面   |  0.9688  |  ☑   |
+|                     不建议买                     |   负面   |   负面   |  0.9996  |  ☑   |
+|                  这个产品还不错                  |   正面   |   负面   |  0.9576  |  ☒   |
+|                  物流速度太慢了                  |   负面   |   负面   |  1.0000  |  ☑   |
+|                性价比很高值得推荐                |   正面   |   正面   |  0.5130  |  ☑   |
+| 包装很精美，产品和描述一致，非常满意这次购物体验 |   正面   |   正面   |  1.0000  |  ☑   |
+| 卖家服务态度不好，发货速度慢，产品质量也不如预期 |   负面   |   负面   |  0.9961  |  ☑   |
+| 虽然价格有点贵，但是品质确实不错，使用效果很满意 |   正面   |   正面   |  0.6009  |  ☑   |
++--------------------------------------------------+----------+----------+----------+------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id14">
+<h2><span class="section-number">6.14. </span>模型测试<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+<span class="n">datamodule2</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                             <span class="n">train_data_file</span><span class="o">=</span><span class="s2">&quot;../dataset/shopping_comments/dev.txt&quot;</span><span class="p">,</span>
+                             <span class="n">val_data_file</span><span class="o">=</span><span class="s2">&quot;../dataset/shopping_comments/test.txt&quot;</span><span class="p">)</span>
+
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;在训练集上评估：&quot;</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;在测试集上评估：&quot;</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">在训练集上评估：</span>
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">            1.0            </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">在测试集上评估：</span>
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          2277.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2789.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">     0.816421627998352     </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2789.0,
+  &#39;total_correct&#39;: 2277.0,
+  &#39;val_overall_acc&#39;: 0.816421627998352}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id15">
+<h2><span class="section-number">6.15. </span>拓展阅读<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+</section>
+<section id="id16">
+<h2><span class="section-number">6.16. </span>存在的问题<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<p>思考一下，引出下一章</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+
+                    <!-- buymecoffee -->
+<!--                    <div class="buymecoffee alert" role="alert">-->
+<!--                        <p>-->
+<!--                            如果你觉得这些内容对你有帮助，可以-->
+<!--                            <a class="reference external" href="/buy-me-a-coffee">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                        </p>-->
+<!--                    </div>-->
+                    <!-- buymecoffee -->
+
+                    <!-- Comments -->
+                    <!-- Comments -->
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+                    <p xmlns:cc="http://creativecommons.org/ns#">
+                        本作品由
+                        <a href="http://fasterai.cn" target="_blank">吾辈亦有感</a>
+                        创作，采用
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="license noopener noreferrer" style="display: inline-block">署名-非商业性使用-禁止演绎 4.0 国际</a>
+                    </p>
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第一部分：基石篇 —— 机器学习的思维与工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch实战入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="03_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   4. 工程的进化：PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第二部分：进阶篇 —— 语言与序列的表示学习
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08_%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第三部分：创造篇 —— 生成式模型的演进之路
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10_%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11_%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12_%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 技巧的力量：用反转优化梯度流动
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13_%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 信息的价值：用偷窥突破视野受限
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="主页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="放大字体" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="缩小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+<!--                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>-->
+<!---->
+<!---->
+<!---->
+<!--                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>-->
+<!---->
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/notebooks/06_表示的困境.ipynb" download><i data-feather="github"></i></a></li>
+                    -->
+<!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "notebooks/06_表示的困境";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

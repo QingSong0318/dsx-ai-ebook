@@ -1,0 +1,1886 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. 深度学习初探：多分类任务实战 &#8212; 动手学大模型：写给程序员的手搓LLM实战指南</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+    <script id="tilt-loader">
+        // 封装成一个简单的初始化函数
+        function initTiltCards() {
+            // 如果库未加载，则动态加载
+            if (typeof VanillaTilt === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+                script.onload = initCards;
+                document.head.appendChild(script);
+            } else {
+                initCards();
+            }
+
+            function initCards() {
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                    max: 4,
+                    speed: 200,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+            }
+        }
+        // 当页面内容加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTiltCards);
+        } else {
+            initTiltCards();
+        }
+    </script>
+
+
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=78c257c0" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/03_深度学习初探';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. 工程的进化：用 PyTorch Lightning 重构" href="04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html" />
+    <link rel="prev" title="2. 神经网络启蒙：PyTorch实战入门" href="02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=深度学习初探：多分类任务实战  介绍  在上一章，我们利用PyTorch框架成功构建并训练了第一个多参数回归模型，实现了对“特调柠檬水顾客评分”的预测。通过上一章的实践，我们熟悉了PyTorch的核心组件——模型层、损失函数与优化器。  本章，我们将把任务从回归问题升级到多分类问题。这意味着我们需要从预测一个连续数值转 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="深度学习初探：多分类任务实战"/>
+<meta name="twitter:description" content="深度学习初探：多分类任务实战  介绍  在上一章，我们利用PyTorch框架成功构建并训练了第一个多参数回归模型，实现了对“特调柠檬水顾客评分”的预测。通过上一章的实践，我们熟悉了PyTorch的核心组件——模型层、损失函数与优化器。  本章，我们将把任务从回归问题升级到多分类问题。这意味着我们需要从预测一个连续数值转">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="深度学习初探：多分类任务实战" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="深度学习初探：多分类任务实战  介绍  在上一章，我们利用PyTorch框架成功构建并训练了第一个多参数回归模型，实现了对“特调柠檬水顾客评分”的预测。通过上一章的实践，我们熟悉了PyTorch的核心组件——模型层、损失函数与优化器。  本章，我们将把任务从回归问题升级到多分类问题。这意味着我们需要从预测一个连续数值转" />
+<meta property="og:site_name" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+<style>
+a {
+    color: #313131;
+}
+a:hover {
+    color: #313131;
+}
+a:visited {
+  color: #111111;
+}
+
+.main-index {
+  #qe-page-author-links {
+    border-bottom: 5px solid #313131;
+  }
+}
+
+.qe-page__header {
+  border-bottom: 5px solid #313131;
+}
+
+.qe-page__footer {
+    border-top: 5px solid #313131;
+}
+
+.toctree-wrapper {
+    .caption-text {
+        color: #111111
+    }
+}
+</style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/03_深度学习初探>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+
+<!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.2. 最少必要知识</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.3. 任务背景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.4. 环境版本</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5. 准备数据</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.5.1. 观察数据</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch">3.5.2. PyTorch 数据管理</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.5.3. 自定义数据集</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.5.3.1. 自定义咖啡分类数据集</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">3.5.3.2. 加载数据集实例</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">3.5.4. 数据加载器</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">3.5.4.1. 创建数据加载器</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">3.5.4.2. 使用数据加载器</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">3.6. 构建模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">3.6.1. 定义模型</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">3.6.2. 创建模型实例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">3.6.3. 查看模型结构</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">3.7. 训练前评估</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">3.7.1. 定义评估函数</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">3.7.2. 评估模型训练前准确率</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">3.8. 训练模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">3.8.1. 定义训练循环</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">3.8.1.1. 训练一个批次</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">3.8.1.2. 训练一个轮次</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">3.8.1.3. 训练多个轮次</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">3.8.2. 启动训练循环</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">3.8.2.1. 训练过程可视化</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">3.8.2.2. 查看模型评估记录</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">3.9. 训练后评估</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">3.10. 使用模型进预测</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">3.10.1. 定义预测单个样本的函数</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">3.10.2. 使用训练好的模型进行预测</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">3.11. 本章小结</a></li>
+</ul>
+<!--                            <p class="logo">-->
+<!--                                -->
+<!--                                    -->
+<!--                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    -->
+<!--                                -->
+<!--                            </p>-->
+<!---->
+<!--                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Fasterer</a></p>-->
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+<!--                            <p><a href="#top"><strong>Back to top</strong></a></p>-->
+
+                            <p><a href="#top">
+                                <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0" type="button">
+                                    <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z"></path></svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com --> 返回顶部
+                                </button>
+                            </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+                            
+                            更新于：2026-01-01 12:13:14
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+                
+
+                <div class="alert alert-light simple-tilt">
+                    <a href="https://t.zsxq.com/snpV8">
+                        <div>
+                            <div style="display: flex; align-items: center">
+                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
+                                <div style="margin-left: 20px">
+                                    <h4 class="card-title mt-3">答疑讨论</h4>
+                                    <p class="card-text">
+                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+
+<!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
+<!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
+<!--                        <strong>调试信息：</strong><br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 2}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 91}}<br>-->
+<!--                        cover 字段是否存在：否<br>-->
+<!--                        -->
+<!--                        -->
+<!--                    </div>-->
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">3. </span>深度学习初探：多分类任务实战<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">3.1. </span>介绍<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在上一章，我们利用PyTorch框架成功构建并训练了第一个多参数回归模型，实现了对“特调柠檬水顾客评分”的预测。通过上一章的实践，我们熟悉了PyTorch的核心组件——模型层、损失函数与优化器。</p>
+<p>本章，我们将把任务从回归问题升级到多分类问题。这意味着我们需要从预测一个连续数值转变为预测多个离散的类别。为了实现这一转变，我们需要把模型的输出从单个值扩展为多个值，并使用新的损失函数来衡量模型的预测结果与真实标签之间的差异。同时，由于任务的复杂性增加，我们将把单层神经网络扩展为多层神经网络，以增强模型的表达能力，并引入Dataset和Dataloader来更高效地管理数据。</p>
+<p>本章的目标是让读者快速掌握使用PyTorch处理分类任务的基本流程。将会以一个生动的“咖啡分类”场景贯穿始终，从零开始，一步步实现数据加载、模型构建、模型训练与评估预测的全过程。在这个过程中，你将亲手搭建一个能够区分不同种类咖啡的神经网络，并理解分类任务与回归任务在模型设计、损失函数选择上的核心差异。</p>
+<p>现在，就让我们正式进入深度神经网络与多分类任务的世界，亲手搭建并训练第一个属于自己的分类模型吧！</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">3.2. </span>最少必要知识<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>深度神经网络</p></li>
+<li><p>分类任务和交叉熵损失</p></li>
+<li><p>Dataset和Dataloader</p></li>
+<li><p>四大主流的优化器</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2><span class="section-number">3.3. </span>任务背景<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>这是一个关于多分类任务的深度学习实战项目，使用咖啡数据集进行分类训练，目标是根据咖啡的配方成分（椰浆、咖啡、牛奶、糖）来识别咖啡的类型（生椰拿铁、双椰拿铁、烤椰拿铁）。</p>
+</section>
+<section id="id5">
+<h2><span class="section-number">3.4. </span>环境版本<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>打印环境的版本号，避免因为环境不同而导致程序不能复现。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">course_03.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+------+----------------------------------------------------------------------------------------+
+| Info |                                   《动手学人工智能》                                   |
++------+----------------------------------------------------------------------------------------+
+| 作者 |                                       吾辈亦有感                                       |
+| 哔站 |                      https://space.bilibili.com/3461565265217538                       |
+| 定位 |      基于&#39;从零构建&#39;的理念，用实战降低学习大模型的门槛，帮助程序员快速入门大模型。      |
+| 愿景 | 若我的经验能让你的AI学习之路走的更容易一点，让你的生活变得更美好，我将倍感荣幸！祝好😄 |
++------+----------------------------------------------------------------------------------------+
+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.9.1     |         2.6.0          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><span class="section-number">3.5. </span>准备数据<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h3><span class="section-number">3.5.1. </span>观察数据<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 读取训练集数据</span>
+<span class="n">train_data_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./dataset/coffee_train.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># 随机显示5行数据</span>
+<span class="n">train_data_frame</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>椰浆</th>
+      <th>咖啡</th>
+      <th>牛奶</th>
+      <th>糖</th>
+      <th>种类</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>90</th>
+      <td>6.5000</td>
+      <td>3.2000</td>
+      <td>5.1000</td>
+      <td>2.0000</td>
+      <td>烤椰拿铁</td>
+    </tr>
+    <tr>
+      <th>104</th>
+      <td>6.7000</td>
+      <td>3.3000</td>
+      <td>5.7000</td>
+      <td>2.1000</td>
+      <td>烤椰拿铁</td>
+    </tr>
+    <tr>
+      <th>91</th>
+      <td>6.4000</td>
+      <td>2.7000</td>
+      <td>5.3000</td>
+      <td>1.9000</td>
+      <td>烤椰拿铁</td>
+    </tr>
+    <tr>
+      <th>71</th>
+      <td>5.5000</td>
+      <td>2.4000</td>
+      <td>3.7000</td>
+      <td>1.0000</td>
+      <td>双椰拿铁</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>5.7000</td>
+      <td>4.4000</td>
+      <td>1.5000</td>
+      <td>0.4000</td>
+      <td>生椰拿铁</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="pytorch">
+<h3><span class="section-number">3.5.2. </span>PyTorch 数据管理<a class="headerlink" href="#pytorch" title="Link to this heading">#</a></h3>
+<p>PyTorch中的 <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> 和 <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> 类是数据加载和处理的核心组件，它们极大地简化了数据准备和批量加载的过程，使得训练循环更加清晰和高效。</p>
+<p><strong>Dataset类的作用：</strong></p>
+<ol class="arabic simple">
+<li><p>抽象数据表示：Dataset类提供了一个表示数据集的抽象接口，允许用户自定义如何加载和访问数据。</p></li>
+<li><p>数据预处理：可以在Dataset类中实现数据的预处理操作，如图像的变换、文本的分词等。</p></li>
+<li><p>统一数据访问：通过实现__getitem__和__len__方法，使得数据集可以像列表一样被索引，并且可以获取数据集的大小。</p></li>
+</ol>
+<p><strong>DataLoader类的作用：</strong></p>
+<ol class="arabic simple">
+<li><p>批量加载：自动将数据集中的数据分成小批量，便于模型训练。</p></li>
+<li><p>数据打乱：在每个训练周期（epoch）开始时，可以随机打乱数据，以减少模型对数据顺序的依赖，提高泛化能力。</p></li>
+<li><p>并行加载：利用多进程并行加载数据，加速数据准备过程，减少GPU等待数据的时间。</p></li>
+<li><p>灵活的数据组合：通过collate_fn参数，可以自定义如何将多个样本组合成一个批量，例如对序列数据进行填充。</p></li>
+</ol>
+<p>PyTorch 中数据加载的整体思路如图所示：【图示】</p>
+<p><strong>使用Dataset和DataLoader的好处：</strong></p>
+<ol class="arabic simple">
+<li><p>模块化：将数据加载和预处理与模型训练代码分离，使得代码结构更清晰，易于维护和修改。</p></li>
+<li><p>效率：通过并行加载和数据预取，可以充分利用计算资源，减少训练时间。</p></li>
+<li><p>灵活性：可以轻松地处理不同类型的数据和不同的数据存储格式。</p></li>
+<li><p>可重复性：通过设置随机种子，可以确保每次训练时数据打乱的方式相同，便于实验复现。</p></li>
+</ol>
+</section>
+<section id="id8">
+<h3><span class="section-number">3.5.3. </span>自定义数据集<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>自定义咖啡分类 <code class="docutils literal notranslate"><span class="pre">CoffeeDataset</span></code> 类，需要继承 <code class="docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code>，并实现<code class="docutils literal notranslate"><span class="pre">__init__</span></code>、<code class="docutils literal notranslate"><span class="pre">__len__</span></code>和<code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>方法。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code> 方法：初始化数据集，通常包含样本列表、标签映射等参数。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__len__</span></code> 方法：返回数据集的长度，即样本数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> 方法：根据索引获取指定样本的数据，通常会将数据的转换过程放在这里。</p></li>
+</ul>
+<p>在此次的任务中我们需要将csv中的每一行数据转化为一条训练样本。转化示例如下：</p>
+<p>【图示】</p>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">input_ids</span></code> 表示输入特征，<code class="docutils literal notranslate"><span class="pre">target_ids</span></code> 表示类别对应的ID。</p>
+<section id="id9">
+<h4><span class="section-number">3.5.3.1. </span>自定义咖啡分类数据集<a class="headerlink" href="#id9" title="Link to this heading">#</a></h4>
+<p>除了实现<code class="docutils literal notranslate"><span class="pre">__init__</span></code>、<code class="docutils literal notranslate"><span class="pre">__len__</span></code>和<code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>方法，我们还需要添加从CSV文件加载数据的类方法 <code class="docutils literal notranslate"><span class="pre">load_from_csv</span></code>，方便直接从数据文件中直接创建数据集对象。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CoffeeDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    自定义咖啡数据集类，继承自PyTorch的Dataset基类</span>
+<span class="sd">    用于加载和处理咖啡分类数据</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化数据集</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">        - samples: 包含特征和标签的样本列表，每个元素是(features, label)的元组</span>
+<span class="sd">        - label_to_id: 标签到ID的映射字典，如果为None则自动创建</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span>
+
+        <span class="c1"># 使用提供的标签映射</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_to_id</span> <span class="o">=</span> <span class="n">label_to_id</span>
+        <span class="c1"># 创建反向映射(ID到标签)，用于后续将预测结果转换回标签名称</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_to_label</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        返回数据集的大小(样本总数)</span>
+<span class="sd">        </span>
+<span class="sd">        返回:</span>
+<span class="sd">        - 数据集中的样本数量</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        获取指定索引的样本数据</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">        - index: 样本索引</span>
+<span class="sd">        </span>
+<span class="sd">        返回:</span>
+<span class="sd">        - 包含输入特征和目标标签ID的字典</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1️⃣ 根据索引获取样本的特征和标签</span>
+        <span class="n">features</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+        <span class="c1"># 2️⃣ 将标签转换为对应的ID</span>
+        <span class="n">label_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_to_id</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+        <span class="c1"># 3️⃣ 返回包含输入特征和目标标签ID的字典</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;input_features&quot;</span><span class="p">:</span> <span class="n">features</span><span class="p">,</span>  <span class="c1"># 输入特征数据</span>
+            <span class="s2">&quot;target_ids&quot;</span><span class="p">:</span> <span class="n">label_id</span>  <span class="c1"># 目标标签ID</span>
+        <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从CSV文件加载数据的类方法</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">        - file_path: CSV文件路径</span>
+<span class="sd">        </span>
+<span class="sd">        返回:</span>
+<span class="sd">        - CoffeeDataset实例</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 使用pandas读取CSV文件并删除包含缺失值的行</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+        <span class="c1"># 存储处理后的样本</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 遍历数据中的每一行</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+            <span class="c1"># 1️⃣ 获取当前行数据</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+            <span class="c1"># 2️⃣ 提取特征数据(除最后一列外的所有列)，并转换为float32类型</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+
+            <span class="c1"># 3️⃣ 提取标签(最后一列)</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># 4️⃣ 将特征和标签作为一个元组添加到样本列表中</span>
+            <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">features</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
+
+        <span class="c1"># 创建并返回CoffeeDataset实例</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h4><span class="section-number">3.5.3.2. </span>加载数据集实例<a class="headerlink" href="#id10" title="Link to this heading">#</a></h4>
+<p>使用训练数据文件<code class="docutils literal notranslate"><span class="pre">coffee_train.csv</span></code> 和评估数据文件 <code class="docutils literal notranslate"><span class="pre">coffee_val.csv</span></code> 来创建对应的数据集对象。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="c1"># 使用 CoffeeDataset 类的 load_from_csv 方法加载咖啡数据集</span>
+<span class="n">label_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;生椰拿铁&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;双椰拿铁&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;烤椰拿铁&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">CoffeeDataset</span><span class="o">.</span><span class="n">load_from_csv</span><span class="p">(</span><span class="s2">&quot;./dataset/coffee_train.csv&quot;</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">)</span>
+<span class="n">val_dataset</span> <span class="o">=</span> <span class="n">CoffeeDataset</span><span class="o">.</span><span class="n">load_from_csv</span><span class="p">(</span><span class="s2">&quot;./dataset/coffee_val.csv&quot;</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">)</span>
+
+<span class="c1"># 使用 pprint 函数打印数据集中的第一个样本，展示其结构和内容</span>
+<span class="c1"># 这有助于查看数据的格式，包括输入特征(input_ids)和目标标签(target_ids)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据集样例：</span><span class="si">{</span><span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 打印训练集和评估集的大小</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;训练集大小: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;评估集大小: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>数据集样例：{&#39;input_features&#39;: array([5.1, 3.5, 1.4, 0.2], dtype=float32), &#39;target_ids&#39;: 0}
+
+训练集大小: 118
+评估集大小: 30
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id11">
+<h3><span class="section-number">3.5.4. </span>数据加载器<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>DataLoader是PyTorch中用于加载数据的一个重要工具，它提供了一个可迭代的对象，可以方便地访问Dataset中的数据，并支持自动批处理、打乱数据、多进程加载等。
+有以下主要参数：</p>
+<ul class="simple">
+<li><p>dataset: 一个Dataset对象，即要加载的数据集。</p></li>
+<li><p>batch_size: 每个批次的大小，默认为1。</p></li>
+<li><p>shuffle: 是否在每个epoch开始时打乱数据，默认为False。通常训练集设置为True，验证集/测试集为False。</p></li>
+<li><p>num_workers: 使用多少个子进程来加载数据，默认为0，表示在主进程中加载。</p></li>
+<li><p>collate_fn: 如何将多个样本数据拼接成一个批次，默认为torch默认的拼接方式。</p></li>
+<li><p>drop_last: 当数据集大小不能被batch_size整除时，是否丢弃最后一个不完整的批次。</p></li>
+</ul>
+<p>下面基于自定义的咖啡分类数据集创建数据加载器。这里创建一个批次大小为5的训练数据加载器，并打印一个批次的数据。</p>
+<section id="id12">
+<h4><span class="section-number">3.5.4.1. </span>创建数据加载器<a class="headerlink" href="#id12" title="Link to this heading">#</a></h4>
+<p>创建数据加载器的时候需要设置数据集、批次大小、是否打乱数据等参数，训练数据加载器通常会打乱数据，而评估数据加载器则通常不需要打乱数据。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+<span class="c1"># 设置每个批次的数据量</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># 创建训练数据的数据加载器，打乱数据</span>
+<span class="c1"># DataLoader会自动处理数据的批量加载和随机打乱（shuffle=True）</span>
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 创建评估数据的数据加载器，无需打乱数据</span>
+<span class="c1"># 评估时通常不需要打乱数据（shuffle=False），以便于结果的复现和分析</span>
+<span class="n">val_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id13">
+<h4><span class="section-number">3.5.4.2. </span>使用数据加载器<a class="headerlink" href="#id13" title="Link to this heading">#</a></h4>
+<p>当我们实例化一个 DataLoader 后，它返回的是一个可迭代对象。对其实例进行迭代时，会调用其__iter__方法，该方法返回一个迭代器。这个迭代器在每次迭代时返回一个批次（batch）的数据。</p>
+<p>在这个迭代器内部会维护一个索引，每次迭代时，它会根据采样器（Sampler）提供的索引来从数据集中获取数据，然后使用将单个样本组合成一个batch。所以我们可以通过下面for循环的迭代方式每次获取一个批次的数据，直到数据遍历一遍为止。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用 Dataloader 打印一个批次的数据</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;使用 Dataloader 打印一个批次的数据：&quot;</span><span class="p">)</span>
+
+<span class="n">input_features</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">target_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># 遍历训练数据加载器，获取一个批次的数据</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
+    <span class="c1"># 从批次数据中提取输入特征(input_features)和目标标签(target_ids)</span>
+    <span class="n">input_features</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_features&quot;</span><span class="p">]</span>
+    <span class="n">target_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;target_ids&quot;</span><span class="p">]</span>
+
+    <span class="c1"># 使用pprint美化打印批次数据，sort_dicts=False保持字段顺序</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">sort_dicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># 只打印第一个批次后就跳出循环</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>使用 Dataloader 打印一个批次的数据：
+{&#39;input_features&#39;: tensor([[6.2000, 2.8000, 4.8000, 1.8000],
+        [6.3000, 3.4000, 5.6000, 2.4000],
+        [4.9000, 3.1000, 1.5000, 0.1000],
+        [6.9000, 3.2000, 5.7000, 2.3000],
+        [5.2000, 3.5000, 1.5000, 0.2000]]),
+ &#39;target_ids&#39;: tensor([2, 2, 0, 2, 0])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>从执行结果中和我们的预期一样，每次迭代都会返回一个批次为 5 的数据，其中包含输入特征<code class="docutils literal notranslate"><span class="pre">input_features</span></code>和目标标签<code class="docutils literal notranslate"><span class="pre">target_ids</span></code>。迭代时 DataLoader 会自动地根据样本中的key进行堆叠，所以<code class="docutils literal notranslate"><span class="pre">input_features</span></code>和<code class="docutils literal notranslate"><span class="pre">target_ids</span></code>都被转换成了列表的形式，它们的数据形状为：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input_features</span></code>：(5, 4)，即每个批次有5个数据样本，每个样本有4个输入特征</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_ids</span></code>：(5,)，即每个批次有5个数据样本，每个样本有1个目标标签</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">批次：用部分对整体的近似估计</p>
+<p>这里我们引入了批次（batch）的概念，在《神经网络启蒙》中训练顾客评分预测模型时，每次训练都会使用全部的数据，虽然使用全量的数据其loss更能精准的表示模型的性能，但是训练的过程会很慢。因此，在训练过程中，通常会采用小批量（mini-batch）的数据去近似估计整个训练集，即每次只使用一部分数据进行训练，从而平衡训练效率和模型性能。</p>
+<p>正式因为这种近似估计的理念，所以通常会将训练数据集进行随机打乱，每个训练轮次中批次的数据都不同，可以让数据集更接近真实分布，从而提高模型的泛化性能。</p>
+</div>
+</section>
+</section>
+</section>
+<section id="id14">
+<h2><span class="section-number">3.6. </span>构建模型<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>本次任务我们需要创建一个用于咖啡分类的模型，学习四种配料与咖啡品类之间的关系。这是一个拥有多个神经网络层和多个输出的模型，其模型结构如下：</p>
+<p><strong>【配图】</strong></p>
+<section id="id15">
+<h3><span class="section-number">3.6.1. </span>定义模型<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<p>定义一个继承自 <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> 的 <code class="docutils literal notranslate"><span class="pre">CoffeeClassifier</span></code> 类，这是PyTorch中定义神经网络模型的标准方式。</p>
+<p>重写模型的 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> 和 <code class="docutils literal notranslate"><span class="pre">forward</span></code> 方法，分别完成模型的初始化和前向计算。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code> 方法：定义模型的参数和层结构，创建一个输入层和一个输出层，不同的层之间使用 <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> 激活函数进行非线性映射。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">forward</span></code> 方法：定义数据在网络中的流动方式，先通过输入层进行数据输入，然后通过隐藏层进行非线性映射，最后通过输出层进行分类预测。</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">激活函数：从线性到非线性的飞跃</p>
+<p>激活函数是施加在人工神经网络每个神经元输出上的数学函数。它的核心使命是引入非线性。这是神经网络能够学习并逼近任意复杂函数关系的基石。</p>
+<p>一个没有激活函数的神经网络，无论有多少层，其整体输出都只是输入数据的线性组合，本质上等价于一个单层的神经网络，能力极其有限。激活函数打破了这种线性束缚，使得神经网络能够拟合曲线、形成复杂的决策边界，从而处理图像识别、自然语言处理等高度非线性的现实问题。</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CoffeeClassifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    咖啡分类模型，继承自PyTorch的nn.Module基类</span>
+<span class="sd">    这是一个简单的两层全连接神经网络，用于咖啡种类分类任务</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化模型结构</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">        - input_size: 输入特征维度（本项目中为4，即椰浆、咖啡、牛奶、糖的含量）</span>
+<span class="sd">        - hidden_size: 隐藏层神经元数量</span>
+<span class="sd">        - output_size: 输出类别数量（本项目中为3，即生椰拿铁、双椰拿铁、烤椰拿铁）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 调用父类初始化方法</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CoffeeClassifier</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 输入层：将输入特征映射到隐藏层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="c1"># 激活函数：引入非线性因素，增强模型表达能力</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+
+        <span class="c1"># 输出层：将隐藏层映射到输出类别</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_features</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播函数，定义数据在网络中的流动过程</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">        - input_features: 输入数据，形状为(batch_size, input_size)</span>
+<span class="sd">        </span>
+<span class="sd">        返回:</span>
+<span class="sd">        - out: 模型输出，形状为(batch_size, output_size)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 输入通过输入层，数据形状变化：(batch_size, hidden_size) → (batch_size, hidden_size)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span><span class="p">(</span><span class="n">input_features</span><span class="p">)</span>
+
+        <span class="c1"># 经过ReLU激活函数</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="c1"># 通过输出层得到最终输出，数据形状变化：(batch_size, hidden_size) → (batch_size, output_size)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="c1"># 返回输出结果</span>
+        <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id16">
+<h3><span class="section-number">3.6.2. </span>创建模型实例<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>创建咖啡分类模型实例，并打印模型信息：</p>
+<ul class="simple">
+<li><p>输入特征维度为4（椰浆、咖啡、牛奶、糖）</p></li>
+<li><p>隐藏层维度为10</p></li>
+<li><p>输出类别数为3（生椰咖啡、双椰咖啡、烤椰咖啡）</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">创建咖啡分类模型实例：</span>
+<span class="sd"> - 输入特征维度为4（椰浆、咖啡、牛奶、糖）</span>
+<span class="sd"> - 隐藏层维度为10</span>
+<span class="sd"> - 输出类别数为3（生椰咖啡、双椰咖啡、烤椰咖啡）</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CoffeeClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">output_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># 打印模型结构</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CoffeeClassifier(
+  (input_layer): Linear(in_features=4, out_features=10, bias=True)
+  (relu): ReLU()
+  (output_layer): Linear(in_features=10, out_features=3, bias=True)
+)
+</pre></div>
+</div>
+</div>
+</div>
+<p>从打印的模型信息中可以看到，模型由输入层、激活函数和输出层组成，其中：</p>
+<ul class="simple">
+<li><p>输入层 <code class="docutils literal notranslate"><span class="pre">input_layer</span></code>：将输入特征映射到隐藏层，输入特征维度为4，隐藏特征维度为10</p></li>
+<li><p>激活函数 <code class="docutils literal notranslate"><span class="pre">relu</span></code>：使用 ReLU 激活函数，引入非线性因素，增强模型表达能力</p></li>
+<li><p>输出层 <code class="docutils literal notranslate"><span class="pre">output_layer</span></code>：将隐藏特征映射到输出类别，隐藏特征维度为10，输出类别数为3</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3><span class="section-number">3.6.3. </span>查看模型结构<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">torchinfo</span></code> 库查看模型的结构，包括输入大小、输出大小、参数数量和是否可训练。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">summary</span>
+
+<span class="c1"># input_data: 输入数据的形状，用于推断模型的输入输出大小</span>
+<span class="c1"># col_names: 指定显示的列名，包括输入大小、输出大小、参数数量和是否可训练</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model Summary:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">input_features</span><span class="p">,</span>
+              <span class="n">col_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;output_size&quot;</span><span class="p">,</span> <span class="s2">&quot;num_params&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Model Summary:
+===================================================================================================================
+Layer (type:depth-idx)                   Input Shape               Output Shape              Param #
+===================================================================================================================
+CoffeeClassifier                         [5, 4]                    [5, 3]                    --
+├─Linear: 1-1                            [5, 4]                    [5, 10]                   50
+├─ReLU: 1-2                              [5, 10]                   [5, 10]                   --
+├─Linear: 1-3                            [5, 10]                   [5, 3]                    33
+===================================================================================================================
+Total params: 83
+Trainable params: 83
+Non-trainable params: 0
+Total mult-adds (Units.MEGABYTES): 0.00
+===================================================================================================================
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.00
+Params size (MB): 0.00
+Estimated Total Size (MB): 0.00
+===================================================================================================================
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id18">
+<h2><span class="section-number">3.7. </span>训练前评估<a class="headerlink" href="#id18" title="Link to this heading">#</a></h2>
+<p>训练前评估为模型性能建立了初始基准，使得后续的训练进度能够被量化追踪。通过对比训练前后的评估结果，开发者可以清晰看到模型的改进幅度，判断训练是否朝着正确的方向发展。</p>
+<section id="id19">
+<h3><span class="section-number">3.7.1. </span>定义评估函数<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>创建一个评估函数<code class="docutils literal notranslate"><span class="pre">evaluate</span></code>，用于评估模型在测试数据集上的准确率。评估时会遍历测试数据加载器中的每个批次，计算模型的预测结果，并统计正确预测的样本数和总样本数，最后计算模型在整个测试数据集上的准确率。</p>
+<p>评估每个批次具体步骤如下：</p>
+<ol class="arabic simple">
+<li><p>从批次数据中获取输入特征和目标标签</p></li>
+<li><p>模型根据输入特征进行前向计算，得到针对每个样本在每个类型上的预测得分</p></li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">argmax</span></code> 获取每个样本预测概率最高的类别作为预测结果，即预测结果为预测概率最高的类别的索引</p></li>
+<li><p>比对预测结果和目标标签，统计当前批次中预测正确的样本数，并累加到总正确样本数中</p></li>
+<li><p>统计并累加当前批次的总样本数</p></li>
+</ol>
+<div class="note admonition">
+<p class="admonition-title">注意</p>
+<ol class="arabic simple">
+<li><p>评估时，使用 <code class="docutils literal notranslate"><span class="pre">torch.no_grad()</span></code> 关闭梯度计算，可以在推理过程中不存储中间结果，减少显存占用</p></li>
+<li><p>评估时，使用 <code class="docutils literal notranslate"><span class="pre">to(device)</span></code> 将模型和数据移动到指定设备上，只有模型和数据在同一设备上时，才能进行计算</p></li>
+</ol>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    评估模型在测试数据集上的准确率</span>
+<span class="sd">    </span>
+<span class="sd">    参数:</span>
+<span class="sd">    - model: 训练好的模型</span>
+<span class="sd">    - dataloader: 待测试数据集的数据加载器</span>
+<span class="sd">    - device: 运行设备，默认为CPU</span>
+<span class="sd">    </span>
+<span class="sd">    返回:</span>
+<span class="sd">    - accuracy: 准确率</span>
+<span class="sd">    - total_correct: 正确预测的样本数</span>
+<span class="sd">    - total_samples: 总样本数</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 将模型设置为评估模式，关闭如dropout等训练时特有的操作</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="c1"># 将模型移动到指定设备上，只有模型和数据在同一设备上时，才能进行计算</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># 初始化正确预测的样本数和总样本数</span>
+    <span class="n">total_correct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total_samples</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># 关闭梯度计算，因为在评估阶段不需要计算梯度，降低显存开销</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="c1"># 遍历测试数据加载器中的每个批次</span>
+        <span class="k">for</span> <span class="n">batch_data</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+            <span class="c1"># 1️⃣ 从批次数据中获取输入特征和目标标签</span>
+            <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span> <span class="o">=</span> <span class="n">batch_data</span><span class="p">[</span><span class="s2">&quot;input_features&quot;</span><span class="p">],</span> <span class="n">batch_data</span><span class="p">[</span><span class="s2">&quot;target_ids&quot;</span><span class="p">]</span>
+            <span class="c1"># 将输入数据和目标标签移动到指定设备上</span>
+            <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span> <span class="o">=</span> <span class="n">input_features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">target_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="c1"># 2️⃣ 模型前向传播，得到输出（未经过argmax处理）</span>
+            <span class="n">output_logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_features</span><span class="p">)</span>
+
+            <span class="c1"># 3️⃣ 获取每个样本预测概率最高的类别作为预测结果</span>
+            <span class="n">predicted_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># 4️⃣ 统计当前批次中预测正确的样本数</span>
+            <span class="n">total_correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted_ids</span> <span class="o">==</span> <span class="n">target_ids</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            
+            <span class="c1"># 5️⃣ 累加当前批次的样本总数</span>
+            <span class="n">total_samples</span> <span class="o">+=</span> <span class="n">target_ids</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># 计算准确率</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">total_correct</span> <span class="o">/</span> <span class="n">total_samples</span>
+    <span class="c1"># 打印准确率信息</span>
+    <span class="n">print_red</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">total_correct</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_samples</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="c1"># 返回准确率、正确预测的样本数和总样本数</span>
+    <span class="k">return</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="n">total_samples</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id20">
+<h3><span class="section-number">3.7.2. </span>评估模型训练前准确率<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="c1"># 评估模型在评估集上的准确率</span>
+<span class="n">accuracy</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="n">total_samples</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="c1"># 打印评估结果表格</span>
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;🎯 训练前预测准确率&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;总样本数&quot;</span><span class="p">,</span> <span class="s2">&quot;正确样本数&quot;</span><span class="p">,</span> <span class="s2">&quot;准确率&quot;</span><span class="p">],</span>
+            <span class="p">[[</span><span class="n">total_samples</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accuracy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">Accuracy: 0.3333 (10/30)</span>
+
+<span class=" -Color -Color-Red">🎯 训练前预测准确率：</span>
++----------+------------+--------+
+| 总样本数 | 正确样本数 | 准确率 |
++----------+------------+--------+
+|    30    |     10     | 33.33% |
++----------+------------+--------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id21">
+<h2><span class="section-number">3.8. </span>训练模型<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
+<p>训练深度神经网络的典型训练循环：</p>
+<p><strong>【图示】</strong></p>
+<section id="id22">
+<h3><span class="section-number">3.8.1. </span>定义训练循环<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>创建一个训练函数<code class="docutils literal notranslate"><span class="pre">train_one_batch</span></code>，用于对一个批次的数据进行训练。</p></li>
+<li><p>创建一个训练函数<code class="docutils literal notranslate"><span class="pre">train_one_epoch</span></code>，用于对一个轮次的数据进行训练。</p></li>
+<li><p>创建一个训练函数<code class="docutils literal notranslate"><span class="pre">train_model</span></code>，用于对多个轮次的数据进行训练。</p></li>
+</ol>
+<section id="id23">
+<h4><span class="section-number">3.8.1.1. </span>训练一个批次<a class="headerlink" href="#id23" title="Link to this heading">#</a></h4>
+<p>定义 <code class="docutils literal notranslate"><span class="pre">train_one_batch</span></code> 函数，用于对一个批次的数据进行训练。</p>
+<ol class="arabic simple">
+<li><p>前向传播：将输入数据传入模型，得到预测类别的得分（未经过argmax处理）</p></li>
+<li><p>计算损失：使用损失函数计算预测类别与真实类别之间的误差</p></li>
+<li><p>清空梯度：在反向传播前清空优化器中的梯度缓存，以避免梯度累积</p></li>
+<li><p>反向传播：计算损失相对于模型参数的梯度</p></li>
+<li><p>参数更新：使用优化器根据计算出的梯度更新模型参数</p></li>
+<li><p>返回损失：返回当前批次的损失值，记录训练过程中性能的变化</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_one_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># 将模型设置为训练模式</span>
+
+    <span class="c1"># 1️⃣ 前向传播：将输入数据传入模型，得到预测输出</span>
+    <span class="n">output_logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_features</span><span class="p">)</span>
+
+    <span class="c1"># 2️⃣ 计算损失：使用损失函数计算预测值与真实值之间的误差</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output_logits</span><span class="p">,</span> <span class="n">target_ids</span><span class="p">)</span>
+
+    <span class="c1"># 3️⃣ 清零梯度：在反向传播前清空优化器中的梯度缓存</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="c1"># 4️⃣ 反向传播：计算损失相对于模型参数的梯度</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+    <span class="c1"># 5️⃣ 更新参数：根据计算出的梯度更新模型参数</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="c1"># 6️⃣ 返回当前批次的损失值</span>
+    <span class="k">return</span> <span class="n">loss</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id24">
+<h4><span class="section-number">3.8.1.2. </span>训练一个轮次<a class="headerlink" href="#id24" title="Link to this heading">#</a></h4>
+<p>定义 <code class="docutils literal notranslate"><span class="pre">train_one_epoch</span></code> 函数，遍历数据加载器中的每一个批次，进行一个轮次的训练。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_one_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">train_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">log_interval</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 累计损失</span>
+    <span class="n">batch_ids</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 批次计数器</span>
+
+    <span class="c1"># 遍历训练数据加载器中的每一个批次</span>
+    <span class="k">for</span> <span class="n">batch_data</span> <span class="ow">in</span> <span class="n">train_dataloader</span><span class="p">:</span>
+        <span class="c1"># 1️⃣ 从批次中获取输入和标签，并移动到指定设备</span>
+        <span class="c1"># input_ids: 输入特征数据</span>
+        <span class="c1"># target_ids: 真实标签数据</span>
+        <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span> <span class="o">=</span> <span class="n">batch_data</span><span class="p">[</span><span class="s2">&quot;input_features&quot;</span><span class="p">],</span> <span class="n">batch_data</span><span class="p">[</span><span class="s2">&quot;target_ids&quot;</span><span class="p">]</span>
+        <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span> <span class="o">=</span> <span class="n">input_features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">target_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># 2️⃣ 调用train_one_batch函数训练一个批次并返回损失</span>
+        <span class="n">batch_loss</span> <span class="o">=</span> <span class="n">train_one_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">input_features</span><span class="p">,</span> <span class="n">target_ids</span><span class="p">)</span>
+
+        <span class="n">batch_ids</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># 增加批次计数器</span>
+        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">batch_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># 累加当前批次的损失值</span>
+
+        <span class="c1"># 3️⃣ 按照指定间隔打印损失值，用于监控训练过程</span>
+        <span class="k">if</span> <span class="n">batch_ids</span> <span class="o">%</span> <span class="n">log_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch </span><span class="si">{</span><span class="n">batch_ids</span><span class="si">}</span><span class="s2">, loss -&gt; </span><span class="si">{</span><span class="n">batch_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 计算并返回该epoch的平均损失</span>
+    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_dataloader</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id25">
+<h4><span class="section-number">3.8.1.3. </span>训练多个轮次<a class="headerlink" href="#id25" title="Link to this heading">#</a></h4>
+<p>定义 <code class="docutils literal notranslate"><span class="pre">train_model</span></code> 函数，对模型进行多轮训练。该函数将：</p>
+<ul class="simple">
+<li><p><strong>循环执行指定数量的训练轮次（epoch）</strong></p></li>
+<li><p><strong>记录每个epoch的平均损失值</strong></p></li>
+<li><p><strong>按设定间隔进行模型评估</strong></p></li>
+<li><p><strong>监控模型性能变化趋势</strong></p></li>
+</ul>
+<p>在训练过程中，系统会定期对模型在验证集上的表现进行评估，便于实时观察模型的学习效果和性能提升情况。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_model</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">train_dataloader</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+                <span class="n">log_interval</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">val_interval</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    训练模型</span>
+
+<span class="sd">    Returns: 包含训练损失和评估准确率的列表。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">train_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储每个 epoch 的训练损失</span>
+    <span class="n">val_accuracies</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储每个评估点的准确率</span>
+
+    <span class="c1"># 循环执行指定数量的训练轮次(epoch)</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+        <span class="c1"># 打印当前轮次信息</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">num_epochs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
+
+        <span class="c1"># 1️⃣ 调用 train_one_epoch 函数训练一个完整的 epoch，返回该 epoch 的平均损失值</span>
+        <span class="n">epoch_loss</span> <span class="o">=</span> <span class="n">train_one_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">train_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">log_interval</span><span class="o">=</span><span class="n">log_interval</span><span class="p">)</span>
+
+        <span class="c1"># 2️⃣ 将当前 epoch 的损失信息保存到 train_losses 列表中</span>
+        <span class="n">train_losses</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># epoch编号</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">epoch_loss</span>  <span class="c1"># 平均损失值</span>
+        <span class="p">})</span>
+
+        <span class="c1"># 3️⃣ 定期评估模型性能：每隔 eval_interval 轮或者在最后一轮进行评估</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">val_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">==</span> <span class="n">num_epochs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># 调用 evaluate 函数评估模型在验证集上的准确率</span>
+            <span class="n">accuracy</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="n">total_samples</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+            <span class="c1"># 将评估结果保存到 eval_accuracies 列表中</span>
+            <span class="n">val_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># epoch编号</span>
+                <span class="s2">&quot;总样本数&quot;</span><span class="p">:</span> <span class="n">total_samples</span><span class="p">,</span>  <span class="c1"># 验证集总样本数</span>
+                <span class="s2">&quot;正确样本数&quot;</span><span class="p">:</span> <span class="n">total_correct</span><span class="p">,</span>  <span class="c1"># 预测正确的样本数</span>
+                <span class="s2">&quot;准确率&quot;</span><span class="p">:</span> <span class="n">accuracy</span>  <span class="c1"># 准确率</span>
+            <span class="p">})</span>
+
+    <span class="c1"># 返回训练过程中的损失记录和评估结果</span>
+    <span class="k">return</span> <span class="n">train_losses</span><span class="p">,</span> <span class="n">val_accuracies</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id26">
+<h3><span class="section-number">3.8.2. </span>启动训练循环<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<p>定义好了训练方法后，可以开始训练模型了。训练模型需要以下步骤：</p>
+<ul class="simple">
+<li><p>加载数据集：加载训练集和验证集</p></li>
+<li><p>创建数据加载器：设置批处理大小为20，创建训练数据加载器和评估数据加载器</p></li>
+<li><p>创建模型实例：<code class="docutils literal notranslate"><span class="pre">input_size</span></code> 为输入特征向量的维度，<code class="docutils literal notranslate"><span class="pre">num_classes</span></code> 为类别数量</p></li>
+<li><p>初始化模型训练组件：损失函数和优化器</p>
+<ul>
+<li><p>损失函数：因为此任务为分类任务，使用交叉熵损失函数（CrossEntropyLoss）</p></li>
+<li><p>优化器：使用 Adam 优化器优化模型参数，学习率为0.01</p></li>
+</ul>
+</li>
+<li><p>执行训练循环：调用 <code class="docutils literal notranslate"><span class="pre">train_model</span></code> 函数进行30轮训练，每3轮进行一次评估，每20个批次记录一次训练损失。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置 GPU 设备类型</span>
+<span class="c1"># 检查是否有可用的CUDA设备(GPU)</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
+<span class="c1"># 如果没有CUDA设备，检查是否有可用的MPS设备(Mac上的GPU加速)</span>
+<span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">mps</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;mps&quot;</span>
+<span class="c1"># 如果都没有，则使用CPU</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+
+<span class="c1"># 打印当前使用的设备类型</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using device: </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1️⃣ 加载数据集</span>
+<span class="n">label_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;生椰拿铁&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;双椰拿铁&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;烤椰拿铁&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">train_dataset</span> <span class="o">=</span> <span class="n">CoffeeDataset</span><span class="o">.</span><span class="n">load_from_csv</span><span class="p">(</span><span class="s2">&quot;./dataset/coffee_train.csv&quot;</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">)</span>
+<span class="n">val_dataset</span> <span class="o">=</span> <span class="n">CoffeeDataset</span><span class="o">.</span><span class="n">load_from_csv</span><span class="p">(</span><span class="s2">&quot;./dataset/coffee_val.csv&quot;</span><span class="p">,</span> <span class="n">label_to_id</span><span class="p">)</span>
+
+<span class="c1"># 2️⃣ 创建数据加载器 </span>
+<span class="c1"># 设置批处理大小</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="c1"># 创建训练数据加载器，shuffle=True表示每个epoch打乱数据顺序</span>
+<span class="n">train_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># 创建评估数据加载器，shuffle=False表示不打乱数据顺序</span>
+<span class="n">val_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># 3️⃣ 创建新的咖啡分类模型实例</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">CoffeeClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">output_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># 4️⃣ 设置训练轮数</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># 5️⃣ 开始训练模型</span>
+<span class="c1"># model: 要训练的模型</span>
+<span class="c1"># optimizer: 优化器，使用Adam优化器，学习率为0.01</span>
+<span class="c1"># loss_fn: 损失函数，使用交叉熵损失函数</span>
+<span class="c1"># train_dataloader: 训练数据加载器</span>
+<span class="c1"># val_dataloader: 评估数据加载器</span>
+<span class="c1"># device: 设备类型，这里设置为&quot;cpu&quot;</span>
+<span class="n">train_losses</span><span class="p">,</span> <span class="n">eval_accuracies</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+                                      <span class="n">loss_fn</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+                                      <span class="n">train_dataloader</span><span class="o">=</span><span class="n">train_dataloader</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="o">=</span><span class="n">val_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using device: mps
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 1 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 2 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 3 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 0.3333 (10/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 4 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 5 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 6 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 0.6667 (20/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 7 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 8 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 9 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 0.8333 (25/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 10 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 11 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 12 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 13 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 14 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 15 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 16 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 17 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 18 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 19 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 20 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 21 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 22 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 23 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 24 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 25 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 26 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 27 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 28 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 29 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Epoch 30 / 30 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id27">
+<h4><span class="section-number">3.8.2.1. </span>训练过程可视化<a class="headerlink" href="#id27" title="Link to this heading">#</a></h4>
+<p>绘制训练过程中损失值的变化曲线，更直观地观察损失值在训练过程中的变化趋势。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_training_loss</span>
+
+<span class="n">plot_training_loss</span><span class="p">(</span><span class="n">train_losses</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/135dae7cdb6e6b10630676efba31a2f9dff0a22efffa4e8367a56d220ea81f66.png" src="../_images/135dae7cdb6e6b10630676efba31a2f9dff0a22efffa4e8367a56d220ea81f66.png" />
+</div>
+</div>
+<p>从训练日志中可以看出随着训练的进行，损失值不断下降，表示模型预测准确性不断提高。</p>
+</section>
+<section id="id28">
+<h4><span class="section-number">3.8.2.2. </span>查看模型评估记录<a class="headerlink" href="#id28" title="Link to this heading">#</a></h4>
+<p>查看训练过程中的评估结果，更直观地观察模型在验证集上的表现。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_table</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Eval Accuracies:&quot;</span><span class="p">)</span>
+<span class="n">show_table</span><span class="p">(</span><span class="n">eval_accuracies</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Eval Accuracies:
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>epoch</th>
+      <th>总样本数</th>
+      <th>正确样本数</th>
+      <th>准确率</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3</td>
+      <td>30</td>
+      <td>10</td>
+      <td>0.3333</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>6</td>
+      <td>30</td>
+      <td>20</td>
+      <td>0.6667</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>9</td>
+      <td>30</td>
+      <td>25</td>
+      <td>0.8333</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>12</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>15</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>18</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>21</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>24</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>27</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>30</td>
+      <td>30</td>
+      <td>30</td>
+      <td>1.0000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id29">
+<h2><span class="section-number">3.9. </span>训练后评估<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="n">accuracy</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="n">total_samples</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">val_dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;🎯 训练前预测准确率&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;总样本数&quot;</span><span class="p">,</span> <span class="s2">&quot;正确样本数&quot;</span><span class="p">,</span> <span class="s2">&quot;准确率&quot;</span><span class="p">],</span>
+            <span class="p">[[</span><span class="n">total_samples</span><span class="p">,</span> <span class="n">total_correct</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">accuracy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">Accuracy: 1.0000 (30/30)</span>
+
+<span class=" -Color -Color-Red">🎯 训练前预测准确率：</span>
++----------+------------+---------+
+| 总样本数 | 正确样本数 |  准确率 |
++----------+------------+---------+
+|    30    |     30     | 100.00% |
++----------+------------+---------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>从评估结果中可以看出，训练前的模型的准确率是33.3%，训练后的准确率是100%，说明模型训练非常有效果。</p>
+</section>
+<section id="id30">
+<h2><span class="section-number">3.10. </span>使用模型进预测<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<section id="id31">
+<h3><span class="section-number">3.10.1. </span>定义预测单个样本的函数<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">predict_sample</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">sample_features</span><span class="p">,</span> <span class="n">id_to_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    使用训练好的模型对单个样本进行预测</span>
+<span class="sd">    </span>
+<span class="sd">    参数:</span>
+<span class="sd">    - model: 训练好的模型</span>
+<span class="sd">    - sample_features: 样本特征，如 [椰浆, 咖啡, 牛奶, 糖]</span>
+<span class="sd">    - id_to_label: 标签映射</span>
+<span class="sd">    </span>
+<span class="sd">    返回:</span>
+<span class="sd">    - predicted_label: 预测的类别名称</span>
+<span class="sd">    - predicted_probabilities: 各类别的预测概率</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 将模型设置为评估模式，关闭dropout等训练时特有的操作</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="c1"># 转换输入特征为tensor</span>
+    <span class="n">input_features_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sample_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="c1"># 添加批次维度，因为模型期望输入是批量数据</span>
+    <span class="c1"># unsqueeze(0)在第0维添加一个维度，例如 shape [4] -&gt; [1, 4]</span>
+    <span class="n">input_features_tensor</span> <span class="o">=</span> <span class="n">input_features_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># 模型预测</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>  <span class="c1"># 关闭梯度计算，节省内存并提高推理速度</span>
+        <span class="c1"># 前向传播得到模型输出</span>
+        <span class="n">output_logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_features_tensor</span><span class="p">)</span>
+        <span class="c1"># 对输出应用softmax函数，将logits转换为概率分布</span>
+        <span class="n">probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">output_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># 获取概率最高的类别作为预测类别的ID</span>
+        <span class="n">predicted_id</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 获取预测类别名称：通过id_to_label字典将类别ID转换为类别名称</span>
+    <span class="n">predicted_label</span> <span class="o">=</span> <span class="n">id_to_label</span><span class="p">[</span><span class="n">predicted_id</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
+
+    <span class="c1"># 返回预测标签和概率分布列表</span>
+    <span class="c1"># squeeze()移除多余的维度，tolist()将tensor转换为Python列表</span>
+    <span class="k">return</span> <span class="n">predicted_label</span><span class="p">,</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id32">
+<h3><span class="section-number">3.10.2. </span>使用训练好的模型进行预测<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
+<p>模型训练完成后，可以使用训练好的模型对新的数据进行预测，查看模型的泛化能力。</p>
+<p>创建3个新样本，每个样本包含[椰浆, 咖啡, 牛奶, 糖]四个特征以及对应的类别，使用模型进行预测，查看模型的预测结果是否正确。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_classification_results</span>
+
+<span class="c1"># 初始化各类别的标签到ID的映射关系（需要和训练模型时一致）</span>
+<span class="n">label_to_id</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;生椰拿铁&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;双椰拿铁&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;烤椰拿铁&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">id_to_label</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">label_to_id</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="c1"># 1️⃣ 假设我们有几个新的咖啡样本，每个样本包含[椰浆, 咖啡, 牛奶, 糖]四个特征</span>
+<span class="n">sample_features</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">4.4</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.9</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">,</span> <span class="mf">5.7</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">]]</span>
+<span class="c1"># 定义这些样本对应的真实标签</span>
+<span class="n">true_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;生椰拿铁&quot;</span><span class="p">,</span> <span class="s2">&quot;双椰拿铁&quot;</span><span class="p">,</span> <span class="s2">&quot;烤椰拿铁&quot;</span><span class="p">]</span>
+<span class="c1"># 将真实标签转换为对应的ID</span>
+<span class="n">true_label_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">label_to_id</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">true_labels</span><span class="p">]</span>
+
+<span class="c1"># 2️⃣ 使用训练好的模型对每个样本进行预测</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储预测的标签名称</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储各类别的预测概率</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample_feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_features</span><span class="p">):</span>
+    <span class="c1"># 对单个样本进行预测，返回预测标签和各类别概率</span>
+    <span class="n">predicted_label</span><span class="p">,</span> <span class="n">probabilities_label</span> <span class="o">=</span> <span class="n">predict_sample</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">sample_feature</span><span class="p">,</span> <span class="n">id_to_label</span><span class="p">)</span>
+    <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicted_label</span><span class="p">)</span>  <span class="c1"># 添加预测标签</span>
+    <span class="n">probabilities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">probabilities_label</span><span class="p">)</span>  <span class="c1"># 添加概率分布</span>
+
+<span class="c1"># 3️⃣ 将预测的标签名称转换为对应的ID</span>
+<span class="n">predicted_label_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">label_to_id</span><span class="p">[</span><span class="n">prediction</span><span class="p">]</span> <span class="k">for</span> <span class="n">prediction</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span>
+
+<span class="c1"># 4️⃣ 输出最终的分类预测结果，包括准确率统计和详细对比</span>
+<span class="n">print_classification_results</span><span class="p">(</span><span class="n">sample_features</span><span class="p">,</span> <span class="n">true_label_ids</span><span class="p">,</span> <span class="n">predicted_label_ids</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="n">id_to_label</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Red">🎯 分类预测结果 (准确率: 3/3 = 100.00%)：</span>
++----------------------+----------+----------+----------+------+
+|         输入         | 真实标签 | 预测标签 | 最高概率 | 标记 |
++----------------------+----------+----------+----------+------+
+| [4.4, 2.9, 1.4, 0.2] | 生椰拿铁 | 生椰拿铁 |  0.9507  |  ☑   |
+|  [6, 2.9, 4.5, 1.5]  | 双椰拿铁 | 双椰拿铁 |  0.6483  |  ☑   |
+| [6.9, 3.2, 5.7, 2.3] | 烤椰拿铁 | 烤椰拿铁 |  0.8999  |  ☑   |
++----------------------+----------+----------+----------+------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>从结果中我们可以看到，模型在所有测试样本上都做出了正确预测。但是，对每一个样本模型的置信度仍然存在差异：</p>
+<ul class="simple">
+<li><p>样本1 (生椰拿铁): 预测概率0.9507，置信度很高</p></li>
+<li><p>样本2 (双椰拿铁): 预测概率0.6483，置信度中等</p></li>
+<li><p>样本3 (烤椰拿铁): 预测概率0.8999，置信度较高</p></li>
+</ul>
+<p>样本2的预测概率相对较低(0.6483)，说明模型对这个样本的分类相对不够确定，表示模型对预测的结果不够自信。如果置信度低于阈值（0.8），我们可以认为这个样本偏离了我们的训练数据集，也就是说这杯咖啡未通过模型的质检，未达到品控标准。</p>
+</section>
+</section>
+<section id="id33">
+<h2><span class="section-number">3.11. </span>本章小结<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>机器学习任务可分为回归问题（预测连续值）和分类问题（预测离散类别）。</p></li>
+<li><p>掌握自定义<code class="docutils literal notranslate"><span class="pre">Dataset</span></code>类的方法，创建了继承PyTorch的<code class="docutils literal notranslate"><span class="pre">Dataset</span></code>基类的<code class="docutils literal notranslate"><span class="pre">CoffeeDataset</span></code>类。</p></li>
+<li><p>使用<code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>创建批量数据加载器，它支持自动分批、数据打乱等功能，能显著简化训练中的数据调度工作。</p></li>
+<li><p>构建了多层全连接神经网络，通过增加网络深度（层数）来提升模型的表达能力，处理更复杂的任务。</p></li>
+<li><p>在引入<code class="docutils literal notranslate"><span class="pre">ReLU</span></code>等激活函数，为模型赋予非线性拟合能力，使其能够学习数据中更复杂的模式。</p></li>
+<li><p>对于多分类任务，使用交叉熵损失函数（<code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code>）作为模型的评价准则，它直接衡量模型输出的概率分布与真实标签之间的差异。</p></li>
+<li><p>使用<code class="docutils literal notranslate"><span class="pre">Adam</span></code>优化器进行参数更新，它通常能比简单的SGD带来更快、更稳定的收敛。</p></li>
+<li><p>实现了<code class="docutils literal notranslate"><span class="pre">predict_sample</span></code>函数对新样本进行单样本预测，并使用<code class="docutils literal notranslate"><span class="pre">softmax</span></code>函数将模型输出的原始分数（logits）转换为直观的概率分布，从而得到最终的分类结果和预测概率。</p></li>
+<li><p>预测的概率表示模型对样本的置信度，如果概率较低，则说明模型对样本的分类不够自信，可能偏离了训练数据集。</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+
+                    <!-- buymecoffee -->
+<!--                    <div class="buymecoffee alert" role="alert">-->
+<!--                        <p>-->
+<!--                            如果你觉得这些内容对你有帮助，可以-->
+<!--                            <a class="reference external" href="/buy-me-a-coffee">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                        </p>-->
+<!--                    </div>-->
+                    <!-- buymecoffee -->
+
+                    <!-- Comments -->
+                    <!-- Comments -->
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+                    <p xmlns:cc="http://creativecommons.org/ns#">
+                        本作品由
+                        <a href="http://fasterai.cn" target="_blank">吾辈亦有感</a>
+                        创作，采用
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="license noopener noreferrer" style="display: inline-block">署名-非商业性使用-禁止演绎 4.0 国际</a>
+                    </p>
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第一部分：基石篇 —— 机器学习的思维与工具
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch实战入门
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   4. 工程的进化：PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第二部分：进阶篇 —— 语言与序列的表示学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06_%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08_%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第三部分：创造篇 —— 生成式模型的演进之路
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10_%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11_%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12_%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 技巧的力量：用反转优化梯度流动
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13_%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 信息的价值：用偷窥突破视野受限
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="主页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="放大字体" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="缩小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+<!--                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>-->
+<!---->
+<!---->
+<!---->
+<!--                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>-->
+<!---->
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/notebooks/03_深度学习初探.ipynb" download><i data-feather="github"></i></a></li>
+                    -->
+<!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "notebooks/03_深度学习初探";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
