@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>动手学大模型：写给程序员的手搓LLM实战指南 &#8212; 动手学大模型：写给程序员的手搓LLM实战指南</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+    <script id="tilt-loader">
+        // 封装成一个简单的初始化函数
+        function initTiltCards() {
+            // 如果库未加载，则动态加载
+            if (typeof VanillaTilt === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+                script.onload = initCards;
+                document.head.appendChild(script);
+            } else {
+                initCards();
+            }
+
+            function initCards() {
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                    max: 4,
+                    speed: 200,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+            }
+        }
+        // 当页面内容加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTiltCards);
+        } else {
+            initTiltCards();
+        }
+    </script>
+
+
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/myfile.css?v=78c257c0" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. 从零开始：机器何以学习？" href="notebooks/01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=动手学大模型：写给程序员的手搓LLM实战指南  自序  我们正身处一个被大语言模型深刻重塑的时代。一夜之间，能够理解并生成复杂文本、编写代码、进行推理的智能体不再是科幻构想，而是触手可及的现实。从能对话、能创作的智能助手，到自动生成代码、优化程序的AI程序员，再到深入科研、医疗、金融等领域的专业工具，大模型正在以前所未 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="动手学大模型：写给程序员的手搓LLM实战指南"/>
+<meta name="twitter:description" content="动手学大模型：写给程序员的手搓LLM实战指南  自序  我们正身处一个被大语言模型深刻重塑的时代。一夜之间，能够理解并生成复杂文本、编写代码、进行推理的智能体不再是科幻构想，而是触手可及的现实。从能对话、能创作的智能助手，到自动生成代码、优化程序的AI程序员，再到深入科研、医疗、金融等领域的专业工具，大模型正在以前所未">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="动手学大模型：写给程序员的手搓LLM实战指南  自序  我们正身处一个被大语言模型深刻重塑的时代。一夜之间，能够理解并生成复杂文本、编写代码、进行推理的智能体不再是科幻构想，而是触手可及的现实。从能对话、能创作的智能助手，到自动生成代码、优化程序的AI程序员，再到深入科研、医疗、金融等领域的专业工具，大模型正在以前所未" />
+<meta property="og:site_name" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body class="main-index">
+
+<!-- Override QuantEcon theme colors -->
+<style>
+a {
+    color: #313131;
+}
+a:hover {
+    color: #313131;
+}
+a:visited {
+  color: #111111;
+}
+
+.main-index {
+  #qe-page-author-links {
+    border-bottom: 5px solid #313131;
+  }
+}
+
+.qe-page__header {
+  border-bottom: 5px solid #313131;
+}
+
+.qe-page__footer {
+    border-top: 5px solid #313131;
+}
+
+.toctree-wrapper {
+    .caption-text {
+        color: #111111
+    }
+}
+</style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=intro>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+
+<!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">自序</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">本书的理念</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">本书面向的读者</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">本书不面向的读者</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">让我们开始动手吧</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!--                            <p class="logo">-->
+<!--                                -->
+<!--                                    -->
+<!--                                    <a href="#"><img src="_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    -->
+<!--                                -->
+<!--                            </p>-->
+<!---->
+<!--                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Fasterer</a></p>-->
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+<!--                            <p><a href="#top"><strong>Back to top</strong></a></p>-->
+
+                            <p><a href="#top">
+                                <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0" type="button">
+                                    <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z"></path></svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com --> 返回顶部
+                                </button>
+                            </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="#">动手学大模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+                            
+                            更新于：2026.01.01
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+                
+                <div class="cover-container simple-tilt">
+                    <img src="_static/covers/chapter01.png" class="cover-image" />
+                </div>
+                
+
+                <div class="alert alert-light simple-tilt">
+                    <a href="https://t.zsxq.com/snpV8">
+                        <div>
+                            <div style="display: flex; align-items: center">
+                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
+                                <div style="margin-left: 20px">
+                                    <h4 class="card-title mt-3">答疑讨论</h4>
+                                    <p class="card-text">
+                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+
+<!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
+<!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
+<!--                        <strong>调试信息：</strong><br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"cover": "chapter01.png", "create_date": "2026.01.01", "wordcount": {"minutes": 0, "words": 6}}<br>-->
+<!--                        cover 字段是否存在：是<br>-->
+<!--                        -->
+<!--                        cover 的值：chapter01.png<br>-->
+<!--                        完整路径：_static/covers/chapter01.png-->
+<!--                        -->
+<!--                        -->
+<!--                    </div>-->
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="llm">
+<h1>动手学大模型：写给程序员的手搓LLM实战指南<a class="headerlink" href="#llm" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2>自序<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>我们正身处一个被大语言模型深刻重塑的时代。一夜之间，能够理解并生成复杂文本、编写代码、进行推理的智能体不再是科幻构想，而是触手可及的现实。从能对话、能创作的智能助手，到自动生成代码、优化程序的AI程序员，再到深入科研、医疗、金融等领域的专业工具，大模型正在以前所未有的速度拓展能力的边界，并重新定义“智能”的疆域。在这个技术浪潮之巅，掌握大模型的原理与实践，已成为程序员面向未来的关键竞争力。</p>
+<p>然而，面对日新月异的技术、层出不穷的论文与框架，许多开发者感到的是“知识爆炸”带来的焦虑与迷茫。从复杂的数学公式到浩如烟海的工程细节，传统的学习路径漫长而陡峭，让人望而生畏。我们是否必须通晓所有理论，才能一窥门径？我们是否注定在追赶中疲惫，却难以触及核心？</p>
+<p>上面提到的这些困境，我都亲身经历过，也深深体会过转型的阵痛。虽然我毕业于北大，自诩不算太笨，但在学习AI的过程中，也曾屡次想要放弃。经过不少艰难的学习和反复的摸索，我才终于入门，这期间踩过很多坑，也浪费了不少时间。这段经历让我真切地意识到，一条正确、高效、为程序员量身打造的大模型学习路径是多么重要。</p>
+<p>于是我不禁思考：如果以现在的经验，给过去的自己提一些学习建议，该用什么方法才能提前一两年掌握AI？我认为最好的方式就是理论结合代码实战，把复杂问题简单化，让大模型的学习曲线变得平缓。正因如此，我结合自身经验着手编写这本《动手学大模型》书籍。</p>
+<p>我坚信，既然这些知识能解决我的问题，也一定会对你有所帮助。引用奈尔斯的一句话：“我们就像乞丐一样，试图告诉其他乞丐我们在哪里找到了面包。”这也正是我创作这本《动手学大模型》的初心。如果我的经验能让你的AI学习之路走得更轻松一些，我将倍感荣幸。</p>
+<section id="id2">
+<h3>本书的理念<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>本书坚信：理解源于创造，精通始于动手。 我非常认同理查德·费曼的一句名言——“凡我不能创造的，我就不能理解。” 对于追求实效的程序员而言，最深层的理解并非来自被动的阅读与聆听，而是来自主动的构建与调试。</p>
+<p>因此，本书摒弃了从理论到理论的冗长铺垫，选择了一条更直接、更务实的路径：“从零开始，手搓源码”。我们将大模型这个看似庞然大物的“黑箱”，拆解为一个个可理解、可实现的组件。本书将带领你，像搭建乐高积木一样，从最基础的模块开始，逐步构建起RNN、Transformer、直至GPT等经典的大模型架构。每一行代码，都是对原理的一次叩问；每一次运行，都是对理解的一次验证。</p>
+<p>我们的目标是：让你在动手实现的过程中，自然而然地掌握注意力机制、位置编码、层归一化等核心概念；让你在调试与优化的实践中，深刻体会模型训练的动态与技巧。我们追求快速掌握“最少必要知识” ，直击要害，绕过不必要的复杂，让你能用最短的时间，搭建起关于大模型的坚实认知框架，并掌握其实现的底层细节。</p>
+</section>
+<section id="id3">
+<h3>本书面向的读者<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>本书是为这样的你准备的：</p>
+<ul class="simple">
+<li><p>具备Python编程基础，渴望深入AI领域但被理论门槛所阻的程序员。</p></li>
+<li><p>已在使用大模型API或框架进行应用开发，希望洞悉其底层原理以提升竞争力的开发者。</p></li>
+<li><p>厌倦了浮于表面的概念介绍，渴望通过“做中学”来获得扎实技能的技术实践者。</p></li>
+<li><p>希望在面试中能对模型细节侃侃而谈，从而抓住高薪机遇的求职者。</p></li>
+</ul>
+<p>为了让你的学习之旅更加高效，本书将提供可运行的完整代码、清晰的实验指引以及围绕代码展开的原理讲解。我们希望你准备好编程环境，跟随本书的节奏，亲手运行、修改甚至挑战重写这些代码。</p>
+</section>
+<section id="id4">
+<h3>本书不面向的读者<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>同时，明确本书的边界也同样重要：</p>
+<ul class="simple">
+<li><p>本书不会系统性地讲授机器学习或深度学习的全部理论基础。</p></li>
+<li><p>本书不会详细对比评测Hugging Face、LangChain等各类上层应用框架的使用技巧。</p></li>
+<li><p>本书不会追踪并详解每一篇最新顶会论文的前沿细节。</p></li>
+<li><p>本书不会涉及大规模分布式训练、极致推理优化等重型工业级工程议题。</p></li>
+</ul>
+<p><strong>本书聚焦于通过“手搓”来理解大模型的核心架构与训练逻辑。完成本书的实践后，你将具备足够的能力和信心，去更自如地阅读论文、更深入地使用框架，并为你自己的原创性项目打下坚实基础。</strong></p>
+</section>
+<section id="id5">
+<h3>让我们开始动手吧<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>当下，调用一个强大的大模型API或许只需几行代码。那么，为何我们还要花费精力，从零开始去实现它呢？</p>
+<p>因为，在亲手构建的过程中，你会遇到意料之外的错误，会为微小的性能提升而反复调试，会为终于跑通一个模块而欣喜。这些“费时”的经历，正是知识内化为直觉的宝贵过程。由此获得的深刻洞察，将成为你驾驭任何高级工具、评估技术方案、甚至进行创新的底气。更重要的是，创造本身，就是最大的乐趣。</p>
+<p>现在，一切都已就绪。请打开你的代码编辑器，让我们一同踏上这段“手搓”大模型的激动人心的旅程，亲手揭开智能时代的核心奥秘。</p>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">第一部分：基石篇 —— 机器学习的思维与工具</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">1. 从零开始：机器何以学习</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">2. 神经网络启蒙：PyTorch实战入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/03_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">3. 深度学习初探：多分类任务实战</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html">4. 工程的进化：PyTorch Lightning 重构</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">第二部分：进阶篇 —— 语言与序列的表示学习</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">5. 语言的序章：分词与情感分析初探</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/06_%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">6. 表示的困境：OneHot编码与模型局限</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">7. 记忆的萌芽：RNN与序列建模入门</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/08_%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">8. 语义的飞跃：词嵌入技术与稠密表示</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/09_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">9. 记忆的进化：GRU与长期依赖问题</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">第三部分：创造篇 —— 生成式模型的演进之路</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/10_%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">10. 穷举的困境：无限膨胀的类别</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/11_%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">11. 从理解到创造：初识序列生成任务</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/12_%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">12. 技巧的力量：用反转优化梯度流动</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/13_%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">13. 信息的价值：用偷窥突破视野受限</a></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+
+                    <!-- buymecoffee -->
+<!--                    <div class="buymecoffee alert" role="alert">-->
+<!--                        <p>-->
+<!--                            如果你觉得这些内容对你有帮助，可以-->
+<!--                            <a class="reference external" href="/buy-me-a-coffee">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                        </p>-->
+<!--                    </div>-->
+                    <!-- buymecoffee -->
+
+                    <!-- Comments -->
+                    <!-- Comments -->
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+                    <p xmlns:cc="http://creativecommons.org/ns#">
+                        本作品由
+                        <a href="http://fasterai.cn" target="_blank">吾辈亦有感</a>
+                        创作，采用
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="license noopener noreferrer" style="display: inline-block">署名-非商业性使用-禁止演绎 4.0 国际</a>
+                    </p>
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第一部分：基石篇 —— 机器学习的思维与工具
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch实战入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/03_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   4. 工程的进化：PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第二部分：进阶篇 —— 语言与序列的表示学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/06_%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/08_%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/09_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  第三部分：创造篇 —— 生成式模型的演进之路
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/10_%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/11_%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/12_%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 技巧的力量：用反转优化梯度流动
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/13_%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 信息的价值：用偷窥突破视野受限
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="主页"><a href="#"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="放大字体" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="缩小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+<!--                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>-->
+<!---->
+<!---->
+<!---->
+<!--                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>-->
+<!---->
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/intro.md" download><i data-feather="github"></i></a></li>
+                    -->
+<!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "intro";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
