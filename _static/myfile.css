@@ -237,6 +237,10 @@ h1, h2, h3, h4, h5 {
     color: #444 !important;
 }
 
+h1 {
+    font-size: 1.7em !important;
+}
+
 .qe-sidebar__header {
     font-family: "寒蝉团圆体 Round", -apple-system, Microsoft Yahei, sans-serif !important;
 }
@@ -327,6 +331,14 @@ a:hover {
     text-decoration: none !important; /* 移除默认下划线 */
 }
 
+.custom-card:hover {
+    background-color: #ae563020;
+}
+
+.alert {
+    --bs-alert-margin-bottom: 0rem !important;
+}
+
 blockquote {
     background-color: #f3f4f5;
     border-left: 5px solid #1665ad;
@@ -366,4 +378,9 @@ b, strong {
 /*圆角*/
 .qe-page__content .cell_output .output.stream, .qe-page__content .cell_output .output.text_plain {
     border-radius: .25rem !important;
+}
+
+.highlight .err {
+    /* border: 1px solid red; */
+    border: none !important;
 }

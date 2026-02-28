@@ -2,11 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="./" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>22. 从零实现GPT &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -110,76 +112,75 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" href="_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/myfile.css?v=70bd48f4" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=70bd48f4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
 
-    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-    <script src="_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
-    <script src="_static/scripts/jquery.js?v=5d32c60e"></script>
-    <script src="_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/实战22：从零实现GPT';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="23. 定义 GPT 分词器" href="%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html" />
+    <link rel="prev" title="21. Transformer 模型训练和评估" href="%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="吾辈亦有感" />
 <meta name="keywords" content="" />
-<meta name="description" content= />
+<meta name="description" content=从零实现GPT  敬请期待 />
 
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@" />
-<meta name="twitter:title" content=""/>
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="从零实现GPT"/>
+<meta name="twitter:description" content="从零实现GPT  敬请期待">
 <meta name="twitter:creator" content="@">
 <meta name="twitter:image" content="">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta property="og:title" content="从零实现GPT" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="None" />
 <meta property="og:image" content="" />
-<meta property="og:description" content="" />
+<meta property="og:description" content="从零实现GPT  敬请期待" />
 <meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta name="theme-color" content="#ffffff" />
 
@@ -225,7 +226,7 @@ a:visited {
 
         <div class="qe-main">
 
-            <div class="qe-page" id=search>
+            <div class="qe-page" id=notebooks/实战22：从零实现GPT>
 
                 <div class="qe-page__toc">
 
@@ -241,7 +242,7 @@ a:visited {
 <!--                            <p class="logo">-->
 <!--                                -->
 <!--                                    -->
-<!--                                    <a href="intro.html"><img src="_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>-->
 <!--                                    -->
 <!--                                -->
 <!--                            </p>-->
@@ -270,7 +271,7 @@ a:visited {
 
                     <div class="qe-page__header-copy">
 
-                        <p class="qe-page__header-heading"><a href="intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
 
                     </div>
 
@@ -278,8 +279,7 @@ a:visited {
                         <p class="qe-page__header-authors" font-size="18">
                             <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
                             
-                            更新于：2026-01-01 12:13:14
-                            
+                            更新于：2025.12.28 13:14:18
                         </p>
 
                     <!-- Last modified / Changelog dropdown -->
@@ -289,6 +289,10 @@ a:visited {
                 </div> <!-- .page__header -->
 
                 <!-- 封面 -->
+                
+                <div class="cover-container simple-tilt">
+                    <img src="../_static/covers/chapter22.png" class="cover-image" />
+                </div>
                 
 
 <!--                <div class="alert alert-light simple-tilt">-->
@@ -314,47 +318,46 @@ a:visited {
 <!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
 <!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
 <!--                        <strong>调试信息：</strong><br>-->
-<!--                        meta 变量是否存在：否<br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"cover": "chapter22.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 1}}<br>-->
+<!--                        cover 字段是否存在：是<br>-->
+<!--                        -->
+<!--                        cover 的值：chapter22.png<br>-->
+<!--                        完整路径：../_static/covers/chapter22.png-->
+<!--                        -->
 <!--                        -->
 <!--                    </div>-->
                     
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search..."
-         aria-label="Search..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
-    }
-  </script>
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="gpt">
+<h1><span class="section-number">22. </span>从零实现GPT<a class="headerlink" href="#gpt" title="Link to this heading">#</a></h1>
+<p><img alt="敬请期待" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228100516.png" /></p>
+</section>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
 
                     <!-- buymecoffee -->
 <!--                    <div class="buymecoffee alert" role="alert">-->
@@ -402,12 +405,12 @@ a:visited {
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9801%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9801%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
    1. 从零开始：机器何以学习？
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9802%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9802%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
    2. 神经网络启蒙：PyTorch 入门实战
   </a>
  </li>
@@ -419,12 +422,12 @@ a:visited {
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9803%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9803%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
    3. 深度学习初探：多分类任务实战
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
    4. 工程的进化：用 PyTorch Lightning 重构
   </a>
  </li>
@@ -436,27 +439,27 @@ a:visited {
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9805%EF%BC%9A%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9805%EF%BC%9A%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
    5. 语言的序章：分词与情感分析初探
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    6. 表示的困境：OneHot编码与模型局限
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9807%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9807%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
    7. 记忆的萌芽：RNN与序列建模入门
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9808%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9808%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
    8. 语义的飞跃：词嵌入技术与稠密表示
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9809%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9809%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
    9. 记忆的进化：GRU与长期依赖问题
   </a>
  </li>
@@ -468,22 +471,22 @@ a:visited {
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9810%EF%BC%9A%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9810%EF%BC%9A%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    10. 穷举的困境：无限膨胀的类别
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9811%EF%BC%9A%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9811%EF%BC%9A%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
    11. 从理解到创造：初识序列生成任务
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9812%EF%BC%9A%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9812%EF%BC%9A%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
    12. 改进Seq2Seq模型：反转输入
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9813%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9813%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
    13. 改进Seq2Seq模型：信息偷窥
   </a>
  </li>
@@ -495,42 +498,42 @@ a:visited {
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9814%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9814%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
    14. 注意力革命：Transformer
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
    15. 定义 Transformer 分词器
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9816%EF%BC%9A%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9816%EF%BC%9A%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
    16. 构造 Transformer 数据集
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
    17. 实现 Transformer Encoder 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9818%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9818%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
    18. 实现 Transformer Encoder 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9819%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9819%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
    19. 实现 Transformer Decoder 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9820%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9820%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
    20. 完整的 Transformer 模型
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
    21. Transformer 模型训练和评估
   </a>
  </li>
@@ -540,39 +543,39 @@ a:visited {
   动手学：GPT
  </span>
 </p>
-<ul class="nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9822%EF%BC%9A%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT.html">
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
    22. 从零实现GPT
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
    23. 定义 GPT 分词器
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9824%EF%BC%9A%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9824%EF%BC%9A%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
    24. 构造 GPT 预训练数据集
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9825%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9825%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.html">
    25. 实现 GPT 模型核心组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9826%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9826%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
    26. 实现 GPT 模型生成解码策略
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9827%EF%BC%9AGPT%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9827%EF%BC%9AGPT%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
    27. GPT 模型训练与评估
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
    28. 更具多样性的生成解码策略
   </a>
  </li>
@@ -594,12 +597,12 @@ a:visited {
 
                 <ul class="qe-toolbar__main">
                     <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
-                    <li data-tippy-content="主页"><a href="intro.html"><i data-feather="home"></i></a></li>
+                    <li data-tippy-content="主页"><a href="../intro.html"><i data-feather="home"></i></a></li>
                 </ul>
 
                 <ul class="qe-toolbar__links">
                     <li data-tippy-content="搜索" class="btn__search">
-                        <form action="#" method="get">
+                        <form action="../search.html" method="get">
                             <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
                             <i data-feather="search" id="search-icon"></i>
                         </form>
@@ -615,7 +618,7 @@ a:visited {
 <!---->
                     <!--
                     # Enable if looking for link to specific document hosted on GitHub
-                    <li data-tippy-content="View Source"><a target="_blank" href="None/" download><i data-feather="github"></i></a></li>
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/notebooks/实战22：从零实现GPT.ipynb" download><i data-feather="github"></i></a></li>
                     -->
 <!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
                 </ul>
@@ -685,7 +688,7 @@ a:visited {
                 }
                 const launcherPublic = document.getElementById('launcher-public-input');
                 const launcherPrivate = document.getElementById('launcher-private-input');
-                const pageName = "search";
+                const pageName = "notebooks/实战22：从零实现GPT";
                 const repoURL = "";
                 const urlPath = "";
                 const branch = ""

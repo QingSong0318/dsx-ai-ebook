@@ -1,0 +1,2319 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. 语言的序章：分词与情感分析初探 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!--  访问统计  -->
+    <script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id:"3OrQmjGXGmdC0oni",ck:"3OrQmjGXGmdC0oni",autoTrack:true})</script>
+
+    <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+    <script id="tilt-loader">
+        // 封装成一个简单的初始化函数
+        function initTiltCards() {
+            // 如果库未加载，则动态加载
+            if (typeof VanillaTilt === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+                script.onload = initCards;
+                document.head.appendChild(script);
+            } else {
+                initCards();
+            }
+
+            function initCards() {
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                    max: 8,
+                    speed: 300,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                    max: 16,
+                    speed: 300,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+            }
+        }
+        // 当页面内容加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTiltCards);
+        } else {
+            initTiltCards();
+        }
+    </script>
+
+
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=70bd48f4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/实战05：语言的序章';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. 表示的困境：OneHot编码与模型局限" href="%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html" />
+    <link rel="prev" title="4. 工程的进化：用 PyTorch Lightning 重构" href="%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=语言的序章：分词与情感分析初探  从本章开始，我们将正式踏入自然语言处理（NLP）的领域。通过本次实践，你将了解 NLP 任务的基本流程，并学会如何搭建与训练一个文本分类模型。  任务背景  随着品类的不断丰富，你的无人柠檬水摊位已成功升级为一家无人奶茶店，生意日益红火。每天，店铺都会收到成百上千条来自顾客的评价。虽然 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="语言的序章：分词与情感分析初探"/>
+<meta name="twitter:description" content="语言的序章：分词与情感分析初探  从本章开始，我们将正式踏入自然语言处理（NLP）的领域。通过本次实践，你将了解 NLP 任务的基本流程，并学会如何搭建与训练一个文本分类模型。  任务背景  随着品类的不断丰富，你的无人柠檬水摊位已成功升级为一家无人奶茶店，生意日益红火。每天，店铺都会收到成百上千条来自顾客的评价。虽然">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="语言的序章：分词与情感分析初探" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="语言的序章：分词与情感分析初探  从本章开始，我们将正式踏入自然语言处理（NLP）的领域。通过本次实践，你将了解 NLP 任务的基本流程，并学会如何搭建与训练一个文本分类模型。  任务背景  随着品类的不断丰富，你的无人柠檬水摊位已成功升级为一家无人奶茶店，生意日益红火。每天，店铺都会收到成百上千条来自顾客的评价。虽然" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+<style>
+a {
+    color: #313131;
+}
+a:hover {
+    color: #313131;
+}
+a:visited {
+  color: #111111;
+}
+
+.main-index {
+  #qe-page-author-links {
+    border-bottom: 5px solid #313131;
+  }
+}
+
+.qe-page__header {
+  border-bottom: 5px solid #313131;
+}
+
+.qe-page__footer {
+    border-top: 5px solid #313131;
+}
+
+.toctree-wrapper {
+    .caption-text {
+        color: #111111
+    }
+}
+</style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/实战05：语言的序章>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+
+<!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">5.1. 任务背景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">5.2. 最少必要知识</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">5.3. 任务鸟瞰</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">5.3.1. 任务分析</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.3.2. 模型结构</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">5.3.3. 环境版本</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">5.4. 自定义分词器</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">5.4.1. 翻译人类的语言</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tokenization">5.4.1.1. 第一步：词元化（Tokenization）</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#vocabulary-building">5.4.1.2. 第二步：构建词表（Vocabulary Building）</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#encoding">5.4.1.3. 第三步：序列化（Encoding）</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">5.4.2. 处理变长的文本</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#padding">5.4.2.1. 填充（Padding）</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#truncation">5.4.2.2. 截断（Truncation）</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">5.4.3. 自定义分词器的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">5.4.4. 基于语料初始化分词器实例</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">5.4.5. 使用分词器进行编码和解码</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">5.5. 数据准备</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">5.5.1. 观察数据</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">5.5.2. 数据转换</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">5.5.2.1. 数据转换器的代码实现</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">5.5.2.2. 数据转换器的使用示例</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">5.5.3. 自定义文本分类数据集</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">5.5.3.1. 文本分类数据集的代码实现</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">5.5.3.2. 文本分类数据集的使用示例</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">5.5.4. 自定义文本分类数据模组</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">5.5.4.1. 文本分类数据模组的代码实现</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">5.5.4.2. 文本分类数据模组的使用示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">5.6. 自定义情感分析模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">5.6.1. 情感分析模型的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">5.6.2. 情感分析模型的结构详情</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">5.7. 模型训练与评估</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">5.7.1. 初始化模型和训练器</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">5.7.2. 训练前评估</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">5.7.3. 训练模型</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">5.7.3.1. 训练过程可视化</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">5.7.3.2. 查看模型评估记录</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">5.7.4. 训练后评估</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">5.8. 使用模型进行预测</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">5.9. 泛化能力评估</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">5.10. 本章小结</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">5.11. 答疑讨论</a></li>
+</ul>
+<!--                            <p class="logo">-->
+<!--                                -->
+<!--                                    -->
+<!--                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    -->
+<!--                                -->
+<!--                            </p>-->
+<!---->
+<!--                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Fasterer</a></p>-->
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+<!--                            <p><a href="#top"><strong>Back to top</strong></a></p>-->
+
+                            <p><a href="#top">
+                                <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0" type="button">
+                                    <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z"></path></svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com --> 返回顶部
+                                </button>
+                            </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+                            
+                            更新于：2025.12.28 13:14:18
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+                
+                <div class="cover-container simple-tilt">
+                    <img src="../_static/covers/chapter05.png" class="cover-image" />
+                </div>
+                
+
+<!--                <div class="alert alert-light simple-tilt">-->
+<!--                    <a href="https://t.zsxq.com/snpV8">-->
+<!--                        <div>-->
+<!--                            <div style="display: flex; align-items: center">-->
+<!--                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">-->
+<!--                                <div style="margin-left: 20px">-->
+<!--                                    <h4 class="card-title mt-3">答疑讨论</h4>-->
+<!--                                    <p class="card-text">-->
+<!--                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。-->
+<!--                                    </p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                </div>-->
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+
+<!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
+<!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
+<!--                        <strong>调试信息：</strong><br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"cover": "chapter05.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 1, "words": 156}}<br>-->
+<!--                        cover 字段是否存在：是<br>-->
+<!--                        -->
+<!--                        cover 的值：chapter05.png<br>-->
+<!--                        完整路径：../_static/covers/chapter05.png-->
+<!--                        -->
+<!--                        -->
+<!--                    </div>-->
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">5. </span>语言的序章：分词与情感分析初探<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<p>从本章开始，我们将正式踏入自然语言处理（NLP）的领域。通过本次实践，你将了解 NLP 任务的基本流程，并学会如何搭建与训练一个文本分类模型。</p>
+<section id="id2">
+<h2><span class="section-number">5.1. </span>任务背景<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>随着品类的不断丰富，你的无人柠檬水摊位已成功升级为一家无人奶茶店，生意日益红火。每天，店铺都会收到成百上千条来自顾客的评价。虽然其中不乏积极的反馈，但也存在许多表达不满的意见。为了更高效地处理这些评价，你计划开发一个能够自动对顾客情感进行分类的系统。通过准确识别用户的情感倾向，可以快速定位那些表达不满的评价，从而进一步优化产品，提升客户满意度。</p>
+<p>然而，你很快发现了一个核心难题：顾客的评价是“好喝！”、“珍珠太硬了”、“服务太慢，差评！”这样的自然语言文本。你之前成功应用的神经网络模型，擅长处理的是柠檬水的配方比例、温度、糖度这类结构化的数值数据。它无法直接理解“差评”这两个字背后所蕴含的负面情绪。</p>
+<p>这就引出了一个更根本的问题：<strong>我们该如何让计算机理解并处理“人类语言”呢？</strong></p>
+</section>
+<section id="id3">
+<h2><span class="section-number">5.2. </span>最少必要知识<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>自然语言处理</p></li>
+<li><p>分词器（Tokenizer）</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2><span class="section-number">5.3. </span>任务鸟瞰<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h3><span class="section-number">5.3.1. </span>任务分析<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>本次的任务是训练一个情感分析模型，它能够识别出顾客评价的情感倾向，并给出相应的概率。</p>
+<p><img alt="情感分析模型任务鸟瞰" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203144622.png" /></p>
+<p>本次的模型包含三个层：输入层、隐藏层和输出层。</p>
+<ul class="simple">
+<li><p><strong>输入层</strong>：接收顾客评价数据，并生成相应的隐藏特征。</p></li>
+<li><p><strong>隐藏层</strong>：进一步组合隐藏特征，生成更复杂的特征表示。</p></li>
+<li><p><strong>输出层</strong>：则根据顾客评价的特征表示，生成相应情感类型的预测得分。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3><span class="section-number">5.3.2. </span>模型结构<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>在前几章中，我们利用神经网络成功解决了回归与分类问题，但所处理的特征均为结构化的数值类型。本章我们将涉足一个经典而实用的自然语言处理任务——情感分析。我们会训练一个能够自动判别顾客评价中蕴含的情感倾向（正面或负面）的模型。由于该任务相对更为复杂，我们需要进一步加深模型结构，以提升模型的表示能力。</p>
+<p>顾客评价情感分析模型的结构如下图所示：</p>
+<p><img alt="情感分析模型结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203144643.png" /></p>
+<p>NLP 任务的通用开发流程包含如下步骤：定义分词器、数据准备、模型定义、模型训练与模型评估。我们会按照这个顺序组织本章的内容，在正式开始之前，先打印环境的版本号，避免因为环境不同而导致程序不能复现。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">5.3.3. </span>环境版本<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">本书愿景：</span>
++------+--------------------------------------------------------+
+| Info |                   《动手学人工智能》                   |
++------+--------------------------------------------------------+
+| 作者 |                       吾辈亦有感                       |
+| 哔站 |      https://space.bilibili.com/3546632320715420       |
+| 定位 | 基于&#39;从零构建&#39;的理念，用实战帮助程序员快速入门大模型。 |
+| 愿景 | 若让你的AI学习之路走的更容易一点，我将倍感荣幸！祝好😄 |
++------+--------------------------------------------------------+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.9.1     |         2.6.0          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2><span class="section-number">5.4. </span>自定义分词器<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>我们该如何让计算机理解并处理“人类语言”呢？这是我们踏入自然语言处理世界所需要解决的第一个挑战。</p>
+<p>假设有两条这样的顾客评价：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">珍珠太硬了</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">非常不错，强烈推荐</span></code></p></li>
+</ul>
+<p>我们应该如何让模型进行处理呢？在 NLP 中，我们会使用<strong>分词器</strong>（Tokenizer）来解决这个问题。分词器（Tokenizer）是自然语言从“人类可读”到“机器可算”的关键枢纽，其有两个核心功能：</p>
+<ul class="simple">
+<li><p><strong>编码</strong>：将“自然语言→数字序列”，让模型能够处理人类的语言。</p></li>
+<li><p><strong>解码</strong>：将“模型输出→自然语言”，让人类能够看懂模型的预测。</p></li>
+</ul>
+<p>这里会设计两个核心问题需要解决：</p>
+<ol class="arabic simple">
+<li><p>如何将人类语言翻译成计算机能够理解的“语言”，也就是数字？</p></li>
+<li><p>如何处理长短不一的变长文本数据，让模型可以批量进行计算？</p></li>
+</ol>
+<section id="id9">
+<h3><span class="section-number">5.4.1. </span>翻译人类的语言<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>计算机无法直接理解人类的语言。因此，我们需要将人类语言翻译成计算机能够理解的数字序列。具体过程如下所示：</p>
+<p><img alt="分词词编码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203165043.png" /></p>
+<p>这个过程通常分为三个关键步骤：</p>
+<section id="tokenization">
+<h4><span class="section-number">5.4.1.1. </span>第一步：词元化（Tokenization）<a class="headerlink" href="#tokenization" title="Link to this heading">#</a></h4>
+<p>计算机无法直接理解一个完整的句子。因此，我们需要将连续的文本序列，切割成一个个有意义的、可处理的基本单元，这些单元被称为<strong>词元</strong>（Token）。对于中文来说，这个过程尤为关键。</p>
+<ul class="simple">
+<li><p><strong>以字符为单位</strong>：最直接的方式是将句子切分成单个汉字。例如，“珍珠太硬了”会被切分成 <code class="docutils literal notranslate"><span class="pre">['珍',</span> <span class="pre">'珠',</span> <span class="pre">'太',</span> <span class="pre">'硬',</span> <span class="pre">'了']</span></code>。</p></li>
+<li><p><strong>以词语为单位</strong>：更符合语言习惯的方式是切分成词语。例如，“珍珠太硬了”会被切分成 <code class="docutils literal notranslate"><span class="pre">['珍珠',</span> <span class="pre">'太',</span> <span class="pre">'硬',</span> <span class="pre">'了']</span></code>。</p></li>
+</ul>
+<p>词元化是NLP的基石。不同的切分方式会直接影响后续模型对语义的理解。例如，“南京市长江大桥”按字符切分和按词语切分（如<code class="docutils literal notranslate"><span class="pre">['南京',</span> <span class="pre">'市长',</span> <span class="pre">'江大桥']</span></code> vs <code class="docutils literal notranslate"><span class="pre">['南京市',</span> <span class="pre">'长江大桥']</span></code>）的含义天差地别。</p>
+</section>
+<section id="vocabulary-building">
+<h4><span class="section-number">5.4.1.2. </span>第二步：构建词表（Vocabulary Building）<a class="headerlink" href="#vocabulary-building" title="Link to this heading">#</a></h4>
+<p>词元化之后，我们得到了大量离散的词元。为了将它们转化为数值，我们首先需要建立一个<strong>词表</strong>（Vocabulary）。词表是一个从词元到唯一 ID（索引）的映射，它定义了模型所能“认识”的所有基本词汇。</p>
+<p>我们收集所有训练数据中出现的词元，并为每个独特的词元分配一个 ID。例如，基于我们的数据，如果采用字符级分词，我们可能构建出这样一个词表：<code class="docutils literal notranslate"><span class="pre">{'珍':</span> <span class="pre">1,</span> <span class="pre">'珠':</span> <span class="pre">2,</span> <span class="pre">'太':</span> <span class="pre">3,</span> <span class="pre">'硬':</span> <span class="pre">4,</span> <span class="pre">'了':</span> <span class="pre">5,</span> <span class="pre">'好':</span> <span class="pre">6,</span> <span class="pre">'喝':</span> <span class="pre">7,</span> <span class="pre">'差':</span> <span class="pre">8,</span> <span class="pre">'评':</span> <span class="pre">9,</span> <span class="pre">...}</span></code>。</p>
+</section>
+<section id="encoding">
+<h4><span class="section-number">5.4.1.3. </span>第三步：序列化（Encoding）<a class="headerlink" href="#encoding" title="Link to this heading">#</a></h4>
+<p>有了词表，我们就可以将任何词元化后的句子，通过查找词表，转换成对应的数字ID序列。</p>
+<p>例如，句子“珍珠太硬了”在<strong>字符级词元化</strong>后的结果是 <code class="docutils literal notranslate"><span class="pre">['珍',</span> <span class="pre">'珠',</span> <span class="pre">'太',</span> <span class="pre">'硬',</span> <span class="pre">'了']</span></code>。根据上面的词表查找 Token 对应的 ID，它就被序列化为数字ID序列：<code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5]</span></code>。
+如果遇到一个词表中没有的词（如“芋”），我们则用一个统一的 ID（例如<code class="docutils literal notranslate"><span class="pre">-1</span></code>）来表示。</p>
+<p>现在，我们成功地将一句自然语言文本，转化成了一个模型可以接收的数值序列。这串数字虽然丢失了词语原本的形态，但它携带了句子的结构信息，是计算机理解文本语义的起点。</p>
+</section>
+</section>
+<section id="id10">
+<h3><span class="section-number">5.4.2. </span>处理变长的文本<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>模型的批量处理机制要求输入数据具有统一的长度，因此，将不同长度的文本序列调整为固定长度是文本预处理流程中不可或缺的一环，实现文本长度统一的核心操作是“填充”（Padding）和“截断”（Truncation）。</p>
+<p>填充和截断如下所示（目标长度为 5）：</p>
+<p><img alt="填充和截断" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203173208.png" /></p>
+<section id="padding">
+<h4><span class="section-number">5.4.2.1. </span>填充（Padding）<a class="headerlink" href="#padding" title="Link to this heading">#</a></h4>
+<p>填充是指在较短的序列末尾或开头添加特定的填充值，使其长度达到预设的统一长度。</p>
+<ul class="simple">
+<li><p>操作：我们首先需要设定一个固定的序列长度（例如，10 个词元）。对于所有短于此长度的序列，我们在其末尾添加一个统一的填充值（例如，数字 <code class="docutils literal notranslate"><span class="pre">0</span></code> ），直到其长度达到10。</p></li>
+<li><p>示例：假设我们设定的固定长度为6。对于序列 <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5]</span></code>（“珍珠太硬了”），其长度为 5，需要将其填充为 6 的序列 <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">0]</span></code></p></li>
+</ul>
+</section>
+<section id="truncation">
+<h4><span class="section-number">5.4.2.2. </span>截断（Truncation）<a class="headerlink" href="#truncation" title="Link to this heading">#</a></h4>
+<p>截断是指将过长的序列从头部或尾部截取一部分，使其长度不超过预设的统一长度。</p>
+<ul class="simple">
+<li><p>操作：对于所有长于预设长度的序列，我们舍弃超出部分。通常可以从序列末尾开始截断（保留开头部分），也可以从开头截断（保留结尾部分），这取决于任务的需要。</p></li>
+<li><p>示例：同样设定固定长度为6。对于过长的序列 <code class="docutils literal notranslate"><span class="pre">[8,</span> <span class="pre">9,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5]</span></code>（“差评珍珠太硬了”），我们从末尾截断，保留前5个词元，得到 <code class="docutils literal notranslate"><span class="pre">[8,</span> <span class="pre">9,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4]</span></code>（即“差评珍珠太硬”）。</p></li>
+</ul>
+<p>通过结合<strong>填充</strong>与<strong>截断</strong>技术，我们可以将任意一批长度不一的文本序列，转换为统一的固定长度数值矩阵，从而使其能够直接作为神经网络模型的输入。</p>
+<p>至此，我们已经完成了分词器处理文本的完整流程：<strong>词元化 → 构建词表 → 序列化 → 长度对齐（填充/截断）</strong>。</p>
+<p>接下来，我们将尝试自定义一个分词器，并在此基础上构建文本分类模型，学习从文本序列到情感类别（正面/负面）的映射关系，迈出让计算机理解人类情感的第一步。</p>
+</section>
+</section>
+<section id="id11">
+<h3><span class="section-number">5.4.3. </span>自定义分词器的代码实现<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>分词器（Tokenizer）将“自然语言→数字序列”，让模型能够处理人类的语言的过程叫做<strong>编码</strong>（encode）。另外，分词器还负责<strong>解码</strong>（decode），将“模型输出→自然语言”，让人类能够看懂模型的预测。</p>
+<p>分词器（Tokenizer）是自然语言从“人类可读”到“机器可算”的关键枢纽。</p>
+<p>下面定义一个字符级中文分词器（<code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code>），将顾客评论转换为模型可处理的、长度统一的 Token ID 序列。自定义分词器包含以下关键步骤：</p>
+<ul class="simple">
+<li><p><strong>词元化</strong>：将原始文本分割成模型可处理基本单元（Token）。</p></li>
+<li><p><strong>构建词表</strong>：统计语料中的所有词元，为每个词元分配一个唯一的ID，形成词表（Vocabulary）。</p></li>
+<li><p><strong>添加特殊标记</strong>： 添加一些特殊标记，如填充符（[PAD]）、未知标记（[UNK]）。</p></li>
+<li><p><strong>添加编码方法</strong>：将原始文本编码为模型可处理的输入。</p></li>
+<li><p><strong>添加解码方法</strong>：将模型输出的ID序列转换回自然语言。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SimpleTokenizer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化简单分词器</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 特殊token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="s1">&#39;[PAD]&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span> <span class="o">=</span> <span class="s1">&#39;[UNK]&#39;</span>
+
+        <span class="c1"># 特殊token ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># 构建词汇表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># 反向词汇表 (id -&gt; token)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># 词汇表大小</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_vocab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        根据文本构建词汇表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>  <span class="c1"># 将每个汉字作为独立token</span>
+
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">word</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_vocab_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从文件中构建词汇表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将文本编码为token ids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># 转换为IDs</span>
+        <span class="n">token_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">:</span>
+                <span class="n">token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">token_ids</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将token ids解码为文本</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="n">token_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">:</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="p">[</span><span class="n">token_id</span><span class="p">]</span>
+                <span class="c1"># 过滤特殊token（可根据需要调整）</span>
+                <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]:</span>
+                    <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pad_sequences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequences</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        对序列进行填充或截断</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">padded_sequences</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">seq</span> <span class="ow">in</span> <span class="n">sequences</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+                <span class="c1"># 截断</span>
+                <span class="n">padded_seq</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 填充</span>
+                <span class="n">pad_length</span> <span class="o">=</span> <span class="n">max_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+                <span class="n">padded_seq</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">]</span> <span class="o">*</span> <span class="n">pad_length</span>
+
+            <span class="n">padded_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">padded_seq</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">padded_sequences</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        分词器主调用函数</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">texts</span><span class="p">]</span>
+
+        <span class="c1"># 编码所有文本</span>
+        <span class="n">all_token_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">all_token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span>
+
+        <span class="c1"># 填充或截断到统一长度</span>
+        <span class="n">padded_token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">all_token_ids</span><span class="p">,</span> <span class="n">max_length</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_single_text</span><span class="p">:</span>
+            <span class="n">padded_token_ids</span> <span class="o">=</span> <span class="n">padded_token_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">padded_token_ids</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 类的核心功能总结：</p>
+<ol class="arabic simple">
+<li><p>初始化与词汇表构建</p>
+<ul class="simple">
+<li><p><strong>特殊标记</strong>：分词在初始化时即定义了两种关键的特殊标记及其 ID：填充标记 <code class="docutils literal notranslate"><span class="pre">[PAD]</span></code> (ID为0) 和未知词标记 <code class="docutils literal notranslate"><span class="pre">[UNK]</span></code> (ID为1)。这解决了前文提到的处理未知词汇和统一序列长度的基础问题。</p></li>
+<li><p><strong>动态构建词表</strong>：提供了 <code class="docutils literal notranslate"><span class="pre">build_vocab</span></code> 和 <code class="docutils literal notranslate"><span class="pre">build_vocab_from_file</span></code> 方法。它们会遍历输入的文本语料，将每个汉字字符视为一个独立的词元（Token），并为其分配一个唯一的 ID，从而动态构建从词元到ID的映射（<code class="docutils literal notranslate"><span class="pre">self.vocab</span></code>）及其反向映射（<code class="docutils literal notranslate"><span class="pre">self.ids_to_tokens</span></code>）。</p></li>
+</ul>
+</li>
+<li><p>编码与解码</p>
+<ul class="simple">
+<li><p><strong>编码方法 <code class="docutils literal notranslate"><span class="pre">encode()</span></code></strong>：接收一个字符串，将其按字符拆分为词元列表。然后，它遍历每个词元（字符），在词汇表中查找其对应的ID。如果词元不存在于词汇表中，则使用 <code class="docutils literal notranslate"><span class="pre">[UNK]</span></code> 的 ID（即1）代替。这实现了将“自然语言→数字序列”的转换过程。</p></li>
+<li><p><strong>解码方法 <code class="docutils literal notranslate"><span class="pre">decode()</span></code></strong>：接收一个 ID 列表，将其转换回对应的词元（字符）列表。在此过程中，它会过滤掉填充标记 <code class="docutils literal notranslate"><span class="pre">[PAD]</span></code>，最后将词元列表拼接成字符串返回。这实现了“数字序列→自然语言”的转换过程。</p></li>
+</ul>
+</li>
+<li><p>序列填充与截断</p>
+<ul class="simple">
+<li><p><strong>长度对齐方法 <code class="docutils literal notranslate"><span class="pre">pad_sequences()</span></code></strong>：该方法接收一个 ID 序列列表和一个目标长度 <code class="docutils literal notranslate"><span class="pre">max_length</span></code>，解决输入文本长度不一的问题。对于每个序列：</p>
+<ul>
+<li><p>如果序列长于 <code class="docutils literal notranslate"><span class="pre">max_length</span></code>，则进行截断，保留前 <code class="docutils literal notranslate"><span class="pre">max_length</span></code> 个元素。</p></li>
+<li><p>如果序列短于 <code class="docutils literal notranslate"><span class="pre">max_length</span></code>，则进行填充，在序列末尾添加足够数量的 <code class="docutils literal notranslate"><span class="pre">[PAD]</span></code> 标记 ID（即0），使其达到目标长度。</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>主调用接口</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">__call__()</span></code></strong>：集成了文本编码与序列长度对齐的完整流程。它支持接收单条文本或文本列表作为输入，并可指定 <code class="docutils literal notranslate"><span class="pre">max_length</span></code> 参数以控制序列最大长度。在其内部首先调用 <code class="docutils literal notranslate"><span class="pre">encode()</span></code> 将文本转换为 ID 序列；随后调用 <code class="docutils literal notranslate"><span class="pre">pad_sequences()</span></code> 将所有序列长度统一处理成 <code class="docutils literal notranslate"><span class="pre">max_length</span></code>。最终，返回一个长度一致的数值张量（或列表），可直接输入至神经网络进行后续计算。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id12">
+<h3><span class="section-number">5.4.4. </span>基于语料初始化分词器实例<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>使用示例语料文本 <code class="docutils literal notranslate"><span class="pre">sample_texts</span></code> 初始化自定义的中文分词器 <code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 实例。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用 print_table 展示结果</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="c1"># 1. 准备示例文本（语料）</span>
+<span class="n">sample_texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;动手学 AI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;吾辈亦有感&quot;</span>
+<span class="p">]</span>
+
+<span class="c1"># 2. 创建分词器实例</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+
+<span class="c1"># 3. 基于语料构建词表</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">)</span>
+
+<span class="c1"># 4. 打印分词器信息</span>
+<span class="n">vocab_info</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;Vocabulary Size&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">]]</span>
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;分词器信息&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;项目&quot;</span><span class="p">,</span> <span class="s2">&quot;值&quot;</span><span class="p">],</span> <span class="n">vocab_info</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">字符到ID的映射表&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="s2">&quot;Token ID&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">[</span><span class="n">token</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">分词器信息：</span>
++-----------------+----+
+|       项目      | 值 |
++-----------------+----+
+| Vocabulary Size | 13 |
++-----------------+----+
+
+<span class=" -Color -Color-Red">字符到ID的映射表：</span>
++-------+----------+
+| Token | Token ID |
++-------+----------+
+| [PAD] |    0     |
+| [UNK] |    1     |
+|   动  |    2     |
+|   手  |    3     |
+|   学  |    4     |
+|       |    5     |
+|   A   |    6     |
+|   I   |    7     |
+|   吾  |    8     |
+|   辈  |    9     |
+|   亦  |    10    |
+|   有  |    11    |
+|   感  |    12    |
++-------+----------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id13">
+<h3><span class="section-number">5.4.5. </span>使用分词器进行编码和解码<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>使用自定义的 <code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 对示例文本进行编码和解码，验证分词器的有效性。</p>
+<p><img alt="编码和解码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203191232.png" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置最大长度</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="c1"># 示例文本</span>
+<span class="n">sample_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;动手学人工智能&quot;</span><span class="p">)</span>
+
+<span class="c1"># 编码文本</span>
+<span class="n">encoded_token_ids</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;编码结果&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;原始文本&quot;</span><span class="p">,</span> <span class="s2">&quot;编码序列&quot;</span><span class="p">,</span> <span class="s2">&quot;解码结果&quot;</span><span class="p">],</span> <span class="p">[</span>
+    <span class="p">[</span><span class="n">sample_texts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">encoded_token_ids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded_token_ids</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample_texts</span><span class="p">))</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">编码结果：</span>
++----------------+-----------------------+-----------------------+
+|    原始文本    |        编码序列       |        解码结果       |
++----------------+-----------------------+-----------------------+
+|   动手学 AI    |   [2, 3, 4, 5, 6, 7]  |       动手学 AI       |
+|   吾辈亦有感   | [8, 9, 10, 11, 12, 0] |       吾辈亦有感      |
+| 动手学人工智能 |   [2, 3, 4, 1, 1, 1]  | 动手学[UNK][UNK][UNK] |
++----------------+-----------------------+-----------------------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>从上述结果可以看出：</p>
+<ul class="simple">
+<li><p>对于第一条数据 <code class="docutils literal notranslate"><span class="pre">&quot;动手学</span> <span class="pre">AI&quot;</span></code>：其长度为 6，与最大长度一致，因此无需填充或截断。从编码序列和解码结果中可以看到，分词器对空格和英文字母也能正确的编解码。</p></li>
+<li><p>对于第二条数据 <code class="docutils literal notranslate"><span class="pre">&quot;吾辈亦有感&quot;</span></code>：长度为 5，短于最大长度，因此自动在末尾填充了一个 <code class="docutils literal notranslate"><span class="pre">[PAD]</span></code> 标记（对应 ID 为 0），说明分词器能够对短文本自动进行对齐。</p></li>
+<li><p>对于第三条数据 <code class="docutils literal notranslate"><span class="pre">&quot;动手学人工智能&quot;</span></code>：长度为 7，超出最大长度，且其中包含四个未登录词（<code class="docutils literal notranslate"><span class="pre">“人”“工”“智”“能”</span></code>）。这些未知词被替换为 <code class="docutils literal notranslate"><span class="pre">[UNK]</span></code> 标记，并且文本被截断至允许的最大长度。编码与解码结果均表明，分词器对未知词和长文本的处理行为符合预期。</p></li>
+</ul>
+</section>
+</section>
+<section id="id14">
+<h2><span class="section-number">5.5. </span>数据准备<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>使用 LightningDataModule 可以统一管理训练、评估和测试数据。创建 LightningDataModule 的流程如下：</p>
+<p><img alt="LightningDataModule" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260202151009.png" /></p>
+<ol class="arabic simple">
+<li><p>定义数据转换器</p></li>
+<li><p>自定义数据集类</p></li>
+<li><p>组装数据模组</p></li>
+</ol>
+<p>在处理数据之前，我们先观察数据的格式，确定数据转换的流程。</p>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('dataset'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">数据集下载</h4>
+                <p class="card-text">
+                    如果你想要亲自动手复现运行结果，可以点击此链接下载相关数据集。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+<section id="id15">
+<h3><span class="section-number">5.5.1. </span>观察数据<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<p>读取训练语料文件，并展示其中的 5 条样本，直观了解数据的结构。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 打开文件并读取前5行</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_first_n_lines</span>
+
+<span class="n">show_first_n_lines</span><span class="p">(</span><span class="s1">&#39;./dataset/comments_train.txt&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>行数</th>
+      <th>内容</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1\t速度依旧很快，快递师傅态度依然很好。包装完好，单果分量足。</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>0\t还可以，顺丰很给力，但是送的东西就不行</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>1\t不错，刚买完就没货了，物流快，和商家介绍的一样……</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>1\t平板反应快，买平板上京东</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>0\t裤子一般物流太慢半个月了才到也是没谁了</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>我们可以看到，每一行样本数据中均包含着一个表示情感倾向的标签 ID 以及一个对应的顾客评论文本，他们之间是用制表符 <code class="docutils literal notranslate"><span class="pre">\t</span></code> 分隔开。为便于后续训练模型，需将原始的数据转换为 <code class="docutils literal notranslate"><span class="pre">&lt;输入的Token</span> <span class="pre">ID序列,</span> <span class="pre">目标情感标签ID&gt;</span></code> 数据对的形式：</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;input_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">4.</span><span class="p">,</span><span class="w">  </span><span class="mf">5.</span><span class="p">,</span><span class="w">  </span><span class="mf">6.</span><span class="p">,</span><span class="w">  </span><span class="mf">7.</span><span class="p">,</span><span class="w">  </span><span class="mf">8.</span><span class="p">,</span><span class="w">  </span><span class="mf">9.</span><span class="p">,</span><span class="w"> </span><span class="mf">10.</span><span class="p">,</span><span class="w">  </span><span class="mf">9.</span><span class="p">,</span><span class="w"> </span><span class="mf">11.</span><span class="p">,</span><span class="w"> </span><span class="mf">12.</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>其中：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input_ids</span></code>：一个列表，包含了当前输入的顾客评论对应的 Token ID 序列。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>：一个整数，代表该顾客评论对应的情感标签，0 表示负面情感，1 表示正面情感。</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3><span class="section-number">5.5.2. </span>数据转换<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>自定义一个数据预处理转换器 <code class="docutils literal notranslate"><span class="pre">TextTransform</span></code> 类，使用分词器将给定的文本字符串编码为 Token ID 序列，并自动完成截断与填充，确保所有序列具有相同的长度。</p>
+<section id="id17">
+<h4><span class="section-number">5.5.2.1. </span>数据转换器的代码实现<a class="headerlink" href="#id17" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TextTransform</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="c1"># 使用 tokenizer 对文本进行编码，并自动完成截断与填充</span>
+        <span class="n">encoded_token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span>  <span class="c1"># 最大序列长度</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">encoded_token_ids</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id18">
+<h4><span class="section-number">5.5.2.2. </span>数据转换器的使用示例<a class="headerlink" href="#id18" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 传入分词器和最大序列长度，创建一个 TextTransform 实例</span>
+<span class="n">text_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># 示例文本</span>
+<span class="n">sample_text</span> <span class="o">=</span> <span class="s2">&quot;动手学 AI&quot;</span>
+
+<span class="c1"># 使用 text_transform 对示例文本进行编码，得到对应的 token ID 序列</span>
+<span class="n">encoded_token_ids</span> <span class="o">=</span> <span class="n">text_transform</span><span class="p">(</span><span class="n">sample_text</span><span class="p">)</span>
+
+<span class="c1"># 打印编码后的 token ID 序列</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encoded:&quot;</span><span class="p">,</span> <span class="n">encoded_token_ids</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Encoded: [2, 3, 4, 5, 6, 7, 0, 0, 0, 0]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id19">
+<h3><span class="section-number">5.5.3. </span>自定义文本分类数据集<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<p>自定义 <code class="docutils literal notranslate"><span class="pre">TextClassificationDataset</span></code> 类，使用前面定义的 <code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 和 <code class="docutils literal notranslate"><span class="pre">TextTransform</span></code> 将顾客评论处理成 <code class="docutils literal notranslate"><span class="pre">(input_ids,</span> <span class="pre">labels)</span></code> 的数据对并封装成数据集。</p>
+<section id="id20">
+<h4><span class="section-number">5.5.3.1. </span>文本分类数据集的代码实现<a class="headerlink" href="#id20" title="Link to this heading">#</a></h4>
+<p>除了实现 <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>、<code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code>、<code class="docutils literal notranslate"><span class="pre">__len__()</span></code> 等基本方法外，额外提供一个可以直接基于语料文件创建数据集实例的工厂方法 <code class="docutils literal notranslate"><span class="pre">from_file()</span></code> 。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextClassificationDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="c1"># 初始化数据集，保存文本、标签和数据转换器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="n">texts</span>  <span class="c1"># 存储文本数据列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>  <span class="c1"># 存储标签数据列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>  <span class="c1"># 数据转换器，用于将文本转换为模型可处理的格式</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 返回数据集的大小（即样本数量）</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="c1"># 根据索引获取单个样本</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># 获取指定索引的文本</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># 获取指定索引的标签</span>
+
+        <span class="c1"># 使用转换器对文本进行处理，生成模型输入所需的格式</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># 返回一个字典，包含输入特征和标签</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>  <span class="c1"># 将输入ID转换为浮点型张量</span>
+            <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>  <span class="c1"># 将标签转换为长整型张量</span>
+        <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从txt文件加载数据集</span>
+<span class="sd">        txt格式应包含标签和文本，使用制表符分隔</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 用于存储读取到的文本</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 用于存储读取到的标签</span>
+
+        <span class="c1"># 打开并逐行读取txt文件</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># 去除行首尾的空白字符</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="c1"># 使用制表符分割每一行的内容</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># 第一列是情感类别的标签（整数类型）</span>
+                        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># 剩余部分是顾客评论的文本内容（考虑了文本中可能包含制表符的情况）</span>
+                        <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>  <span class="c1"># 将文本添加到列表中</span>
+                        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>  <span class="c1"># 将标签添加到列表中</span>
+
+        <span class="c1"># 创建并返回数据集实例</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id21">
+<h4><span class="section-number">5.5.3.2. </span>文本分类数据集的使用示例<a class="headerlink" href="#id21" title="Link to this heading">#</a></h4>
+<p>使用训练语料文件创建数据集实例。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="c1"># 指定训练数据文件路径</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;./dataset/comments_train.txt&quot;</span>
+
+<span class="c1"># 1. 创建分词器实例</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+
+<span class="c1"># 2. 从文件中构建词汇表</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+<span class="c1"># 3. 创建数据转换器实例，指定最大序列长度为10</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># 4. 应用数据转换器从文件中加载数据集</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+<span class="c1"># 打印数据集的前3个样本，查看数据转换结果</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">dataset</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;input_ids&#39;: tensor([[ 4.,  5.,  6.,  7.,  8.,  9., 10.,  9., 11., 12.],
+        [27., 28., 29., 10., 30., 31.,  8., 32., 33., 10.],
+        [41., 43., 10., 44., 45., 20., 40., 46., 47., 48.]]),
+ &#39;labels&#39;: tensor([1, 0, 1])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id22">
+<h3><span class="section-number">5.5.4. </span>自定义文本分类数据模组<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h4><span class="section-number">5.5.4.1. </span>文本分类数据模组的代码实现<a class="headerlink" href="#id23" title="Link to this heading">#</a></h4>
+<p>继承 PyTorch Lightning 的 <code class="docutils literal notranslate"><span class="pre">LightningDataModule</span></code> 定义一个用于文本分类任务的 <code class="docutils literal notranslate"><span class="pre">TextDataModule</span></code> 类，统一管理训练、验证和测试数据。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextDataModule</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">train_data_file</span><span class="p">,</span> <span class="n">val_data_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">test_data_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 训练、验证和测试数据文件路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span> <span class="o">=</span> <span class="n">train_data_file</span>  <span class="c1"># 训练数据文件路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span> <span class="o">=</span> <span class="n">val_data_file</span>  <span class="c1"># 验证数据文件路径（可选）</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span> <span class="o">=</span> <span class="n">test_data_file</span>  <span class="c1"># 测试数据文件路径（可选）</span>
+
+        <span class="c1"># 数据集实例，初始为None，在setup方法中初始化</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 测试数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 验证数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 训练数据集</span>
+
+        <span class="c1"># 批次大小和数据转换器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>  <span class="c1"># 每个批次的样本数量</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>  <span class="c1"># 数据转换器，用于预处理数据</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 下载或准备数据集的操作（如果需要）</span>
+        <span class="c1"># 此方法通常用于下载数据或进行一次性操作</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># 根据阶段加载数据集</span>
+        <span class="c1"># 加载训练数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span><span class="p">,</span>
+            <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 如果未提供验证数据文件，则使用训练数据集作为验证集</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 否则加载指定的验证数据集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 如果未提供测试数据文件，则使用验证数据集作为测试集</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 否则加载指定的测试数据集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">TextClassificationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 返回训练数据的DataLoader，启用shuffle以打乱数据顺序</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 返回验证数据的DataLoader，不打乱数据顺序</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 返回测试数据的DataLoader，不打乱数据顺序</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id24">
+<h4><span class="section-number">5.5.4.2. </span>文本分类数据模组的使用示例<a class="headerlink" href="#id24" title="Link to this heading">#</a></h4>
+<p>将前面定义的所有组件（分词器、数据转换器、数据集类）组合起来，实例化文本分类数据模组（<code class="docutils literal notranslate"><span class="pre">TextDataModule</span></code>）。</p>
+<p>实例化 <code class="docutils literal notranslate"><span class="pre">TextDataModule</span></code> 具体步骤包括：</p>
+<ul class="simple">
+<li><p><strong>初始化分词器</strong>：创建 <code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 实例。</p></li>
+<li><p><strong>构建词表</strong>：基于训练数据语料，让分词器构建词表。</p></li>
+<li><p><strong>创建数据转换器</strong>：将分词器封装进 <code class="docutils literal notranslate"><span class="pre">TextTransform</span></code>，用于将任意文本自动编码和填充为固定长度的数值序列。</p></li>
+<li><p><strong>实例化数据模组</strong>：使用 <code class="docutils literal notranslate"><span class="pre">TextDataModule</span></code> 类，传入相关参数（如批次大小、转换器、语料文件路径），它将负责在内部加载并管理训练集、验证集和测试集。</p></li>
+<li><p><strong>准备数据</strong>：调用 <code class="docutils literal notranslate"><span class="pre">setup()</span></code> 方法，触发数据集的实际加载和初始化过程。</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置最大序列长度</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># 1. 创建分词器实例</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+<span class="c1"># 2. 从训练数据文件中构建词汇表</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="s2">&quot;./dataset/comments_train.txt&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. 创建数据转换器实例，指定最大序列长度</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+
+<span class="c1"># 4. 创建 TextDataModule 实例，传入批次大小、数据转换器和训练数据文件路径</span>
+<span class="n">text_datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">train_data_file</span><span class="o">=</span><span class="s2">&quot;./dataset/comments_train.txt&quot;</span><span class="p">)</span>
+
+<span class="c1"># 5. 调用 setup 方法初始化数据集（加载训练集、验证集和测试集）</span>
+<span class="n">text_datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+<span class="c1"># 获取训练数据加载器</span>
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">text_datamodule</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+
+<span class="c1"># 打印一个批次的数据</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;打印一个批次的数据：&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
+    <span class="c1"># 打印批次数据，保持字典顺序</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">sort_dicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="c1"># 打印 input_ids 的形状</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;input_ids shape: &quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># 打印 labels 的形状</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;labels shape: &quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>打印一个批次的数据：
+{&#39;input_ids&#39;: tensor([[289.,  74., 327.,  29., 678., 102., 192., 204., 606., 167., 168.,   0.,
+           0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,
+           0.,   0.,   0.,   0.,   0.,   0.],
+        [ 79.,  24.,   8.,  91.,  10., 385., 197.,   8., 417., 418.,  10.,  99.,
+          48., 100.,  73.,  87., 648.,  79.,  24.,   8.,  91.,  17.,   0.,   0.,
+           0.,   0.,   0.,   0.,   0.,   0.]]),
+ &#39;labels&#39;: tensor([0, 0])}
+--------------------
+input_ids shape:  torch.Size([2, 30])
+labels shape:  torch.Size([2])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="id25">
+<h2><span class="section-number">5.6. </span>自定义情感分析模型<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<p>本任务是一个典型的文本情感二分类问题，模型需要根据顾客的一条评论文本，判断其情感倾向属于“正面”（好评）或“负面”（差评）。</p>
+<ul class="simple">
+<li><p><strong>模型输入</strong>：模型的输入是顾客评论对应的 Token ID 序列。</p></li>
+<li><p><strong>模型输出</strong>：模型将输出对应“正面”和“负面”两个情感类别的预测得分。</p></li>
+</ul>
+<p>由于本次任务相对复杂，所以我们采用更深的模型加强模型的表示能力。此次的模型有三个层：输入层、隐藏层和输出层。模型的层结构如下：</p>
+<p><img alt="情感分析模型的详细层结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204164441.png" /></p>
+<ul class="simple">
+<li><p><strong>输入层（input_layer）</strong>：输入层的其作用是将预处理后的、固定长度的数值序列从原始维度映射到一个更高维的隐藏空间（如128）。这个过程将每个Token的ID信息初步转化为一个具有更丰富表征能力的向量。</p></li>
+<li><p><strong>隐藏层（hidden_layer）</strong>：隐藏层接收来自输入层或前一个隐藏层的输出。该层会进一步组织和融合文本中的隐藏信息，从而捕捉文本中更深层次的情感语义模式。</p></li>
+<li><p><strong>输出层（output_layer）</strong>：输出层是最后一个全连接层，它将隐藏层学习到的高维特征向量映射到最终的分类空间。输出层的输出维度为 <code class="docutils literal notranslate"><span class="pre">num_classes</span></code>（在本任务中为 2，对应“正面”和“负面”两类情感）。该层的输出是未经归一化的原始分数（logits）。</p>
+<ul>
+<li><p>在训练时，这些 logits 会与真实标签一同送入交叉熵损失函数进行计算；</p></li>
+<li><p>在预测时，则可以通过 <code class="docutils literal notranslate"><span class="pre">argmax()</span></code> 获取最大概率类别，或使用 <code class="docutils literal notranslate"><span class="pre">softmax()</span></code> 将原始分数转化为概率分布。</p></li>
+</ul>
+</li>
+</ul>
+<section id="id26">
+<h3><span class="section-number">5.6.1. </span>情感分析模型的代码实现<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<p>继承 <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code> 定义一个文本情感分类模型 <code class="docutils literal notranslate"><span class="pre">TextClassifier</span></code>，用于解决文本分类任务（正面/负面情感）。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> 方法中，定义模型的网络层和日志列表、示例数据等。</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">forward()</span></code> 方法中，实现模型的前向传播逻辑。前向传播中的数据形状变化如下图所示：</p>
+<p><img alt="情感分析模型前向计算" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204164630.png" /></p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">training_step()</span></code> 方法中定义情感分析模型的训练步骤，在训练步骤结束后计算当前批次的损失和准确率，并保存到 <code class="docutils literal notranslate"><span class="pre">train_step_losses</span></code> 和<code class="docutils literal notranslate"><span class="pre">train_step_accuracies</span></code> 列表中。训练过程如下：</p>
+<p><img alt="情感分析模型训练过程" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204164818.png" /></p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">validation_step()</span></code> 方法中定义情感分析模型的验证步骤，在验证步骤结束后记录当前批次的预测标签和监督标签。在验证轮次结束时，计算验证集的整体的准确率并保存到 <code class="docutils literal notranslate"><span class="pre">eval_accuracies</span></code> 列表中。</p>
+<p>最后，添加 <code class="docutils literal notranslate"><span class="pre">predict()</span></code> 方法，用于在预测阶段使用模型进行预测。预测步骤如下：</p>
+<p><img alt="情感分析模型的预测过程" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204165337.png" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextClassifier</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TextClassifier</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+
+        <span class="c1"># 定义网络层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">)</span>  <span class="c1"># 输入层：将输入特征映射到隐藏特征空间</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>  <span class="c1"># 输入层的激活函数ReLU</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">)</span>  <span class="c1"># 隐藏层：进一步提取更复杂的隐藏特征</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>  <span class="c1"># 隐藏层的激活函数ReLU</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">num_classes</span><span class="p">)</span>  <span class="c1"># 输出层：将隐藏特征映射到类别数</span>
+
+        <span class="c1"># 存储每个训练步骤和训练循环的损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 记录每一步的训练损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 记录每个epoch的平均训练损失</span>
+
+        <span class="c1"># 用于存储验证步骤的结果</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储验证步骤的预测结果和标签</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 存储验证集的准确率</span>
+
+        <span class="c1"># 示例输入</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_input_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">input_size</span><span class="p">)</span>  <span class="c1"># 用于模型摘要的示例输入</span>
+
+        <span class="c1"># 标签id到标签的映射，用于预测解码</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_map</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 标签映射字典，例如 {0: &quot;负面&quot;, 1: &quot;正面&quot;}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;前向传播&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 输入层处理</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># 对输入层的结果进行非线性变换</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># 隐藏层处理</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># 对隐藏层的结果进行非线性变换</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># 输出层处理</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;训练步骤&quot;&quot;&quot;</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>  <span class="c1"># 获取输入特征</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>  <span class="c1"># 获取真实标签</span>
+
+        <span class="c1"># 前向传播</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>  <span class="c1"># 模型前向计算</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>  <span class="c1"># 计算交叉熵损失</span>
+
+        <span class="c1"># 计算准确率</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 获取预测类别</span>
+        <span class="n">acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">preds</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 计算准确率</span>
+
+        <span class="c1"># 记录日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;train_loss&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>  <span class="c1"># 记录训练损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;train_acc&#39;</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>  <span class="c1"># 记录训练准确率</span>
+
+        <span class="c1"># 存储损失以便后续使用</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>  <span class="c1"># 将损失添加到列表中</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_train_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在每个训练epoch结束时计算整体损失&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="p">:</span>  <span class="c1"># 确保列表不为空</span>
+            <span class="c1"># 计算并记录平均训练损失</span>
+            <span class="n">avg_train_loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c1"># 计算平均损失</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span><span class="p">,</span>  <span class="c1"># 当前epoch编号</span>
+                <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">avg_train_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># 转换为Python数值</span>
+            <span class="p">})</span>
+
+            <span class="c1"># 清空训练loss为下一个epoch做准备</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;验证步骤&quot;&quot;&quot;</span>
+
+        <span class="c1"># 提取 batch 数据</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>  <span class="c1"># 获取输入特征</span>
+        <span class="n">target_ids</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>  <span class="c1"># 获取真实标签</span>
+
+        <span class="c1"># 模型前向计算</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>  <span class="c1"># </span>
+
+        <span class="c1"># 获取预测类别</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># 保存结果供epoch结束时使用</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;preds&#39;</span><span class="p">:</span> <span class="n">preds</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">:</span> <span class="n">target_ids</span><span class="p">})</span>  <span class="c1"># 保存预测结果和真实标签</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;在每个验证epoch结束时计算整体准确率&quot;&quot;&quot;</span>
+        <span class="c1"># 汇总所有预测结果和标签</span>
+        <span class="n">all_preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;preds&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="p">])</span>  <span class="c1"># 合并所有预测结果</span>
+        <span class="n">all_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="p">])</span>  <span class="c1"># 合并所有标签</span>
+
+        <span class="c1"># 计算整体准确率</span>
+        <span class="n">val_overall_acc</span> <span class="o">=</span> <span class="p">(</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="c1"># 记录整体准确率</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;total_samples&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_labels</span><span class="p">))</span>  <span class="c1"># 记录总样本数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;total_correct&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>  <span class="c1"># 记录正确样本数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;val_overall_acc&#39;</span><span class="p">,</span> <span class="n">val_overall_acc</span><span class="p">)</span>  <span class="c1"># 记录验证集准确率</span>
+
+        <span class="c1"># 将评估结果保存到eval_accuracies列表中</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span><span class="p">,</span>  <span class="c1"># epoch编号</span>
+            <span class="s2">&quot;总样本数&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_labels</span><span class="p">),</span>  <span class="c1"># 验证集总样本数</span>
+            <span class="s2">&quot;正确样本数&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">((</span><span class="n">all_preds</span> <span class="o">==</span> <span class="n">all_labels</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>  <span class="c1"># 预测正确的样本数</span>
+            <span class="s2">&quot;准确率&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">val_overall_acc</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># 准确率（保留四位小数）</span>
+        <span class="p">})</span>
+
+        <span class="c1"># 清空缓存</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;清除缓存&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># 清空训练步骤损失列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># 清空训练epoch损失列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># 清空验证步骤输出列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># 清空验证准确率列表</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;配置优化器&quot;&quot;&quot;</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span>  <span class="c1"># 使用Adam优化器</span>
+        <span class="k">return</span> <span class="n">optimizer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_label_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_map</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;根据数据集设置标签映射&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_map</span> <span class="o">=</span> <span class="n">label_map</span>  <span class="c1"># 设置标签映射字典</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        对新数据进行预测</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            input_ids: 输入特征</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            predictions: 预测的标签索引</span>
+<span class="sd">            decoded_predictions: 解码后的标签名称</span>
+<span class="sd">            probabilities: 预测概率</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 确保模型处于评估模式</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># 确保输入是tensor格式</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>  <span class="c1"># 转换为tensor</span>
+
+        <span class="c1"># 预测</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>  <span class="c1"># 模型前向计算</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># 获取得分最高预测类别索引</span>
+            <span class="n">probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># 将预测得分转化为概率分布</span>
+
+        <span class="c1"># 解码预测结果</span>
+        <span class="n">decoded_predictions</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_map</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">]</span>  <span class="c1"># 根据标签映射解码</span>
+
+        <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">decoded_predictions</span><span class="p">,</span> <span class="n">probabilities</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        将标签ID解码为标签名称</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            label_ids: 标签ID列表</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            decoded_labels: 解码后的标签名称列表</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">label_ids</span> <span class="o">=</span> <span class="n">label_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># 如果是tensor则转换为list</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_map</span><span class="p">[</span><span class="n">label_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">label_id</span> <span class="ow">in</span> <span class="n">label_ids</span><span class="p">]</span>  <span class="c1"># 根据标签映射解码</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id27">
+<h3><span class="section-number">5.6.2. </span>情感分析模型的结构详情<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">example_input_array</span></code> 作为示例输入，使用 <code class="docutils literal notranslate"><span class="pre">ModelSummary</span></code> 生成模型摘要详情。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">lightning.pytorch.utilities.model_summary</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelSummary</span>
+
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">TextClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                       <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">ModelSummary</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  | Name         | Type   | Params | Mode  | FLOPs  | In sizes  | Out sizes
+---------------------------------------------------------------------------------
+0 | input_layer  | Linear | 4.0 K  | train | 245 K  | [32, 30]  | [32, 128]
+1 | relu1        | ReLU   | 0      | train | 0      | [32, 128] | [32, 128]
+2 | hidden_layer | Linear | 16.5 K | train | 1.0 M  | [32, 128] | [32, 128]
+3 | relu2        | ReLU   | 0      | train | 0      | [32, 128] | [32, 128]
+4 | output_layer | Linear | 258    | train | 16.4 K | [32, 128] | [32, 2]  
+---------------------------------------------------------------------------------
+20.7 K    Trainable params
+0         Non-trainable params
+20.7 K    Total params
+0.083     Total estimated model params size (MB)
+5         Modules in train mode
+0         Modules in eval mode
+1.3 M     Total Flops
+</pre></div>
+</div>
+</div>
+</div>
+<p>从模型摘要信息中可以看到，模型由输入层、隐藏层、输出层和激活函数组成，其中：</p>
+<ul class="simple">
+<li><p>输入层 <code class="docutils literal notranslate"><span class="pre">input_layer</span></code>：将输入特征映射到隐藏层，输入特征维度为 20（最大序列长度），隐藏特征维度为 128</p></li>
+<li><p>隐藏层 <code class="docutils literal notranslate"><span class="pre">hidden_layer</span></code>：将隐藏特征进一步融合，提取更复杂的语义信息，输入特征维度为 128，隐藏特征维度为 128</p></li>
+<li><p>输出层 <code class="docutils literal notranslate"><span class="pre">output_layer</span></code>：将隐藏特征映射到输出类别，隐藏特征维度为 128，输出类别数为 2</p></li>
+<li><p>激活函数 <code class="docutils literal notranslate"><span class="pre">relu</span></code>：在不同的层之间，使用 ReLU 激活函数引入非线性因素，增强模型表达能力</p></li>
+</ul>
+</section>
+</section>
+<section id="id28">
+<h2><span class="section-number">5.7. </span>模型训练与评估<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
+<p>模型训练与评估的流程如下：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171732.png" /></p>
+<p>在训练模型之前，先对模型一次评估，以了解模型在训练前的性能。然后再训练模型，在训练完成后，再对模型进行评估，确认训练是否成功。</p>
+<section id="id29">
+<h3><span class="section-number">5.7.1. </span>初始化模型和训练器<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 超参配置</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="c1"># 1️⃣ 创建 SimpleTokenizer 实例</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">SimpleTokenizer</span><span class="p">()</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">build_vocab_from_file</span><span class="p">(</span><span class="s2">&quot;./dataset/comments_train.txt&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2️⃣ 创建 TextTransform 实例</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+
+<span class="c1"># 3️⃣ 创建 DataModule 实例</span>
+<span class="n">datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                            <span class="n">train_data_file</span><span class="o">=</span><span class="s2">&quot;./dataset/comments_train.txt&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4️⃣ 创建 TextClassifier 实例</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">TextClassifier</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                       <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+<span class="c1"># 5️⃣ 创建PyTorch Lightning训练器，设置训练参数：</span>
+<span class="c1"># - max_epochs=12: 最大训练轮数为12</span>
+<span class="c1"># - log_every_n_steps=3: 每3个步骤记录一次日志</span>
+<span class="c1"># - check_val_every_n_epoch=3: 每3个epoch进行一次验证</span>
+<span class="c1"># - enable_progress_bar=False: 不显示进度条</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_sanity_val_steps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">enable_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>💡 Tip: For seamless cloud uploads and versioning, try installing [litmodels](https://pypi.org/project/litmodels/) to enable LitModelCheckpoint, which syncs automatically with the Lightning model registry.
+GPU available: True (mps), used: True
+TPU available: False, using: 0 TPU cores
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id30">
+<h3><span class="section-number">5.7.2. </span>训练前评估<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 直接调用验证函数进行评估</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          1396.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">    0.5117301940917969     </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2728.0,
+  &#39;total_correct&#39;: 1396.0,
+  &#39;val_overall_acc&#39;: 0.5117301940917969}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>训练前评估为模型性能建立了初始基准，在模型训练之前，模型预测的准确率为 <code class="docutils literal notranslate"><span class="pre">51.17%</span></code>，基本上和随机瞎猜的准确率一致，说明模型在训练前没有任何的预测能力。</p>
+</section>
+<section id="id31">
+<h3><span class="section-number">5.7.3. </span>训练模型<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 清除模型中存储的历史训练损失和评估指标数据，为新的训练做准备</span>
+<span class="n">model</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+
+<span class="c1"># 使用训练器在指定的数据模块上进行训练</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━┳━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Name         </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Type   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Params </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Mode  </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">  FLOPs </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">  In sizes </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Out sizes </span>┃
+┡━━━╇━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━┩
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 0 </span>│ input_layer  │ Linear │  4.0 K │ train │  245 K │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">  [32, 30] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 1 </span>│ relu1        │ ReLU   │      0 │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 2 </span>│ hidden_layer │ Linear │ 16.5 K │ train │  1.0 M │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 3 </span>│ relu2        │ ReLU   │      0 │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 4 </span>│ output_layer │ Linear │    258 │ train │ 16.4 K │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [32, 128] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [32, 2] </span>│
+└───┴──────────────┴────────┴────────┴───────┴────────┴───────────┴───────────┘
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Trainable params</span>: 20.7 K                                                                                           
+<span style="font-weight: bold">Non-trainable params</span>: 0                                                                                            
+<span style="font-weight: bold">Total params</span>: 20.7 K                                                                                               
+<span style="font-weight: bold">Total estimated model params size (MB)</span>: 0                                                                          
+<span style="font-weight: bold">Modules in train mode</span>: 5                                                                                           
+<span style="font-weight: bold">Modules in eval mode</span>: 0                                                                                            
+<span style="font-weight: bold">Total FLOPs</span>: 1.3 M                                                                                                 
+</pre>
+</div><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>`Trainer.fit` stopped: `max_epochs=12` reached.
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id32">
+<h4><span class="section-number">5.7.3.1. </span>训练过程可视化<a class="headerlink" href="#id32" title="Link to this heading">#</a></h4>
+<p>绘制训练过程中损失值的变化曲线，更直观地观察损失值在训练过程中的变化趋势。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_training_loss</span>
+
+<span class="n">plot_training_loss</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/cee0c74b22a56ab7a0e548634e47b1bff1a18354db7364e3b94758fd54b7b206.png" src="../_images/cee0c74b22a56ab7a0e548634e47b1bff1a18354db7364e3b94758fd54b7b206.png" />
+</div>
+</div>
+<p>从图中可以看出随着训练的进行，损失值不断下降，表示模型预测准确性不断提高。</p>
+</section>
+<section id="id33">
+<h4><span class="section-number">5.7.3.2. </span>查看模型评估记录<a class="headerlink" href="#id33" title="Link to this heading">#</a></h4>
+<p>查看训练过程中的评估结果，更直观地观察模型在验证集上的表现。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_table</span>
+
+<span class="n">show_table</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">eval_accuracies</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>epoch</th>
+      <th>总样本数</th>
+      <th>正确样本数</th>
+      <th>准确率</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>2728</td>
+      <td>1581</td>
+      <td>0.5795</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>2728</td>
+      <td>1431</td>
+      <td>0.5246</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>2728</td>
+      <td>1766</td>
+      <td>0.6474</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>2728</td>
+      <td>1805</td>
+      <td>0.6617</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>2728</td>
+      <td>1951</td>
+      <td>0.7152</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>2728</td>
+      <td>2086</td>
+      <td>0.7647</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>2728</td>
+      <td>2133</td>
+      <td>0.7819</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>2728</td>
+      <td>1923</td>
+      <td>0.7049</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>2728</td>
+      <td>2094</td>
+      <td>0.7676</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>2728</td>
+      <td>2279</td>
+      <td>0.8354</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>2728</td>
+      <td>2328</td>
+      <td>0.8534</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>2728</td>
+      <td>2322</td>
+      <td>0.8512</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="id34">
+<h3><span class="section-number">5.7.4. </span>训练后评估<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 直接调用验证函数进行训练评估</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          2322.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">    0.8511730432510376     </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2728.0,
+  &#39;total_correct&#39;: 2322.0,
+  &#39;val_overall_acc&#39;: 0.8511730432510376}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>从评估结果中可以看出，训练前的模型的准确率是 <code class="docutils literal notranslate"><span class="pre">51.17%</span></code>，训练后的准确率是 <code class="docutils literal notranslate"><span class="pre">85.11%</span></code>，说明这次模型训练确实有效。</p>
+</section>
+</section>
+<section id="id35">
+<h2><span class="section-number">5.8. </span>使用模型进行预测<a class="headerlink" href="#id35" title="Link to this heading">#</a></h2>
+<p>在模型训练完成后，需要评估模型的泛化能力。我们准备了一组包含不同长度（短、中、长）且情感倾向明确的评论文本，并调用模型的 <code class="docutils literal notranslate"><span class="pre">predict</span></code> 方法进行推理预测，直观地观察模型在实际应用中的表现。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">setup_label_map</span><span class="p">(</span><span class="n">label_map</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;负面&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;正面&quot;</span><span class="p">})</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_classification_results</span>
+
+<span class="c1"># 1. 准备需要预测的文本（长短不一）与对应的感情标签</span>
+<span class="n">new_texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># 短文本</span>
+    <span class="s2">&quot;非常好&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;质量差&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;推荐购买&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;不建议买&quot;</span><span class="p">,</span>
+
+    <span class="c1"># 中等长度文本</span>
+    <span class="s2">&quot;这个产品还不错&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;物流速度太慢了&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;性价比很高值得推荐&quot;</span><span class="p">,</span>
+
+    <span class="c1"># 长文本</span>
+    <span class="s2">&quot;包装很精美，产品和描述一致，非常满意这次购物体验&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;卖家服务态度不好，发货速度慢，产品质量也不如预期&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;虽然价格有点贵，但是品质确实不错，使用效果很满意&quot;</span>
+<span class="p">]</span>
+
+<span class="n">true_labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># 2. 使用已有的 tokenizer 对文本进行编码</span>
+<span class="n">input_ids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">new_texts</span><span class="p">:</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+    <span class="n">input_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+
+<span class="c1"># 3. 使用模型进行预测</span>
+<span class="n">predictions</span><span class="p">,</span> <span class="n">decoded_predictions</span><span class="p">,</span> <span class="n">probabilities</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>
+
+<span class="c1"># 4. 输出预测结果</span>
+<span class="n">print_classification_results</span><span class="p">(</span><span class="n">new_texts</span><span class="p">,</span> <span class="n">true_labels</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">label_map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">🎯 分类预测结果 (准确率: 5/10 = 50.00%)：</span>
++--------------------------------------------------+----------+----------+----------+------+
+|                       输入                       | 真实标签 | 预测标签 | 最高概率 | 标记 |
++--------------------------------------------------+----------+----------+----------+------+
+|                      非常好                      |   正面   |   正面   |  0.7041  |  ☑   |
+|                      质量差                      |   负面   |   正面   |  0.6130  |  ☒   |
+|                     推荐购买                     |   正面   |   正面   |  0.7757  |  ☑   |
+|                     不建议买                     |   负面   |   负面   |  0.8575  |  ☑   |
+|                  这个产品还不错                  |   正面   |   负面   |  0.6043  |  ☒   |
+|                  物流速度太慢了                  |   负面   |   正面   |  0.5382  |  ☒   |
+|                性价比很高值得推荐                |   正面   |   负面   |  0.9419  |  ☒   |
+| 包装很精美，产品和描述一致，非常满意这次购物体验 |   正面   |   负面   |  0.9761  |  ☒   |
+| 卖家服务态度不好，发货速度慢，产品质量也不如预期 |   负面   |   负面   |  0.7494  |  ☑   |
+| 虽然价格有点贵，但是品质确实不错，使用效果很满意 |   正面   |   正面   |  0.5063  |  ☑   |
++--------------------------------------------------+----------+----------+----------+------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>从汇总结果中可以清晰地看到，模型在这 10 条新评论上的预测准确率仅为 <code class="docutils literal notranslate"><span class="pre">50%</span></code>。这个极低的准确率表明，尽管模型在训练集和评估集（在本例中初始评估集与训练集相同）上表现良好，但其泛化能力严重不足。当面对全新的、未见过的评论文本时，模型无法做出有效判断。</p>
+<p>下面我们使用与训练集不同的评估集重新评估模型的性能。</p>
+</section>
+<section id="id36">
+<h2><span class="section-number">5.9. </span>泛化能力评估<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<p>使用与训练集不同的评估集重新评估模型的性能，查看模型在新数据上的泛化能力。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+<span class="n">datamodule2</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                             <span class="n">train_data_file</span><span class="o">=</span><span class="s2">&quot;./dataset/comments_train.txt&quot;</span><span class="p">,</span>
+                             <span class="n">val_data_file</span><span class="o">=</span><span class="s2">&quot;./dataset/comments_val.txt&quot;</span><span class="p">)</span>
+
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;在训练集上评估：&quot;</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;在评估集上评估：&quot;</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">在训练集上评估：</span>
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          2322.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2728.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">    0.8511730432510376     </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">在评估集上评估：</span>
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃<span style="font-weight: bold">      Validate metric      </span>┃<span style="font-weight: bold">       DataLoader 0        </span>┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│<span style="color: #008080; text-decoration-color: #008080">       total_correct       </span>│<span style="color: #800080; text-decoration-color: #800080">          1520.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">       total_samples       </span>│<span style="color: #800080; text-decoration-color: #800080">          2789.0           </span>│
+│<span style="color: #008080; text-decoration-color: #008080">      val_overall_acc      </span>│<span style="color: #800080; text-decoration-color: #800080">    0.5449982285499573     </span>│
+└───────────────────────────┴───────────────────────────┘
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;total_samples&#39;: 2789.0,
+  &#39;total_correct&#39;: 1520.0,
+  &#39;val_overall_acc&#39;: 0.5449982285499573}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>当我们在一个独立的评估集上进行评估时，模型的表现急剧下降，准确率远低于训练集。这是一个典型的过拟合（Overfitting）现象。</p>
+<p>为什么会这样呢？</p>
+<div class="note admonition">
+<p class="admonition-title">思考一下：为何原始序号无法让模型学会“理解”？</p>
+<p>我们的实验清晰地表明，仅使用分词后的字符ID序号（Token ID）来训练文本分类模型，存在非常严重的过拟合问题。其根源在于我们当前采用的文本表示方法存在根本性缺陷，模型无法从这种表示中学习到有意义的语义规律，只能“死记硬背”训练数据中的表面模式。</p>
+<p>直接使用 Token ID 训练模型，本质上是让模型去“背”数字编号，而非“学”语义规律。这就像让一个学生只记忆考卷的题号顺序来答题，而不是理解题目本身，导致模型陷入对数字表面模式的“死记硬背”。</p>
+<p>更严重的是，模型难以区分“一个词的含义”和“一个词出现的位置”。当一个 ID 为 999 的字出现在句子的不同位置，对模型来说可能是完全不同的信号，模型存在严重的绝对位置依赖问题。这种<strong>大数对模型来说非常不稳定</strong>，当它位置稍有变化就会引起模型的大幅震荡。</p>
+<p>两个情感倾向相同的评论，因为关键 Token 位置差异，最终的输出差异可能很大：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204182910.png" /></p>
+<p>两个情感倾向不同的评论，因为关键 Token 位置相同，最终的输出差异却可能很小：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204182937.png" /></p>
+<p>所以，我们必须从根本上改进文本的表示方法来改进这一问题。</p>
+</div>
+</section>
+<section id="id37">
+<h2><span class="section-number">5.10. </span>本章小结<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
+<p>本章我们迈出了自然语言处理实践的第一步，成功构建并训练了一个用于情感分析的文本分类模型。不过我们发现，当前模型将文本表示为孤立的字符 ID 序列，尤其词表较大时，模型会过度依赖字符的绝对位置，这容易导致过拟合，从而使泛化能力下降。因此，下一章我们将改进文本表示方法，让模型能更好地理解词语语义。</p>
+</section>
+<section id="id38">
+<h2><span class="section-number">5.11. </span>答疑讨论<a class="headerlink" href="#id38" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+
+                    <!-- buymecoffee -->
+<!--                    <div class="buymecoffee alert" role="alert">-->
+<!--                        <p>-->
+<!--                            如果你觉得这些内容对你有帮助，可以-->
+<!--                            <a class="reference external" href="/buy-me-a-coffee">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                        </p>-->
+<!--                    </div>-->
+                    <!-- buymecoffee -->
+
+                    <!-- Comments -->
+                    <!-- Comments -->
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+                    <p xmlns:cc="http://creativecommons.org/ns#">
+                        本作品由
+                        <a href="http://fasterai.cn" target="_blank">吾辈亦有感</a>
+                        创作，采用
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="license noopener noreferrer" style="display: inline-block">署名-非商业性使用-禁止演绎 4.0 国际</a>
+                    </p>
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9801%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9802%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9803%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9807%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9808%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9809%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9810%EF%BC%9A%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9811%EF%BC%9A%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9812%EF%BC%9A%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9813%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9814%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9816%EF%BC%9A%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9818%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9819%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9820%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9822%EF%BC%9A%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT.html">
+   22. 从零实现GPT
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 定义 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9824%EF%BC%9A%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9825%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.html">
+   25. 实现 GPT 模型核心组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9826%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   26. 实现 GPT 模型生成解码策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9827%EF%BC%9AGPT%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   27. GPT 模型训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   28. 更具多样性的生成解码策略
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="主页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="放大字体" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="缩小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+<!--                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>-->
+<!---->
+<!---->
+<!---->
+<!--                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>-->
+<!---->
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/notebooks/实战05：语言的序章.ipynb" download><i data-feather="github"></i></a></li>
+                    -->
+<!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "notebooks/实战05：语言的序章";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

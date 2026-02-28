@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; 动手学大模型：写给程序员的手搓LLM实战指南</title>
+    <title>Index &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -18,6 +18,10 @@
     <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!--  访问统计  -->
+    <script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id:"3OrQmjGXGmdC0oni",ck:"3OrQmjGXGmdC0oni",autoTrack:true})</script>
 
     <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
     <script id="tilt-loader">
@@ -35,8 +39,16 @@
 
             function initCards() {
                 VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
-                    max: 4,
-                    speed: 200,
+                    max: 8,
+                    speed: 300,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                    max: 16,
+                    speed: 300,
                     glare: true,
                     "max-glare": 0.2,
                     scale: 1.01
@@ -115,7 +127,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/myfile.css?v=78c257c0" />
+    <link rel="stylesheet" type="text/css" href="_static/myfile.css?v=70bd48f4" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -161,12 +173,12 @@
 <meta name="twitter:image" content="">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta property="og:title" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="None" />
 <meta property="og:image" content="" />
 <meta property="og:description" content="" />
-<meta property="og:site_name" content="动手学大模型：写给程序员的手搓LLM实战指南" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta name="theme-color" content="#ffffff" />
 
   </head>
@@ -256,7 +268,7 @@ a:visited {
 
                     <div class="qe-page__header-copy">
 
-                        <p class="qe-page__header-heading"><a href="intro.html">动手学大模型：写给程序员的手搓LLM实战指南</a></p>
+                        <p class="qe-page__header-heading"><a href="intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
 
                     </div>
 
@@ -277,21 +289,21 @@ a:visited {
                 <!-- 封面 -->
                 
 
-                <div class="alert alert-light simple-tilt">
-                    <a href="https://t.zsxq.com/snpV8">
-                        <div>
-                            <div style="display: flex; align-items: center">
-                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">
-                                <div style="margin-left: 20px">
-                                    <h4 class="card-title mt-3">答疑讨论</h4>
-                                    <p class="card-text">
-                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+<!--                <div class="alert alert-light simple-tilt">-->
+<!--                    <a href="https://t.zsxq.com/snpV8">-->
+<!--                        <div>-->
+<!--                            <div style="display: flex; align-items: center">-->
+<!--                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">-->
+<!--                                <div style="margin-left: 20px">-->
+<!--                                    <h4 class="card-title mt-3">答疑讨论</h4>-->
+<!--                                    <p class="card-text">-->
+<!--                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。-->
+<!--                                    </p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                </div>-->
 
 
                 
@@ -358,87 +370,183 @@ a:visited {
                 <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
                     <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  第一部分：基石篇 —— 机器学习的思维与工具
+  动手学：机器学习
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/01_%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
-   1. 从零开始：机器何以学习
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9801%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/02_%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
-   2. 神经网络启蒙：PyTorch实战入门
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/03_%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
-   3. 深度学习初探：多分类任务实战
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/04_%E5%B7%A5%E7%A8%8B%E7%9A%84%E8%BF%9B%E5%8C%96.html">
-   4. 工程的进化：PyTorch Lightning 重构
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9802%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  第二部分：进阶篇 —— 语言与序列的表示学习
+  动手学：深度学习
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/05_%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9803%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9805%EF%BC%9A%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
    5. 语言的序章：分词与情感分析初探
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/06_%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    6. 表示的困境：OneHot编码与模型局限
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/07_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9807%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
    7. 记忆的萌芽：RNN与序列建模入门
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/08_%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9808%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
    8. 语义的飞跃：词嵌入技术与稠密表示
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/09_%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9809%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
    9. 记忆的进化：GRU与长期依赖问题
   </a>
  </li>
 </ul>
 <p aria-level="2" class="caption" role="heading">
  <span class="caption-text">
-  第三部分：创造篇 —— 生成式模型的演进之路
+  动手学：Seq2Seq
  </span>
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/10_%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9810%EF%BC%9A%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    10. 穷举的困境：无限膨胀的类别
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/11_%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9811%EF%BC%9A%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
    11. 从理解到创造：初识序列生成任务
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/12_%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
-   12. 技巧的力量：用反转优化梯度流动
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9812%EF%BC%9A%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="notebooks/13_%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
-   13. 信息的价值：用偷窥突破视野受限
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9813%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9814%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9816%EF%BC%9A%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9818%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9819%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9820%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9822%EF%BC%9A%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT.html">
+   22. 从零实现GPT
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 定义 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9824%EF%BC%9A%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9825%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.html">
+   25. 实现 GPT 模型核心组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9826%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   26. 实现 GPT 模型生成解码策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9827%EF%BC%9AGPT%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   27. GPT 模型训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="notebooks/%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   28. 更具多样性的生成解码策略
   </a>
  </li>
 </ul>
