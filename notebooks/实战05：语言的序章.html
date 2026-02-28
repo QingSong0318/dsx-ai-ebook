@@ -128,7 +128,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=70bd48f4" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=d0410c28" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -421,7 +421,7 @@ a:visited {
 <section id="id5">
 <h3><span class="section-number">5.3.1. </span>任务分析<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <p>本次的任务是训练一个情感分析模型，它能够识别出顾客评价的情感倾向，并给出相应的概率。</p>
-<p><img alt="情感分析模型任务鸟瞰" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203144622.png" /></p>
+<p><img alt="情感分析模型任务鸟瞰" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171843.png" /></p>
 <p>本次的模型包含三个层：输入层、隐藏层和输出层。</p>
 <ul class="simple">
 <li><p><strong>输入层</strong>：接收顾客评价数据，并生成相应的隐藏特征。</p></li>
@@ -433,7 +433,7 @@ a:visited {
 <h3><span class="section-number">5.3.2. </span>模型结构<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <p>在前几章中，我们利用神经网络成功解决了回归与分类问题，但所处理的特征均为结构化的数值类型。本章我们将涉足一个经典而实用的自然语言处理任务——情感分析。我们会训练一个能够自动判别顾客评价中蕴含的情感倾向（正面或负面）的模型。由于该任务相对更为复杂，我们需要进一步加深模型结构，以提升模型的表示能力。</p>
 <p>顾客评价情感分析模型的结构如下图所示：</p>
-<p><img alt="情感分析模型结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203144643.png" /></p>
+<p><img alt="情感分析模型结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171925.png" /></p>
 <p>NLP 任务的通用开发流程包含如下步骤：定义分词器、数据准备、模型定义、模型训练与模型评估。我们会按照这个顺序组织本章的内容，在正式开始之前，先打印环境的版本号，避免因为环境不同而导致程序不能复现。</p>
 </section>
 <section id="id7">
@@ -489,8 +489,9 @@ a:visited {
 <section id="id9">
 <h3><span class="section-number">5.4.1. </span>翻译人类的语言<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>计算机无法直接理解人类的语言。因此，我们需要将人类语言翻译成计算机能够理解的数字序列。具体过程如下所示：</p>
-<p><img alt="分词词编码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203165043.png" /></p>
+<p><img alt="分词目的" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171849.png" /></p>
 <p>这个过程通常分为三个关键步骤：</p>
+<p><img alt="分词步骤" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171857.png" /></p>
 <section id="tokenization">
 <h4><span class="section-number">5.4.1.1. </span>第一步：词元化（Tokenization）<a class="headerlink" href="#tokenization" title="Link to this heading">#</a></h4>
 <p>计算机无法直接理解一个完整的句子。因此，我们需要将连续的文本序列，切割成一个个有意义的、可处理的基本单元，这些单元被称为<strong>词元</strong>（Token）。对于中文来说，这个过程尤为关键。</p>
@@ -517,7 +518,7 @@ a:visited {
 <h3><span class="section-number">5.4.2. </span>处理变长的文本<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>模型的批量处理机制要求输入数据具有统一的长度，因此，将不同长度的文本序列调整为固定长度是文本预处理流程中不可或缺的一环，实现文本长度统一的核心操作是“填充”（Padding）和“截断”（Truncation）。</p>
 <p>填充和截断如下所示（目标长度为 5）：</p>
-<p><img alt="填充和截断" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203173208.png" /></p>
+<p><img alt="填充和截断" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171909.png" /></p>
 <section id="padding">
 <h4><span class="section-number">5.4.2.1. </span>填充（Padding）<a class="headerlink" href="#padding" title="Link to this heading">#</a></h4>
 <p>填充是指在较短的序列末尾或开头添加特定的填充值，使其长度达到预设的统一长度。</p>
@@ -771,7 +772,7 @@ a:visited {
 <section id="id13">
 <h3><span class="section-number">5.4.5. </span>使用分词器进行编码和解码<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>使用自定义的 <code class="docutils literal notranslate"><span class="pre">SimpleTokenizer</span></code> 对示例文本进行编码和解码，验证分词器的有效性。</p>
-<p><img alt="编码和解码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260203191232.png" /></p>
+<p><img alt="编码和解码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171916.png" /></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置最大长度</span>
@@ -813,7 +814,7 @@ a:visited {
 <section id="id14">
 <h2><span class="section-number">5.5. </span>数据准备<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p>使用 LightningDataModule 可以统一管理训练、评估和测试数据。创建 LightningDataModule 的流程如下：</p>
-<p><img alt="LightningDataModule" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260202151009.png" /></p>
+<p><img alt="LightningDataModule" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171823.png" /></p>
 <ol class="arabic simple">
 <li><p>定义数据转换器</p></li>
 <li><p>自定义数据集类</p></li>
@@ -1220,6 +1221,7 @@ labels shape:  torch.Size([2])
 <li><p><strong>模型输入</strong>：模型的输入是顾客评论对应的 Token ID 序列。</p></li>
 <li><p><strong>模型输出</strong>：模型将输出对应“正面”和“负面”两个情感类别的预测得分。</p></li>
 </ul>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204171934.png" /></p>
 <p>由于本次任务相对复杂，所以我们采用更深的模型加强模型的表示能力。此次的模型有三个层：输入层、隐藏层和输出层。模型的层结构如下：</p>
 <p><img alt="情感分析模型的详细层结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260204164441.png" /></p>
 <ul class="simple">

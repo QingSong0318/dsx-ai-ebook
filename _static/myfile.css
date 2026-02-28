@@ -1,6 +1,8 @@
 @import url("https://fontsapi.zeoseven.com/293/main/result.css");
 /*@import url("https://fontsapi.zeoseven.com/84/main/result.css");*/
 @import url("https://fontsapi.zeoseven.com/66/main/result.css");
+@import url("https://fontsapi.zeoseven.com/442/main/result.css"); /* Maple Mono NF CN */
+@import url("https://fontsapi.zeoseven.com/293/main/result.css"); /* LXGW WenKai Mono */
 
 
 html {
@@ -140,14 +142,6 @@ html {
     --grey-border-color: #ccc;
 }
 
-
-@font-face {
-    font-family: 'LXGWBright';
-    src: url('fonts/LXGWBrightCode-Regular.ttf') format('truetype');
-    font-weight: 400; /* 对应 CSS 的 normal */
-    font-style: normal;
-}
-
 html {
     scroll-behavior: smooth;
     font-size: 1rem;
@@ -201,7 +195,7 @@ body {
     line-height: 1.8;
     letter-spacing: 0.08rem;
     font-weight: normal;
-    font-family: "LXGWBright", sans-serif;
+    font-family: "LXGW WenKai Mono", sans-serif;
     background-color: #f5f4ef;
     color: var(--color-body);
 
@@ -258,7 +252,7 @@ h1 {
 
 pre {
     word-wrap: break-word;
-    font-family: "LXGWBright", sans-serif !important;
+    font-family: "Maple Mono NF CN", sans-serif !important;
     font-size: .9rem;
     white-space: pre-wrap;
     line-height: 1.5rem;
@@ -267,7 +261,7 @@ pre {
 }
 
 div.cell_output pre {
-    font-family: "LXGWBright", sans-serif !important;
+    font-family: "Maple Mono NF CN", sans-serif !important;
     letter-spacing: 0 !important;
 }
 
