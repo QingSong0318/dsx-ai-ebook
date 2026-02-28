@@ -1,5 +1,5 @@
 ---
-cover: cover-book.png
+cover: https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260119194153.png
 create_date: 2026.01.01
 ---
 
