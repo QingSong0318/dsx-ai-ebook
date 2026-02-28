@@ -1,0 +1,871 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>29. 起步时，最重要的是什么？ &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+    
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js" integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf" crossorigin="anonymous"></script>
+
+    <!--  访问统计  -->
+    <script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id:"3OrQmjGXGmdC0oni",ck:"3OrQmjGXGmdC0oni",autoTrack:true})</script>
+
+    <!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+    <script id="tilt-loader">
+        // 封装成一个简单的初始化函数
+        function initTiltCards() {
+            // 如果库未加载，则动态加载
+            if (typeof VanillaTilt === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+                script.onload = initCards;
+                document.head.appendChild(script);
+            } else {
+                initCards();
+            }
+
+            function initCards() {
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                    max: 8,
+                    speed: 300,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+
+                VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                    max: 16,
+                    speed: 300,
+                    glare: true,
+                    "max-glare": 0.2,
+                    scale: 1.01
+                });
+            }
+        }
+        // 当页面内容加载完成后执行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTiltCards);
+        } else {
+            initTiltCards();
+        }
+    </script>
+
+
+    
+        <script>
+            MathJax = {
+            loader: {load: ['[tex]/boldsymbol', '[tex]/textmacros']},
+            tex: {
+                packages: {'[+]': ['boldsymbol', 'textmacros']},
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                processEscapes: true,
+                macros: {
+                    "argmax" : "arg\\,max",
+                    "argmin" : "arg\\,min",
+                    "col"    : "col",
+                    "Span"   :  "span",
+                    "epsilon": "\\varepsilon",
+                    "EE": "\\mathbb{E}",
+                    "PP": "\\mathbb{P}",
+                    "RR": "\\mathbb{R}",
+                    "NN": "\\mathbb{N}",
+                    "ZZ": "\\mathbb{Z}",
+                    "aA": "\\mathcal{A}",
+                    "bB": "\\mathcal{B}",
+                    "cC": "\\mathcal{C}",
+                    "dD": "\\mathcal{D}",
+                    "eE": "\\mathcal{E}",
+                    "fF": "\\mathcal{F}",
+                    "gG": "\\mathcal{G}",
+                    "hH": "\\mathcal{H}",
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 0.92,
+                displayAlign: "center",
+            },
+            };
+        </script>
+    
+    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=d0410c28" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'docs/起步时，最重要的是什么';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="30. 粗调和精调：从一道Google的面试题谈起" href="%E7%B2%97%E8%B0%83%E5%92%8C%E7%B2%BE%E8%B0%83.html" />
+    <link rel="prev" title="28. 更具多样性的生成解码策略" href="../notebooks/%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=起步时，最重要的是什么？  来源  李笑来：《财富自由之路》  快速入门  “速成”，顾名思义，大抵上应该指的是“迅速成功” —— 那当然不可能了！因为绝大多数成绩（暂且不说那么大的“成功”吧）都需要时间的孕育，而时间可不会因为某个人的意志而改变其速度，对不对？  虽然“迅速成功”绝对不可能，但， 快速入门 ，绝对是有 />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="起步时，最重要的是什么？"/>
+<meta name="twitter:description" content="起步时，最重要的是什么？  来源  李笑来：《财富自由之路》  快速入门  “速成”，顾名思义，大抵上应该指的是“迅速成功” —— 那当然不可能了！因为绝大多数成绩（暂且不说那么大的“成功”吧）都需要时间的孕育，而时间可不会因为某个人的意志而改变其速度，对不对？  虽然“迅速成功”绝对不可能，但， 快速入门 ，绝对是有">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="起步时，最重要的是什么？" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="起步时，最重要的是什么？  来源  李笑来：《财富自由之路》  快速入门  “速成”，顾名思义，大抵上应该指的是“迅速成功” —— 那当然不可能了！因为绝大多数成绩（暂且不说那么大的“成功”吧）都需要时间的孕育，而时间可不会因为某个人的意志而改变其速度，对不对？  虽然“迅速成功”绝对不可能，但， 快速入门 ，绝对是有" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+<style>
+a {
+    color: #313131;
+}
+a:hover {
+    color: #313131;
+}
+a:visited {
+  color: #111111;
+}
+
+.main-index {
+  #qe-page-author-links {
+    border-bottom: 5px solid #313131;
+  }
+}
+
+.qe-page__header {
+  border-bottom: 5px solid #313131;
+}
+
+.qe-page__footer {
+    border-top: 5px solid #313131;
+}
+
+.toctree-wrapper {
+    .caption-text {
+        color: #111111
+    }
+}
+</style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=docs/起步时，最重要的是什么>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+
+<!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">29.1. 快速入门</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">29.2. 元认知能力</a></li>
+</ul>
+<!--                            <p class="logo">-->
+<!--                                -->
+<!--                                    -->
+<!--                                    <a href="../intro.html"><img src="../../_static/logo.png" class="logo" alt="logo"></a>-->
+<!--                                    -->
+<!--                                -->
+<!--                            </p>-->
+<!---->
+<!--                            <p class="powered">Powered by <a href="https://jupyterbook.org/v1/">Fasterer</a></p>-->
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+<!--                            <p><a href="#top"><strong>Back to top</strong></a></p>-->
+
+                            <p><a href="#top">
+                                <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0" type="button">
+                                    <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z"></path></svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com --> 返回顶部
+                                </button>
+                            </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                        <p class="qe-page__header-authors" font-size="18">
+                            <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+                            
+                            更新于：2026-01-01 12:13:14
+                            
+                        </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+                
+
+<!--                <div class="alert alert-light simple-tilt">-->
+<!--                    <a href="https://t.zsxq.com/snpV8">-->
+<!--                        <div>-->
+<!--                            <div style="display: flex; align-items: center">-->
+<!--                                <img src="https://cdn.aibydoing.com/aibydoing/images/aibydoing-pro-icon.svg" style="width: 128px">-->
+<!--                                <div style="margin-left: 20px">-->
+<!--                                    <h4 class="card-title mt-3">答疑讨论</h4>-->
+<!--                                    <p class="card-text">-->
+<!--                                        如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。-->
+<!--                                    </p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                </div>-->
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+
+<!--                    &lt;!&ndash; 调试信息：查看 meta 变量 &ndash;&gt;-->
+<!--                    <div style="background:#f8f9fa; border:1px solid #ddd; padding:10px; margin:10px 0; font-size:12px;">-->
+<!--                        <strong>调试信息：</strong><br>-->
+<!--                        meta 变量是否存在：是<br>-->
+<!--                        -->
+<!--                        meta 的内容：{"wordcount": {"minutes": 0, "words": 32}}<br>-->
+<!--                        cover 字段是否存在：否<br>-->
+<!--                        -->
+<!--                        -->
+<!--                    </div>-->
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">29. </span>起步时，最重要的是什么？<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<div class="admonition- admonition">
+<p class="admonition-title">来源</p>
+<p>李笑来：《财富自由之路》</p>
+</div>
+<section id="id2">
+<h2><span class="section-number">29.1. </span>快速入门<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>“速成”，顾名思义，大抵上应该指的是“<strong>迅速成功</strong>” —— 那当然不可能了！因为绝大多数成绩（暂且不说那么大的“成功”吧）都需要时间的孕育，而时间可不会因为某个人的意志而改变其速度，对不对？</p>
+<p>虽然“迅速成功”绝对不可能，但， <strong>快速入门</strong> ，绝对是有可能的，这很容易理解吧？</p>
+<p>并且，很多人可能没认真想过：</p>
+<blockquote>
+<div><p><strong>快速入门不仅绝对有可能，而且还绝对必要 ！</strong></p>
+</div></blockquote>
+<p>这也许算得上是我这一生最大的好运：不知道为什么，从一开始我就对学习这事儿感兴趣，并且从来没有对它厌烦过，乐此不疲许多年 —— 不需要谁教育，不需要谁灌输，甚至我都有幻觉：感觉自己天生就是终生学习者。</p>
+<p>于是，我一直在研究学习这事儿。连我的第一个微信公共帐号名称都是“学习学习再学习”（近期我会再开一个微信公共帐号，是什么，暂且保密，不过，我赌一件事情：大家一定都用得上哈！）：</p>
+<ul class="simple">
+<li><p>第一个“学习”是动词，第二个“学习”是名词，第三个“学习”是动词……</p></li>
+<li><p>“学习学习再学习”的意思是说，要先学会“学习”，然后再去学习！</p></li>
+</ul>
+<p>我的 motto 放在那里很多年了：</p>
+<p>终生只有一个职业：学生。</p>
+<p>再进一步，我甚至觉得教育这事儿，之所以历史上屡战屡败（虽然屡败屡战也是事实），就是因为它一直以来缺一个重要的底层架构：“元教育”（Meta-Education）—— 这是我杜撰的一个词，来自于“元认知”的构架。“元认知”，是“关于认知的认知，关于思考的思考”，那么“元教育”，就是“关于教育的教育，关于学习的学习”；元认知用来思考自己的思考是否正确合理， 元教育用来实践、检验自己的教育是否有效……</p>
+<p>学习任何一个学科的时候，都有一个概念很重要（再一次是我杜撰的概念，当然换一种说法，这不是“杜撰”，而是“真正的原创”）：</p>
+<blockquote>
+<div><p><strong>最少必要知识</strong></p>
+</div></blockquote>
+<p>我甚至专门为它杜撰了一个英文缩写：</p>
+<blockquote>
+<div><p><strong>MAKE : Minimal Actionable  Knowledge and Experience</strong></p>
+</div></blockquote>
+<p><strong>需要获得某项技能的时候，一定要想办法在最快的时间里，摸索清楚最少必要知识 （MAKE）都有哪些？ 然后迅速地掌握它们，在那一瞬间，任何人都完成了“快速入门” —— 屡试不爽。</strong></p>
+<p>举个例子。</p>
+<p>我相信绝大多数人觉得自己没有艺术天分 —— 貌似事实也确实如此，你看看绝大多数人的 PPT 就知道了，那个难看啊！我相信每个人都应该起码学一点点的设计原理的，在任何地方都用得上。不一定非要成为专家，但哪怕掌握一点点的常识，都可以迅速做到“胜过绝大多数人”……</p>
+<p>那么，设计的“最少必要知识”是什么呢？其实，只需要记住两个词就可以了：</p>
+<ul class="simple">
+<li><p>简洁</p></li>
+<li><p>留白</p></li>
+</ul>
+<p>就这么两个词，足以打败绝大多数人。所谓“简洁”，有很简单的实施方案：在任何一个视觉框架之中，都要尽量减少各种元素数量、比如形状数量、线条样式数量、颜色数量等等，控制在 3 个左右。比如，最多三种形状，最多三种线条，最多三种颜色，最多三种字体…… 所谓的“留白”，更简单，就是一定要留出 61.8%（其实这是黄金分割数字）的空间（或者反过来，只占用最多 61.8% 的空间）……</p>
+<p>Over.</p>
+<p>以上的例子，你两分钟就读完了；就算我当面讲给你听，连说带比划，甚至给出一些具体示例，也不过最多用 5 分钟时间…… 可若是你真的严格遵守这两个小原则，你会发现的，90% 以上的人在这个小细节上就被你超越了。</p>
+<p>这样的例子实在太多。</p>
+<p>我拿开车也做过例子。开私家车的最少必要知识是什么呢？一个字就够了：“慢”。相信我，这一个字能避免绝大多数的车祸 —— 虽然很多人喜欢炫技，认为那些开车慢的人“太肉”，但，不争的事实是，这一个字不仅已经够用，不仅救命，还少害很多命。</p>
+<p>我还专门写过一本书（没有发行纸质版，全部公开在 <a class="reference external" href="http://zhibimo.com">zhibimo.com</a> 网站上）：《人人都能用英语》。掌握一门外语的最少必要知识都有哪些呢？</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>认识字母</p></li>
+<li><p>认识音标</p></li>
+<li><p>会查词典</p></li>
+<li><p>懂基本语法</p></li>
+<li><p>会查语法书</p></li>
+<li><p>会用 Google 搜索引擎</p></li>
+</ol>
+</div></blockquote>
+<p>好了，这些都会了的话（其实，初中毕业之后的我们，事实上确实都会），“入门”已经彻底完成了，再下一步，只剩下所谓的执行，一个字而已：<strong>用！</strong></p>
+<p>不得不慨叹：“英语”真的是一个绝佳的、经典的、“大面积社会化学习失败”的案例。全国人民从小就开始“学”，小学六年、初中三年、高中三年、本科四年…… 一晃 16 年过去，天天“ 学 ”，就是坚持不用 ！你若是认真地问，“你们为啥光学不用呢？好奇怪！”他们的回答一准是相同的：“没有环境！” —— 哈！这太荒唐了，这就好像没有厕所就坚持不小便了一样…… 这个类比可能比较不雅，但非常精准。</p>
+<p>我在一块听听（微信服务号）上为一个英语培训机构办了个栏目，名字叫《 天天用英语 》。现在上万人每天至少读一篇“新鲜热乎”的当日美国主流媒体文章，查单词、查语法书、做笔记、听讲解、复习再深入…… 有了最少必要知识之后，就要把英语用起来 —— 掌握一门外语用来干什么呀？天天用来获取一手信息还不够嘛！</p>
+<p>学习我们这个栏目的最少必要知识是什么呢？</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">29.2. </span>元认知能力<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>一旦我们开始认真思考自己的思考是否正确、合理、有效，那么我们的思考质量只能逐步上升，没有其他可能。够了！够了！！可以开始天天用了，可以开始天天进步了……</p>
+<p><strong>快速入门已经彻底完成，剩下的，不是“学”，是“用”，是“践行”，是在用的过程中纠正，在践行的过程中发现，在错误中不断改进，在不足中不断弥补…… 是为“精深”。</strong></p>
+<p>把“最少必要知识（MAKE）” 这个“元件”装进自己的“操作系统”之后，你再去审视任何你想习得的技能，你就会发现：</p>
+<blockquote>
+<div><p>长期以来挡住你的只有一件事儿，你居然以为你能一上来就做得很好！</p>
+</div></blockquote>
+<p>而这是绝对不可能的！谁能一上来就做得很好呢？就好像我们走路一样。人类天生就有走路的基因，所以，用不着什么学步车，早晚能够走路的 —— 刚出生的婴儿，只不过是需要一定的时间，等到自己的腿力健壮到富余地支撑自己体重，并且可以保持平衡而已…… 然后呢？起步过程中，蹒跚、跌撞、然后就正常了 —— 正常到此后一生不出太大意外的话就可以一直“无意识地行走”……</p>
+<p>学习能力也好、执行力也罢，最终的核心只有一个：</p>
+<p><strong>刚开始的时候，平静地接受自己的笨拙。</strong></p>
+<p>接受自己的笨拙，理解自己的笨拙，放慢速度尝试，观察哪里可以改进，再反复练习，观察自己哪里可以进一步改进，再反复…… 这是学习一切技能必须的过程 —— 关键在于：</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><strong>尽快开始这个过程；</strong></p></li>
+<li><p><strong>尽快度过这个过程。</strong></p></li>
+</ol>
+</div></blockquote>
+<p>在十多年后的今天，已经没有人怀疑我的文字能力。可当年我刚开始的时候呢？且不说有没有人怀疑我的文字能力吧，我自己都知道自己不咋地。</p>
+<p><img alt="图片" src="https://mmbiz.qpic.cn/sz_mmbiz_png/LqRickqP6I3Qv19PZq80OiazspxiaicTich3YlMlwWc3Ou2Fbl1ricmWM53pHZ6WS8wPwvOVibW8rRF2MTE1VbvnVbLBA/640?wx_fmt=png&amp;from=appmsg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1#imgIndex=0" /></p>
+<p>这是 2005 年我搭建好自己的独立博客网站之后，发表的第一篇文章…… 绝对是“励志典范”：你看那时候我能写出来的东西是什么样子的，能写出来的长度是什么样子的，一个字形容，“屎”，三个字形容，“特别屎”…… 虽然，即便在那个时候，我已经确立了自己的一些基础价值观，比如，“鼓励所有人”……</p>
+<p>问题在于：写得不好就不写了吗？写得不好就不发表了吗？还有个小的博弈局很多人想反了：我写文章写的不好放出去，或者我英文发音不标准讲出去…… 事实上受伤的又不是我！</p>
+<p>事实上，这样的例子非常难得，因为这样的例子，不仅仅属于“讲清楚”那一类，更为重要的是，这是“我做到之后拿出来的经历” —— 是为“铁证”。</p>
+<p>讲到这里，可以重提我对“执行力”的一个定义了（其实我对“执行力”有很多个定义）：</p>
+<p><strong>看一个人执行力强不强，就看他在做得不足够好的时候是否持续地做……</strong></p>
+<p>绝大多数“废物”的特点是一模一样的：但凡觉得自己做得不够“显摆”，有可能被别人鄙视，就马上不做了 —— 进步对他们来说根本不重要，维持所谓的“形象”（面子）才是他们真正的刚需…… 而一旦有什么可显摆的东西，他们就会一生只关注那一个东西 —— 非常“专注”。于是，进步对他们来说天然不可能。</p>
+<p><strong>“也许我不适合干这事儿吧？” 绝对是一切失败者的墓志铭。</strong></p>
+<p>甚至，都可以干脆改成：“也许我不适合来到这个世界吧？”（有的时候，刻薄一点会让自己异常清醒……）</p>
+<p>做生意也一样。很多人都有开店的梦想 —— 虽然，那在我们的分类里，只不过是比较初级的创业。开店的结果，1/3 的概率赚钱，1/3 的概率维持，1/3 的概率赔钱，这貌似并不是智商能够决定的结果，因为只要是人，总有想得不周到，甚至想错的时候。第一次开店失败了，那就不再开了吗？第一次开店很辛苦，没怎么赚到钱，那就不再开了吗？很多人，或者说绝大多数人真的是这样的，马上得到一个结论“唉，我可能不适合干这个……” 然后呢？然后人生就那样了。</p>
+<p>我身边的朋友若是想要开店的话，我都是鼓励态度的，原因很简单：我觉得这是起步做生意的一种常见途径（事实上，在我眼里，连上班都是做生意，因为同样在出售自己的时间嘛！），顶多，我会给上一个最具价值的建议：</p>
+<p>你要给自己输两次的机会。（也就是说，要拼倒那两个1/3……）</p>
+<p>不要押上全部去开店，不要借钱去开店（不仅押上全部，还要加上杠杆），虽然也有人这样成功，但大多数情况下，这么做会使自己失去良好的心态 —— 以后你会越来越明白的，一切都发生在自己的脑子之中，所谓的心态，其实不过是大脑正常运转的状态。大脑不能正常运转了，会有什么好事儿自动发生呢？能发生的全是灾难。</p>
+<p>做过赚钱的生意了，就有更高的视角去思考“成长的生意究竟是什么”；做出“有成长的生意”了之后，才有机会去思考如何找到成长率的爆发点…… 还有这种可能性：因为经过长期思考与行动，才真正认清“成长率”的难得，所以才认真在已经验证过的企业之中寻找二级市场投资机会 —— 否则，就是绝大多数人，以为那是“炒股票”而已，把所有的注意力都不由自主地放到了“炒”这个字上且自以为是。</p>
+<p>不开始行动，一切都是虚无。所以，要尽快开始。刚才就说：</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><strong>要尽快开始那个过程；</strong></p></li>
+<li><p><strong>要尽快度过那个过程。</strong></p></li>
+</ol>
+</div></blockquote>
+<p><strong>如何尽快度过呢？掌握最少必要知识之后马上开始行动，而后就要把注意力专注在改进之上 。</strong></p>
+<p>除此之外，没有什么别的东西存在。尤其是别人的看法 —— 把注意力放在事实上，而不是别人的看法上，你自己知道自己的看法常常是不准确的，是需要不断修正的，那你为什么要在意别人的看法呢？因为他们的看法和你的看法一样往往并不准确 —— 多么简单明了的事实啊！</p>
+<p>有一个魔法一样的现象：</p>
+<p>当你专注的时候，时间飞速流逝……</p>
+<p>所以，专注，事实上是“尽快度过那个（笨拙的）过程”的核心方法。之前的文章里，我们也分析过，“长期”这个概念，在每个人身上有着不一样的长度，同理来解释，也很清楚，对专注的人来说，他们的“长期”比不专注的人的“长期”更短 —— 短出很多很多……</p>
+<p>讲到这个深度，我们甚至应该重新审视“速成”了：即便“速成”普遍不可能，但，人和人之间的差异还是很大的。有的人学了很久都没有“入门”，有的人掌握最少必要知识之后，不仅迅速入门，还要迅速展开行动……</p>
+<p>而这之中又有一些人注意力高度集中，只在意自己的改进，不在意别人的看法，所以他们的长期被他们的专注与行动缩短了许多许多，于是，他们相当于“<strong>相对于大多数，更为迅猛地到达了成功的里程碑</strong>”，这有什么奇怪的吗？</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./docs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+
+                    <!-- buymecoffee -->
+<!--                    <div class="buymecoffee alert" role="alert">-->
+<!--                        <p>-->
+<!--                            如果你觉得这些内容对你有帮助，可以-->
+<!--                            <a class="reference external" href="/buy-me-a-coffee">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                        </p>-->
+<!--                    </div>-->
+                    <!-- buymecoffee -->
+
+                    <!-- Comments -->
+                    <!-- Comments -->
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+                    <p xmlns:cc="http://creativecommons.org/ns#">
+                        本作品由
+                        <a href="http://fasterai.cn" target="_blank">吾辈亦有感</a>
+                        创作，采用
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh-hans" target="_blank" rel="license noopener noreferrer" style="display: inline-block">署名-非商业性使用-禁止演绎 4.0 国际</a>
+                    </p>
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9801%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9802%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9803%EF%BC%9A%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9804%EF%BC%9APyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9805%EF%BC%9A%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9806%EF%BC%9A%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9807%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9808%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9809%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9810%EF%BC%9A%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9811%EF%BC%9A%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9812%EF%BC%9A%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9813%EF%BC%9A%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9814%EF%BC%9A%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9816%EF%BC%9A%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9818%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9819%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9820%EF%BC%9A%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9821%EF%BC%9ATransformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9822%EF%BC%9A%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0GPT.html">
+   22. 从零实现GPT
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9823%EF%BC%9A%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 定义 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9824%EF%BC%9A%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9825%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6.html">
+   25. 实现 GPT 模型核心组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9826%EF%BC%9A%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   26. 实现 GPT 模型生成解码策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9827%EF%BC%9AGPT%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   27. GPT 模型训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/%E5%AE%9E%E6%88%9828%EF%BC%9A%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81%E7%AD%96%E7%95%A5.html">
+   28. 更具多样性的生成解码策略
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  拓展阅读
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   29. 起步时，最重要的是什么？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E7%B2%97%E8%B0%83%E5%92%8C%E7%B2%BE%E8%B0%83.html">
+   30. 粗调和精调：从一道Google的面试题谈起
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="主页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input" placeholder="Search..." aria-label="Search..." autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="放大字体" class="btn__plus"><i data-feather="plus-circle"></i></li>
+                    <li data-tippy-content="缩小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+<!--                    <li data-tippy-content="Change contrast" class="btn__contrast"><i data-feather="sunset"></i></li>-->
+<!---->
+<!---->
+<!---->
+<!--                        <li data-tippy-content="Download PDF" onClick="window.print()"><i data-feather="file"></i></li>-->
+<!---->
+                    <!--
+                    # Enable if looking for link to specific document hosted on GitHub
+                    <li data-tippy-content="View Source"><a target="_blank" href="None/docs/起步时，最重要的是什么.md" download><i data-feather="github"></i></a></li>
+                    -->
+<!--                    <li data-tippy-content="View Source"><a target="_blank" href="None" download><i data-feather="github"></i></a></li>-->
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download><p>Book (PDF)</p></a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+            <p>
+                Choose public or private cloud service for "Launch" button.
+            </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+            <li class="active launcher-public">
+                <span class="label">Public</span>
+                <select id="launcher-public-input">
+                
+                </select>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            <li class="launcher-private">
+                <span class="label">Private</span>
+                <input type="text" id="launcher-private-input" data-repourl="" data-urlpath="" data-branch=>
+                <i class="fas fa-check-circle"></i>
+            </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                  for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].classList.remove('active');
+                    if ( launcherTypeElements[i].classList.contains(localStorage.launcherType) ) {
+                      launcherTypeElements[i].classList.add('active');
+                    }
+                  }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                  launcherTypeElements[i].addEventListener('click', function() {
+                    for (var j = 0; j < launcherTypeElements.length; j++) {
+                      launcherTypeElements[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
+                    if ( this.classList.contains('launcher-private') ) {
+                      localStorage.launcherType = 'launcher-private';
+                    } else if ( this.classList.contains('launcher-public') ) {
+                      localStorage.launcherType = 'launcher-public';
+                    }
+                    setLaunchServer();
+                  })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "docs/起步时，最重要的是什么";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                  launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                  setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                  launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                  setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                  launchNotebookLink.removeAttribute("style")
+                  if ( localStorage.launcherType == 'launcher-private' ) {
+                    let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                    launcherPrivateValue = launcherPrivate.value
+                    if (!launcherPrivateValue) {
+                        launchNotebookLink.removeAttribute("href")
+                        launchNotebookLink.style.background = "grey"
+                        return
+                    }
+                    localStorage.launcherPrivate = launcherPrivateValue;
+                    privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                    if (!privateServer.includes("http")) {
+                        privateServer = "http://" + privateServer
+                    }
+                    launchNotebookLinkURL = privateServer + repoPrefix;
+                  } else if ( localStorage.launcherType == 'launcher-public' ) {
+                    launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                    localStorage.launcherPublic = launcherPublicValue;
+                    launchNotebookLinkURL = localStorage.launcherPublic;
+                  }
+                  if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ( (typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined') ) {
+                  setLaunchServer();
+                }
+                </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>
