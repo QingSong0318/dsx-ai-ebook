@@ -128,7 +128,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=d0410c28" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -159,19 +158,19 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/实战16：构造 Transformer 数据集';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="17. 实现 Transformer Encoder 组件" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html" />
+    <link rel="next" title="17. 实现 Transformer Input 组件" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html" />
     <link rel="prev" title="15. 定义 Transformer 分词器" href="%E5%AE%9E%E6%88%9815%EF%BC%9A%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="吾辈亦有感" />
 <meta name="keywords" content="" />
-<meta name="description" content=构造 Transformer 数据集  敬请期待 />
+<meta name="description" content=构造 Transformer 数据集  基于训练语料构建加法计算数据集，并封装成数据模组供模型训练时使用。  Transformer 模型分为编码器和解码器，前者负责编码输入序列，后者负责解码输出序列。所以我们会将一个完整的计算算法处理成 3 部分：  原始数据：保留原始问题和答案，方便观察结果。  编码器数据：编码器 />
 
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@" />
 <meta name="twitter:title" content="构造 Transformer 数据集"/>
-<meta name="twitter:description" content="构造 Transformer 数据集  敬请期待">
+<meta name="twitter:description" content="构造 Transformer 数据集  基于训练语料构建加法计算数据集，并封装成数据模组供模型训练时使用。  Transformer 模型分为编码器和解码器，前者负责编码输入序列，后者负责解码输出序列。所以我们会将一个完整的计算算法处理成 3 部分：  原始数据：保留原始问题和答案，方便观察结果。  编码器数据：编码器">
 <meta name="twitter:creator" content="@">
 <meta name="twitter:image" content="">
 
@@ -180,7 +179,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="None" />
 <meta property="og:image" content="" />
-<meta property="og:description" content="构造 Transformer 数据集  敬请期待" />
+<meta property="og:description" content="构造 Transformer 数据集  基于训练语料构建加法计算数据集，并封装成数据模组供模型训练时使用。  Transformer 模型分为编码器和解码器，前者负责编码输入序列，后者负责解码输出序列。所以我们会将一个完整的计算算法处理成 3 部分：  原始数据：保留原始问题和答案，方便观察结果。  编码器数据：编码器" />
 <meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta name="theme-color" content="#ffffff" />
 
@@ -235,10 +234,28 @@ a:visited {
                         
 
 <!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
 
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
-                            
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">16.1. 观察数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">16.2. 实现数据转换器</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">16.3. 自定义数据集</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">16.3.1. 自定义加法数据集的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">16.3.2. 创建自定义加法数据集的实例</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">16.4. 构建数据模组</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">16.4.1. 加法数据模组的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">16.4.2. 创建加法数据模组的实例</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">16.5. 答疑讨论</a></li>
+</ul>
 <!--                            <p class="logo">-->
 <!--                                -->
 <!--                                    -->
@@ -321,7 +338,7 @@ a:visited {
 <!--                        <strong>调试信息：</strong><br>-->
 <!--                        meta 变量是否存在：是<br>-->
 <!--                        -->
-<!--                        meta 的内容：{"cover": "https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092912.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 3}}<br>-->
+<!--                        meta 的内容：{"cover": "https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092912.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 28}}<br>-->
 <!--                        cover 字段是否存在：是<br>-->
 <!--                        -->
 <!--                        cover 的值：https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092912.png<br>-->
@@ -334,7 +351,494 @@ a:visited {
                         
   <section class="tex2jax_ignore mathjax_ignore" id="transformer">
 <h1><span class="section-number">16. </span>构造 Transformer 数据集<a class="headerlink" href="#transformer" title="Link to this heading">#</a></h1>
-<p><img alt="敬请期待" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228100516.png" /></p>
+<p>基于训练语料构建加法计算数据集，并封装成数据模组供模型训练时使用。</p>
+<p>Transformer 模型分为编码器和解码器，前者负责编码输入序列，后者负责解码输出序列。所以我们会将一个完整的计算算法处理成 3 部分：</p>
+<ul class="simple">
+<li><p>原始数据：保留原始问题和答案，方便观察结果。</p></li>
+<li><p>编码器数据：编码器的输入序列和填充掩码，填充掩码用于计算注意力。</p></li>
+<li><p>解码器数据：解码器做的时自回归任务有输入和输出，所以解码器数据包含输入序列、输出出列以及填充掩码 3 部分。</p></li>
+</ul>
+<p>以 <code class="docutils literal notranslate"><span class="pre">12+8=20</span></code> 为例，我们会处理成如下 json 格式：</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="err">&#39;ques</span><span class="kc">t</span><span class="err">io</span><span class="kc">n</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="mf">12+8</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;a</span><span class="kc">ns</span><span class="err">wer&#39;</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="mi">20</span><span class="err">&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;e</span><span class="kc">n</span><span class="err">coder_i</span><span class="kc">n</span><span class="err">pu</span><span class="kc">t</span><span class="err">_ids&#39;</span><span class="p">:</span><span class="w"> </span><span class="kc">tens</span><span class="err">or(</span><span class="p">[</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">  </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">  </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">]</span><span class="err">)</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;e</span><span class="kc">n</span><span class="err">coder_pad_mask&#39;</span><span class="p">:</span><span class="w"> </span><span class="kc">tens</span><span class="err">or(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="err">)</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;decoder_i</span><span class="kc">n</span><span class="err">pu</span><span class="kc">t</span><span class="err">_ids&#39;</span><span class="p">:</span><span class="w"> </span><span class="kc">tens</span><span class="err">or(</span><span class="p">[</span><span class="mi">14</span><span class="p">,</span><span class="w">  </span><span class="mi">2</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">]</span><span class="err">)</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;decoder_pad_mask&#39;</span><span class="p">:</span><span class="w"> </span><span class="kc">tens</span><span class="err">or(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="err">)</span><span class="p">,</span>
+<span class="w">    </span><span class="err">&#39;decoder_</span><span class="kc">tar</span><span class="err">ge</span><span class="kc">t</span><span class="err">_ids&#39;</span><span class="p">:</span><span class="w"> </span><span class="kc">tens</span><span class="err">or(</span><span class="p">[</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">]</span><span class="err">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>其中：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">question</span></code>: 问题文本，原始问题。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">answer</span></code>: 问题的答案，原始答案。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encoder_input_ids</span></code>: 编码器的输入序列，问题文本对齐填充后的 token ID 序列。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encoder_pad_mask</span></code>: 编码器输入的填充掩码，用于计算注意力。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decoder_input_ids</span></code>: 解码器的输入序列。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decoder_pad_mask</span></code>: 解码器输入的填充掩码，用于计算注意力。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decoder_target_ids</span></code>: 解码器的目标序列。</p></li>
+</ul>
+<p>Transformer 解码器做的任务是自回归任务，即根据前一个词预测下一个词。</p>
+<p><img alt="解码器" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260303134914.png" /></p>
+<p>所以解码器处理数据的过程相对比较复杂，有两点需要注意：</p>
+<ul class="simple">
+<li><p>首先，先在原始问题中添加开始和结束标记，让模型知道何时开始和停止生成答案。</p></li>
+<li><p>其次，自回归任务采用右移 1 位的方式生成目标序列。</p></li>
+</ul>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260303140406.png" /></p>
+<section id="id1">
+<h2><span class="section-number">16.1. </span>观察数据<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>处理数据之前，我们再观察一遍训练数据的格式。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 打开文件并读取前5行</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_first_n_lines</span>
+
+<span class="n">show_first_n_lines</span><span class="p">(</span><span class="s1">&#39;./dataset/addition_train.txt&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>行数</th>
+      <th>内容</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>12+991=1003</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>188+350=538</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>60+899=959</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>122+72=194</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>727+52=779</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('dataset'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">数据集下载</h4>
+                <p class="card-text">
+                    如果你想要亲自动手复现运行结果，可以点击此链接下载相关数据集。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+<section id="id2">
+<h2><span class="section-number">16.2. </span>实现数据转换器<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>使用 TransformerTokenizer 对问题和答案进行分词并对齐，生成对应的 token ID 序列和填充掩码。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsx_transformer.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformerTokenizer</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextTransform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; 文本转换类，用于将原始文本转换为模型可用的输入格式 &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">TransformerTokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       初始化文本转换器</span>
+<span class="sd">       </span>
+<span class="sd">       参数:</span>
+<span class="sd">           tokenizer: Transformer 分词器实例</span>
+<span class="sd">           max_length: 序列最大长度，默认为 20</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">=</span> <span class="n">max_length</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        调用方法，将文本转换为 token ID 序列</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">            text: 输入的原始文本字符串</span>
+<span class="sd">            </span>
+<span class="sd">        返回:</span>
+<span class="sd">            经过分词、填充和截断后的张量数据</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2><span class="section-number">16.3. </span>自定义数据集<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>在 <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> 方法中，我们根据索引获取单个样本，并进行相应的处理和转换，最终返回符合 Transformer 模型需求的数据格式。</p>
+<section id="id4">
+<h3><span class="section-number">16.3.1. </span>自定义加法数据集的代码实现<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextGenerationDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">questions</span><span class="p">,</span> <span class="n">answers</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">,</span> <span class="n">decoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化数据集</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">            questions: 问题列表</span>
+<span class="sd">            answers: 答案列表</span>
+<span class="sd">            encoder_transform: Encoder 端的文本转换器</span>
+<span class="sd">            decoder_transform: Decoder 端的文本转换器</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questions</span> <span class="o">=</span> <span class="n">questions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answers</span> <span class="o">=</span> <span class="n">answers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span> <span class="o">=</span> <span class="n">encoder_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">decoder_transform</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;返回数据集的大小&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">questions</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        根据索引获取单个样本</span>
+<span class="sd">        </span>
+<span class="sd">        参数:</span>
+<span class="sd">            idx: 样本索引</span>
+<span class="sd">            </span>
+<span class="sd">        返回:</span>
+<span class="sd">            包含编码器输入、解码器输入和目标的字典</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">question</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">questions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="c1"># 统一处理：始终为答案添加开始和结束标记</span>
+        <span class="c1"># bos_token 作为解码器的起始标记，eos_token 作为结束标记</span>
+        <span class="n">processed_answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token</span> <span class="o">+</span> <span class="n">answer</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token</span>
+
+        <span class="c1"># 编码问题（Encoder 输入）</span>
+        <span class="n">question_encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+        <span class="n">encoder_input_ids</span> <span class="o">=</span> <span class="n">question_encoded</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>  <span class="c1"># 问题 token ID 序列</span>
+        <span class="n">encoder_pad_mask</span> <span class="o">=</span> <span class="n">question_encoded</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">]</span>  <span class="c1"># 填充掩码，用于忽略 padding 位置</span>
+
+        <span class="c1"># 编码答案（用于构造 Decoder 的输入和目标）</span>
+        <span class="n">answer_encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="p">(</span><span class="n">processed_answer</span><span class="p">)</span>
+        <span class="n">answer_ids</span> <span class="o">=</span> <span class="n">answer_encoded</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span>  <span class="c1"># 答案 token ID 序列</span>
+        <span class="n">answer_pad_mask</span> <span class="o">=</span> <span class="n">answer_encoded</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">]</span>  <span class="c1"># 答案填充掩码</span>
+
+        <span class="c1"># 统一处理解码器输入输出序列</span>
+        <span class="c1"># decoder_input_ids: 去掉最后一个 token（作为输入序列）</span>
+        <span class="c1"># decoder_target_ids: 去掉第一个 token（作为预测目标）</span>
+        <span class="c1"># 这样实现了自回归 teacher forcing 训练方式</span>
+        <span class="n">decoder_input_ids</span> <span class="o">=</span> <span class="n">answer_ids</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="n">decoder_pad_mask</span> <span class="o">=</span> <span class="n">answer_pad_mask</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="n">decoder_target_ids</span> <span class="o">=</span> <span class="n">answer_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">,</span>  <span class="c1"># 原始问题文本</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">,</span>  <span class="c1"># 原始答案文本</span>
+            <span class="s1">&#39;encoder_input_ids&#39;</span><span class="p">:</span> <span class="n">encoder_input_ids</span><span class="p">,</span>  <span class="c1"># 编码器输入 ID</span>
+            <span class="s1">&#39;encoder_pad_mask&#39;</span><span class="p">:</span> <span class="n">encoder_pad_mask</span><span class="p">,</span>  <span class="c1"># 编码器填充掩码</span>
+            <span class="s1">&#39;decoder_input_ids&#39;</span><span class="p">:</span> <span class="n">decoder_input_ids</span><span class="p">,</span>  <span class="c1"># 解码器输入 ID</span>
+            <span class="s1">&#39;decoder_pad_mask&#39;</span><span class="p">:</span> <span class="n">decoder_pad_mask</span><span class="p">,</span>  <span class="c1"># 解码器填充掩码</span>
+            <span class="s1">&#39;decoder_target_ids&#39;</span><span class="p">:</span> <span class="n">decoder_target_ids</span>  <span class="c1"># 解码器预测目标 ID</span>
+        <span class="p">}</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">,</span> <span class="n">decoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        从txt文件加载数据集</span>
+<span class="sd">        txt格式应包含标签和文本，使用制表符分隔</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">questions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">answers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># 读取txt文件</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># 跳过空行</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># 查找等号的位置，将行分割为问题和答案</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="c1"># 将样本添加到列表中: (question, answer)，answer中去掉&quot;=&quot;以及最后的&quot;\n&quot;</span>
+                    <span class="n">question</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span>
+                    <span class="n">answer</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">questions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+                    <span class="n">answers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># 如果处理某行时出错，打印错误信息并跳过</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing line: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+        <span class="c1"># 创建数据集实例</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">questions</span><span class="p">,</span> <span class="n">answers</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="p">,</span> <span class="n">decoder_transform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">16.3.2. </span>创建自定义加法数据集的实例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsx_transformer.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tokenizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="c1"># 1️⃣ 初始化分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">()</span>
+
+<span class="c1"># 2️⃣ 初始化数据转换</span>
+<span class="n">encoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># 3️⃣ 加载数据集</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;./dataset/addition_train.txt&quot;</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">TextGenerationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="o">=</span><span class="n">encoder_transform</span><span class="p">,</span>
+                                          <span class="n">decoder_transform</span><span class="o">=</span><span class="n">decoder_transform</span><span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sort_dicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;question&#39;: &#39;12+991&#39;,
+ &#39;answer&#39;: &#39;1003&#39;,
+ &#39;encoder_input_ids&#39;: tensor([ 1,  2, 10,  9,  9,  1, 12]),
+ &#39;encoder_pad_mask&#39;: tensor([1, 1, 1, 1, 1, 1, 0]),
+ &#39;decoder_input_ids&#39;: tensor([14,  1,  0,  0,  3]),
+ &#39;decoder_pad_mask&#39;: tensor([1, 1, 1, 1, 1]),
+ &#39;decoder_target_ids&#39;: tensor([ 1,  0,  0,  3, 15])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>这里需要注意：</p>
+<ul class="simple">
+<li><p>编码器的数据最长为 <code class="docutils literal notranslate"><span class="pre">三位数</span> <span class="pre">+</span> <span class="pre">三位数</span></code>，所以序列最大长度为 7。</p></li>
+<li><p>解码器的数据最长的长度为<code class="docutils literal notranslate"><span class="pre">开始符</span></code>、<code class="docutils literal notranslate"><span class="pre">四位数结果</span></code>和<code class="docutils literal notranslate"><span class="pre">结束符</span></code>，所以序列最大长度为 6。</p></li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h2><span class="section-number">16.4. </span>构建数据模组<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>加法数据模组继承自 LightningDataModule，用于统一管理训练、验证和测试数据集。</p>
+<section id="id7">
+<h3><span class="section-number">16.4.1. </span>加法数据模组的代码实现<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextDataModule</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    文本生成任务的数据模块</span>
+<span class="sd">    继承自LightningDataModule，用于管理训练、验证和测试数据的加载</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">,</span> <span class="n">decoder_transform</span><span class="p">:</span> <span class="n">TextTransform</span><span class="p">,</span> <span class="n">train_data_file</span><span class="p">,</span>
+                 <span class="n">val_data_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">test_data_file</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化数据模块</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            batch_size: 批次大小</span>
+<span class="sd">            encoder_transform: 编码器文本转换器</span>
+<span class="sd">            decoder_transform: 解码器文本转换器</span>
+<span class="sd">            train_data_file: 训练数据文件路径</span>
+<span class="sd">            val_data_file: 验证数据文件路径（可选）</span>
+<span class="sd">            test_data_file: 测试数据文件路径（可选）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>                    <span class="c1"># 设置批次大小</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span> <span class="o">=</span> <span class="n">encoder_transform</span>      <span class="c1"># 编码器文本预处理转换器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">decoder_transform</span>      <span class="c1"># 解码器文本预处理转换器</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span> <span class="o">=</span> <span class="n">train_data_file</span>          <span class="c1"># 训练数据文件路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span> <span class="o">=</span> <span class="n">val_data_file</span>              <span class="c1"># 验证数据文件路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span> <span class="o">=</span> <span class="n">test_data_file</span>            <span class="c1"># 测试数据文件路径</span>
+
+        <span class="c1"># 初始化数据集属性</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="kc">None</span>                        <span class="c1"># 测试数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="kc">None</span>                         <span class="c1"># 验证数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="kc">None</span>                       <span class="c1"># 训练数据集</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        准备数据的方法</span>
+<span class="sd">        用于下载数据集或进行一次性数据预处理操作</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        设置数据集的方法</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 加载训练数据集</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TextGenerationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data_file</span><span class="p">,</span>
+                                                             <span class="n">encoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span><span class="p">,</span>
+                                                             <span class="n">decoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="p">)</span>
+
+        <span class="c1"># 加载验证数据集</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># 如果没有指定验证集，则使用训练集作为验证集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 加载指定的验证数据集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">TextGenerationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_data_file</span><span class="p">,</span>
+                                                               <span class="n">encoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span><span class="p">,</span>
+                                                               <span class="n">decoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="p">)</span>
+
+        <span class="c1"># 加载测试数据集</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># 如果没有指定测试集，则使用训练集作为测试集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 加载指定的测试数据集</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">TextGenerationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data_file</span><span class="p">,</span>
+                                                                <span class="n">encoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder_transform</span><span class="p">,</span>
+                                                                <span class="n">decoder_transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">decoder_transform</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        返回训练数据加载器</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataLoader: 训练数据的DataLoader对象</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        返回验证数据加载器</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataLoader: 验证数据的DataLoader对象</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        返回测试数据加载器</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataLoader: 测试数据的DataLoader对象</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h3><span class="section-number">16.4.2. </span>创建加法数据模组的实例<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="c1"># 1️⃣ 初始化分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">()</span>
+
+<span class="c1"># 2️⃣ 初始化数据转换</span>
+<span class="n">encoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># 3️⃣ 加载数据模组</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;./dataset/addition_train.txt&quot;</span>
+<span class="n">text_datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="o">=</span><span class="n">encoder_transform</span><span class="p">,</span> <span class="n">decoder_transform</span><span class="o">=</span><span class="n">decoder_transform</span><span class="p">,</span>
+                                 <span class="n">train_data_file</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+
+<span class="c1"># 4️⃣ 调用 setup 方法初始化数据集</span>
+<span class="n">text_datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+<span class="c1"># 5️⃣ 打印一个批次的数据</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;打印一个批次的数据：&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">text_datamodule</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">():</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">sort_dicts</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>打印一个批次的数据：
+{&#39;question&#39;: [&#39;532+49&#39;, &#39;727+23&#39;],
+ &#39;answer&#39;: [&#39;581&#39;, &#39;750&#39;],
+ &#39;encoder_input_ids&#39;: tensor([[ 5,  3,  2, 10,  4,  9, 12],
+        [ 7,  2,  7, 10,  2,  3, 12]]),
+ &#39;encoder_pad_mask&#39;: tensor([[1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 0]]),
+ &#39;decoder_input_ids&#39;: tensor([[14,  5,  8,  1, 15],
+        [14,  7,  5,  0, 15]]),
+ &#39;decoder_pad_mask&#39;: tensor([[1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1]]),
+ &#39;decoder_target_ids&#39;: tensor([[ 5,  8,  1, 15, 12],
+        [ 7,  5,  0, 15, 12]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2><span class="section-number">16.5. </span>答疑讨论<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -514,8 +1018,8 @@ a:visited {
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
-   17. 实现 Transformer Encoder 组件
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
   </a>
  </li>
  <li class="toctree-l1">

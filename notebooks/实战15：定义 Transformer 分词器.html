@@ -128,7 +128,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=d0410c28" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -165,13 +164,13 @@
 <!-- Normal Meta Tags -->
 <meta name="author" context="吾辈亦有感" />
 <meta name="keywords" content="" />
-<meta name="description" content=定义 Transformer 分词器  敬请期待 />
+<meta name="description" content=定义 Transformer 分词器  这一部分代码和前面章节的实现相似，这里不再赘述。  分词器的代码实现  from util import print_table import torch   class TransformerTokenizer:     def __init__(self, vocab, pa />
 
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@" />
 <meta name="twitter:title" content="定义 Transformer 分词器"/>
-<meta name="twitter:description" content="定义 Transformer 分词器  敬请期待">
+<meta name="twitter:description" content="定义 Transformer 分词器  这一部分代码和前面章节的实现相似，这里不再赘述。  分词器的代码实现  from util import print_table import torch   class TransformerTokenizer:     def __init__(self, vocab, pa">
 <meta name="twitter:creator" content="@">
 <meta name="twitter:image" content="">
 
@@ -180,7 +179,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="None" />
 <meta property="og:image" content="" />
-<meta property="og:description" content="定义 Transformer 分词器  敬请期待" />
+<meta property="og:description" content="定义 Transformer 分词器  这一部分代码和前面章节的实现相似，这里不再赘述。  分词器的代码实现  from util import print_table import torch   class TransformerTokenizer:     def __init__(self, vocab, pa" />
 <meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta name="theme-color" content="#ffffff" />
 
@@ -235,10 +234,19 @@ a:visited {
                         
 
 <!---->
+<!--                        <div class="qe-page__toc-header">-->
+<!--                            On this page-->
+<!--                        </div>-->
+<!---->
 
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
-                            
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">15.1. 分词器的代码实现</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">15.2. 创建分词器实例</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">15.3. 使用分词器处理数据</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">15.4. 答疑讨论</a></li>
+</ul>
 <!--                            <p class="logo">-->
 <!--                                -->
 <!--                                    -->
@@ -321,7 +329,7 @@ a:visited {
 <!--                        <strong>调试信息：</strong><br>-->
 <!--                        meta 变量是否存在：是<br>-->
 <!--                        -->
-<!--                        meta 的内容：{"cover": "https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092858.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 3}}<br>-->
+<!--                        meta 的内容：{"cover": "https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092858.png", "create_date": "2025.12.28 13:14:18", "kernelspec": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"}, "language_info": {"codemirror_mode": {"name": "ipython", "version": 3}, "file_extension": ".py", "mimetype": "text/x-python", "name": "python", "nbconvert_exporter": "python", "pygments_lexer": "ipython3", "version": "3.12.12"}, "wordcount": {"minutes": 0, "words": 7}}<br>-->
 <!--                        cover 字段是否存在：是<br>-->
 <!--                        -->
 <!--                        cover 的值：https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092858.png<br>-->
@@ -334,7 +342,272 @@ a:visited {
                         
   <section class="tex2jax_ignore mathjax_ignore" id="transformer">
 <h1><span class="section-number">15. </span>定义 Transformer 分词器<a class="headerlink" href="#transformer" title="Link to this heading">#</a></h1>
-<p><img alt="敬请期待" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228100516.png" /></p>
+<p>这一部分代码和前面章节的实现相似，这里不再赘述。</p>
+<section id="id1">
+<h2><span class="section-number">15.1. </span>分词器的代码实现<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TransformerTokenizer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab</span><span class="p">,</span> <span class="n">pad_token</span><span class="o">=</span><span class="s2">&quot;&lt;|pad|&gt;&quot;</span><span class="p">,</span> <span class="n">unk_token</span><span class="o">=</span><span class="s2">&quot;&lt;|unk|&gt;&quot;</span><span class="p">,</span> <span class="n">bos_token</span><span class="o">=</span><span class="s2">&quot;&lt;|bos|&gt;&quot;</span><span class="p">,</span> <span class="n">eos_token</span><span class="o">=</span><span class="s2">&quot;&lt;|eos|&gt;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化简单分词器</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span> <span class="o">=</span> <span class="n">vocab</span>
+
+        <span class="c1"># 反向词汇表 (id -&gt; token)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># 特殊token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span> <span class="o">=</span> <span class="n">pad_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">pad_token</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span> <span class="o">=</span> <span class="n">unk_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">unk_token</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bos_token</span> <span class="o">=</span> <span class="n">bos_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bos_token_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">bos_token</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span> <span class="o">=</span> <span class="n">eos_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eos_token_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">eos_token</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">special_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bos_token</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="p">]</span>
+
+        <span class="c1"># 词汇表大小</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="c1"># 将文本拆分为单个字符和特殊标记</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize_special_tokens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># 将每个token转换为对应的token ID</span>
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">input_ids</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tokenize_special_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="c1"># 识别并处理特殊标记</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="c1"># 检查是否匹配特殊标记</span>
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_tokens</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)]</span> <span class="o">==</span> <span class="n">token</span><span class="p">:</span>
+                    <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 如果不是特殊标记，则逐个字符处理</span>
+                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">tokens</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># 如果 input_ids 是 torch.Tensor，则转换为列表</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">input_ids</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># 将token ID序列转换为对应的字符</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ids_to_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">input_ids</span><span class="p">]</span>
+
+        <span class="c1"># 去除开始符和结束符</span>
+        <span class="k">if</span> <span class="n">skip_special_tokens</span><span class="p">:</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">token</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_tokens</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        分词器主调用函数</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">is_single_text</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">texts</span><span class="p">]</span>
+
+        <span class="c1"># 编码所有文本</span>
+        <span class="n">all_token_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_attention_masks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+            <span class="n">token_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="c1"># 处理填充和注意力掩码</span>
+            <span class="k">if</span> <span class="n">padding</span> <span class="ow">and</span> <span class="n">max_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attention_mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_ids</span><span class="p">))</span>
+                <span class="n">token_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_ids</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attention_mask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span>
+
+            <span class="n">all_token_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token_ids</span><span class="p">)</span>
+            <span class="n">all_attention_masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attention_mask</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_single_text</span><span class="p">:</span>
+            <span class="n">all_token_ids</span> <span class="o">=</span> <span class="n">all_token_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">all_attention_masks</span> <span class="o">=</span> <span class="n">all_attention_masks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># 转换为tensor</span>
+        <span class="k">if</span> <span class="n">return_tensors</span><span class="p">:</span>
+            <span class="n">all_token_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">all_token_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+            <span class="n">all_attention_masks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">all_attention_masks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;input_ids&#39;</span><span class="p">:</span> <span class="n">all_token_ids</span><span class="p">,</span> <span class="s1">&#39;attention_mask&#39;</span><span class="p">:</span> <span class="n">all_attention_masks</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        打印分词器的详细信息</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># 通用信息表</span>
+        <span class="n">info_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="s2">&quot;Vocabulary Size&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;Padding Token&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_token_id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;Unknown Token&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unk_token</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unk_token_id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;Start Token&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bos_token</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bos_token_id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;End Token&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">eos_token</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">eos_token_id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;General Information&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">info_data</span><span class="p">)</span>
+
+        <span class="c1"># 字符到ID的映射表</span>
+        <span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;Token Mapping&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">[</span><span class="n">char</span><span class="p">,</span> <span class="n">char_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">char</span><span class="p">,</span> <span class="n">char_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2><span class="section-number">15.2. </span>创建分词器实例<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_tokenizer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TransformerTokenizer</span><span class="p">:</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s2">&quot;5&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s2">&quot;6&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="s2">&quot;7&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+        <span class="s2">&quot;8&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s2">&quot;9&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+        <span class="s2">&quot;+&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">&quot;=&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;|pad|&gt;&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;|unk|&gt;&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;|bos|&gt;&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+        <span class="s2">&quot;&lt;|eos|&gt;&quot;</span><span class="p">:</span> <span class="mi">15</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">TransformerTokenizer</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span>
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">()</span>
+
+<span class="c1"># 初始化分词器</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>  <span class="c1"># 打印分词器信息</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">General Information：</span>
++-----------------+------------------+
+|   Information   |      Value       |
++-----------------+------------------+
+| Vocabulary Size |        16        |
+|  Padding Token  | &lt;|pad|&gt; (ID: 12) |
+|  Unknown Token  | &lt;|unk|&gt; (ID: 13) |
+|   Start Token   | &lt;|bos|&gt; (ID: 14) |
+|    End Token    | &lt;|eos|&gt; (ID: 15) |
++-----------------+------------------+
+<span class=" -Color -Color-Red">Token Mapping：</span>
++---------+----+
+|  Token  | ID |
++---------+----+
+|    0    | 0  |
+|    1    | 1  |
+|    2    | 2  |
+|    3    | 3  |
+|    4    | 4  |
+|    5    | 5  |
+|    6    | 6  |
+|    7    | 7  |
+|    8    | 8  |
+|    9    | 9  |
+|    +    | 10 |
+|    =    | 11 |
+| &lt;|pad|&gt; | 12 |
+| &lt;|unk|&gt; | 13 |
+| &lt;|bos|&gt; | 14 |
+| &lt;|eos|&gt; | 15 |
++---------+----+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2><span class="section-number">15.3. </span>使用分词器处理数据<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 编码解码示例表</span>
+<span class="n">example</span> <span class="o">=</span> <span class="s2">&quot;&lt;|bos|&gt;12+8&lt;|eos|&gt;&quot;</span>  <span class="c1"># 示例输入</span>
+
+<span class="n">encoded_input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
+<span class="n">pad_encoded_input</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">decoded_output</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">pad_encoded_input</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;Example Details&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Field&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="s2">&quot;Length&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;原始文本&quot;</span><span class="p">,</span> <span class="n">example</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize_special_tokens</span><span class="p">(</span><span class="n">example</span><span class="p">))],</span>
+    <span class="p">[</span><span class="s2">&quot;直接编码&quot;</span><span class="p">,</span> <span class="n">encoded_input</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded_input</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">])],</span>
+    <span class="p">[</span><span class="s2">&quot;填充编码&quot;</span><span class="p">,</span> <span class="n">pad_encoded_input</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pad_encoded_input</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">])],</span>
+    <span class="p">[</span><span class="s2">&quot;掩码向量&quot;</span><span class="p">,</span> <span class="n">pad_encoded_input</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pad_encoded_input</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">])],</span>
+    <span class="p">[</span><span class="s2">&quot;解码结果&quot;</span><span class="p">,</span> <span class="n">decoded_output</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">tokenize_special_tokens</span><span class="p">(</span><span class="n">decoded_output</span><span class="p">))]</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">Example Details：</span>
++----------+------------------------------------------------+--------+
+|  Field   |                     Value                      | Length |
++----------+------------------------------------------------+--------+
+| 原始文本 |               &lt;|bos|&gt;12+8&lt;|eos|&gt;               |   6    |
+| 直接编码 |             [14, 1, 2, 10, 8, 15]              |   6    |
+| 填充编码 |     [14, 1, 2, 10, 8, 15, 12, 12, 12, 12]      |   10   |
+| 掩码向量 |         [1, 1, 1, 1, 1, 1, 0, 0, 0, 0]         |   10   |
+| 解码结果 | &lt;|bos|&gt;12+8&lt;|eos|&gt;&lt;|pad|&gt;&lt;|pad|&gt;&lt;|pad|&gt;&lt;|pad|&gt; |   10   |
++----------+------------------------------------------------+--------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2><span class="section-number">15.4. </span>答疑讨论<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -514,8 +787,8 @@ a:visited {
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
-   17. 实现 Transformer Encoder 组件
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
   </a>
  </li>
  <li class="toctree-l1">

@@ -128,7 +128,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=d0410c28" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -409,7 +408,7 @@ a:visited {
 </section>
 <section id="id5">
 <h3><span class="section-number">12.2.3. </span>环境版本<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
-<p>照例我们先打印环境版本信息，方便大家进行程序复现。</p>
+<p>照例我们先打印环境版本信息，方便大家进行代码复现。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
@@ -895,7 +894,7 @@ a:visited {
 <span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># 解码器的输出结果不进行反转</span>
 
 <span class="c1"># 3️⃣ 加载数据集</span>
-<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;../dataset/addition.txt&quot;</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s2">&quot;./dataset/addition_train.txt&quot;</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">TextGenerationDataset</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="o">=</span><span class="n">encoder_transform</span><span class="p">,</span>
                                           <span class="n">decoder_transform</span><span class="o">=</span><span class="n">decoder_transform</span><span class="p">)</span>
 
@@ -1404,8 +1403,10 @@ a:visited {
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">lightning.pytorch.utilities.model_summary</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelSummary</span>
 
+<span class="c1"># 创建加法计算模型实例：词嵌入维度128，隐藏层维度128</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">SequenceGenerator</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">embed_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 
+<span class="c1"># 使用 ModelSummary 获取模型详细信息</span>
 <span class="n">summary</span> <span class="o">=</span> <span class="n">ModelSummary</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
 </pre></div>
@@ -1456,8 +1457,8 @@ a:visited {
 <span class="n">decoder_transform</span> <span class="o">=</span> <span class="n">TextTransform</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">decoder_max_length</span><span class="p">)</span>
 
 <span class="c1"># 3️⃣ 加载数据模组</span>
-<span class="n">train_data_file</span> <span class="o">=</span> <span class="s2">&quot;../dataset/addition_train.txt&quot;</span>
-<span class="n">val_data_file</span> <span class="o">=</span> <span class="s2">&quot;../dataset/addition_val.txt&quot;</span>
+<span class="n">train_data_file</span> <span class="o">=</span> <span class="s2">&quot;./dataset/addition_train.txt&quot;</span>
+<span class="n">val_data_file</span> <span class="o">=</span> <span class="s2">&quot;./dataset/addition_val.txt&quot;</span>
 
 <span class="c1"># 此处的直接使用评估集进行评估</span>
 <span class="n">datamodule</span> <span class="o">=</span> <span class="n">TextDataModule</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">encoder_transform</span><span class="o">=</span><span class="n">encoder_transform</span><span class="p">,</span>
@@ -2047,8 +2048,8 @@ Validation Step 50: Token Accuracy=0.6541, Seq Accuracy=0.2200
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20%E9%80%9A%E7%94%A8%E7%BB%84%E4%BB%B6.html">
-   17. 实现 Transformer Encoder 组件
+  <a class="reference internal" href="%E5%AE%9E%E6%88%9817%EF%BC%9A%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
   </a>
  </li>
  <li class="toctree-l1">

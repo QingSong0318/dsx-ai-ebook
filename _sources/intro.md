@@ -316,13 +316,13 @@ create_date: 2026.01.01
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战17：实现 Transformer 通用组件.html">
+<a href="./notebooks/实战17：实现 Transformer Input 组件.html">
     <div class="alert alert-light simple-tilt2 custom-card">
     <h4 class="mt-3">
-    17. 实现 Transformer 通用组件
+    17. 实现 Transformer Input 组件
     </h4>
     <p class="text-truncate">
-    本章将介绍如何实现位置编码等 Transformer 通用组件。
+    本章将介绍如何实现位置编码等 Transformer 输入模块相关组件。
     </p>
     </div>
 </a>
@@ -335,7 +335,7 @@ create_date: 2026.01.01
     18. 实现 Transformer Encoder 组件
     </h4>
     <p class="text-truncate">
-    本章将介绍如何实现 Transformer 模型的编码器组件。
+    介绍如何实现自注意力层、前馈网络层等 Transformer 编码器相关组件。
     </div>
 </a>
 :::
