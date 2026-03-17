@@ -1,0 +1,1259 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>18. 实现 Transformer Encoder 组件 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a4444a4c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/18实现 Transformer Encoder 组件';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="19. 实现 Transformer Decoder 组件" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html" />
+    <link rel="prev" title="17. 实现 Transformer Input 组件" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=实现 Transformer Encoder 组件  Transformer Encoder 概览  在 Transformer 架构中，编码器（Encoder）的核心作用是将输入序列转换为一系列富含上下文信息的连续向量表示。简单来说，编码器负责“理解”输入内容，提取融合了整个序列信息的隐藏特征，并为后续的解码器（De />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="实现 Transformer Encoder 组件" />
+<meta name="twitter:description" content="实现 Transformer Encoder 组件  Transformer Encoder 概览  在 Transformer 架构中，编码器（Encoder）的核心作用是将输入序列转换为一系列富含上下文信息的连续向量表示。简单来说，编码器负责“理解”输入内容，提取融合了整个序列信息的隐藏特征，并为后续的解码器（De">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="实现 Transformer Encoder 组件" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="实现 Transformer Encoder 组件  Transformer Encoder 概览  在 Transformer 架构中，编码器（Encoder）的核心作用是将输入序列转换为一系列富含上下文信息的连续向量表示。简单来说，编码器负责“理解”输入内容，提取融合了整个序列信息的隐藏特征，并为后续的解码器（De" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+    <!-- Override QuantEcon theme colors -->
+    <style>
+        a {
+            color: #313131;
+        }
+
+        a:hover {
+            color: #313131;
+        }
+
+        a:visited {
+            color: #111111;
+        }
+
+        .main-index {
+            #qe-page-author-links {
+                border-bottom: 5px solid #313131;
+            }
+        }
+
+        .qe-page__header {
+            border-bottom: 5px solid #313131;
+        }
+
+        .qe-page__footer {
+            border-top: 5px solid #313131;
+        }
+
+        .toctree-wrapper {
+            .caption-text {
+                color: #111111
+            }
+        }
+    </style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/18实现 Transformer Encoder 组件>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">18.1. Transformer Encoder 概览</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">18.2. 自注意力层</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">18.2.1. 自注意力机制的计算过程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">18.2.2. 自注意力机制的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">18.2.3. 自注意力机制的应用实例</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">18.3. 层归一化</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">18.3.1. 层归一化的计算公式</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">18.3.2. 层归一化的计算步骤</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">18.3.3. 层归一化的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">18.3.4. 层归一化的应用实例</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">18.4. 残差连接</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">18.5. 前馈神经网络层</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">18.5.1. 前馈网络层的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">18.5.2. 前馈网络层的详细信息</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">18.6. 本章小结</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">18.7. 答疑讨论</a></li>
+</ul>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top">
+                                    <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                        type="button">
+                                        <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                            focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                            <path fill="currentColor"
+                                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                            </path>
+                                        </svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com -->
+                                        返回顶部
+                                    </button>
+                                </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                    <p class="qe-page__header-authors" font-size="18">
+                        <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                        更新于：2026.01.01
+                    </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+
+                <div class="cover-container simple-tilt">
+                    
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092922.png" class="cover-image">
+                    
+                </div>
+
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="transformer-encoder">
+<h1><span class="section-number">18. </span>实现 Transformer Encoder 组件<a class="headerlink" href="#transformer-encoder" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">18.1. </span>Transformer Encoder 概览<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>在 Transformer 架构中，编码器（Encoder）的核心作用是将输入序列转换为一系列富含上下文信息的连续向量表示。简单来说，编码器负责“理解”输入内容，提取融合了整个序列信息的隐藏特征，并为后续的解码器（Decoder）提供高质量的语义表示。</p>
+<p><img alt="Transformer Encoder" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316093123.png" /></p>
+<p>Transformer 编码器通常由多个结构相同的编码器层（Encoder Layer）堆叠而成。这种分层结构使得模型能够逐层提炼信息：</p>
+<ul class="simple">
+<li><p>底层更倾向于捕捉表面的词法特征（如词形、词性）；</p></li>
+<li><p>中层开始关注句法结构和局部上下文信息；</p></li>
+<li><p>高层则能够提炼出抽象的语义概念和整体的主题信息。</p></li>
+</ul>
+<p>通过这种逐层抽象的过程，编码器输出的表示越来越富含语义信息，也越来越适合各类下游任务。</p>
+<p><img alt="编码器层堆叠" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316093215.png" /></p>
+<p>每一个编码器层（Encoder Layer）均由两个核心子层组成——多头自注意力层和前馈神经网络层，并且每个子层都配备了残差连接和层归一化。具体的层结构如下图所示：</p>
+<p><img alt="编码器层结构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316093224.png" /></p>
+<p>各组件的作用如下：</p>
+<ul class="simple">
+<li><p><strong>自注意力层</strong>：允许输入序列中的每个位置关注序列中的所有其他位置，动态捕捉序列内部的依赖关系和结构信息。</p></li>
+<li><p><strong>前馈神经网络层</strong>：通过非线性变换、维度扩展与压缩，对注意力层的输出进行进一步的特征提取和抽象，增强模型的表达能力。它与自注意力机制形成互补，共同提升模型性能。</p></li>
+<li><p><strong>残差连接</strong>：将子层的输入直接加到输出上，为梯度提供一条“捷径”，有效缓解深层网络中的梯度消失/梯度爆炸问题，使得训练深层Transformer成为可能。</p></li>
+<li><p><strong>层归一化</strong>：对每个子层的输出进行归一化处理，稳定参数的分布和尺度，加快模型收敛速度，提升训练过程的稳定性。</p></li>
+</ul>
+<p>接下来，我们将进入实战环节，亲手搭建 Transformer 编码器中的各个核心组件。</p>
+</section>
+<section id="id2">
+<h2><span class="section-number">18.2. </span>自注意力层<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在 Transformer 的编码器中，自注意力层是最核心的组件之一。它的目标是让模型在处理每个词时，能够动态地关注输入序列中所有其他词，从而捕捉全局依赖关系。下面我们一步步拆解它的工作原理。</p>
+<p>自注意力层的底层原理是注意力机制，通过计算输入序列中每个位置与所有其他位置之间的权重，来决定每个位置所关注的信息来源。</p>
+<p>假设我们有一个句子：“那只动物没过马路，因为它太累了”。当模型处理“它”这个词时，需要知道“它”指的是“动物”还是“马路”？自注意力机制会计算“它”与句子中所有词的关联度（注意力权重），然后根据这些权重将其他词的信息融合到“它”的表示中。如果“动物”的权重最高，那么“它”的最终向量就会富含“动物”的特征，从而解决指代问题。</p>
+<p>Transformer 中使用的是多头自注意力层，为方便理解注意力的核心原理，此处使用单头自注意力层替代。</p>
+<section id="id3">
+<h3><span class="section-number">18.2.1. </span>自注意力机制的计算过程<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>在循环神经网络（RNN）中，每个 Token 需要依赖上一时刻的隐藏状态来逐步传递和融合上下文信息。那么，自注意力层又是如何让每个 Token 获取全局上下文，并生成新的表示向量的呢？其核心计算过程如下图所示：</p>
+<p><img alt="自注意力层" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316093703.png" /></p>
+<p>我们可以借助一个直观的比喻来理解这一过程：将每个 Token 视为持有三张功能各异的“牌”——Query 牌、Key 牌和 Value 牌。</p>
+<ul class="simple">
+<li><p><strong>Query 牌</strong>：代表当前 Token “要什么”，它就像一个提问，向其他 Token 征询相关的信息。</p></li>
+<li><p><strong>Key 牌</strong>：代表当前 Token “是什么”，相当于一个标签或索引，供其他 Token 的 Query 来匹配。</p></li>
+<li><p><strong>Value 牌</strong>：代表当前 Token “有什么”，是 Token 自身携带的实际信息内容。</p></li>
+</ul>
+<p>当为某个 Token 计算其在下一层的表示向量时，将经历以下四个步骤：</p>
+<ul class="simple">
+<li><p><strong>匹配求相似</strong>：该 Token 首先亮出自己的 Query 牌，与序列中所有 Token 的 Key 牌进行一一匹配（通常通过点积运算），计算出它与每个 Token 的关联程度。这个关联程度就是注意力分数。</p></li>
+<li><p><strong>屏蔽无关项</strong>：为了防止填充的无效 Token 干扰计算结果，需要将对应位置的注意力分数替换为一个极小的负数（如负无穷），使其在后续归一化中权重趋近于零。</p></li>
+<li><p><strong>归一化得权重</strong>：将经过屏蔽的注意力分数输入 Softmax 函数进行归一化，使所有位置的分数之和为 1。此时得到的便是注意力权重，它反映了当前 Token 应该给予其他每个 Token 多大的关注度。</p></li>
+<li><p><strong>聚合信息</strong>：根据这些注意力权重，从每个 Token 的 Value 牌中提取相应比例的信息，并将所有信息整合起来（即加权求和）。最终得到的向量，就是融合了全局上下文信息的、当前 Token 的新表示。</p></li>
+</ul>
+<p>那么，Token 的 Query、Key、Value 又是如何生成的呢？Transformer 采用了简洁而有效的做法：通过三个独立的线性变换层，从输入的 Token 向量中分别映射出 Query、Key 和 Value。这三个线性变换的权重矩阵会在模型训练过程中自动学习优化，从而使生成的 Query、Key、Value 能够更好地适配注意力机制的需求。</p>
+</section>
+<section id="id4">
+<h3><span class="section-number">18.2.2. </span>自注意力机制的代码实现<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<p>在自注意力机制的计算中，我们可以看到一个关键步骤：对 Key 矩阵进行转置。这一步是为了通过矩阵乘法，一次性并行计算出所有位置之间的相似度。</p>
+<p>使用线性变换得到的 Query 和 Key 矩阵的形状都是 [序列长度，特征维度] 。我们的目标是计算每一个 Query 和每一个 Key 的点积，最终得到一个 [序列长度，序列长度] 的注意力分数矩阵。</p>
+<p>根据矩阵乘法的规则（左矩阵的列数必须等于右矩阵的行数），我们需要把 Key 矩阵的行列互换（即转置），将其形状从 [序列长度，特征维度] 变为 [特征维度，序列长度] 。</p>
+<p>这样，计算过程就变成了：[序列长度，特征维度]×[特征维度，序列长度]=[序列长度，序列长度]</p>
+<p>从而高效地得到了注意力分数矩阵。</p>
+<div class="note admonition">
+<p class="admonition-title">缩放注意力机制</p>
+<p>Transformer 自注意力机制也被称为<code class="docutils literal notranslate"><span class="pre">缩放点积注意力机制</span></code>，这是因为其计算过程是先求<strong>查询矩阵</strong>与<strong>键矩阵</strong>的点积，再用 <span class="math notranslate nohighlight">\(\sqrt{d_k}\)</span> 对结果进行缩放。这样做的目的主要是获得稳定的梯度。</p>
+<p>因为当输入信息的维度 d 比较高，会导致 softmax 函数接近饱和区，梯度会比较小。因此，缩放点积模型可以较好地解决这一问题。</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SingleHeadAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SingleHeadAttention</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span> <span class="o">=</span> <span class="n">d_model</span>
+
+        <span class="c1"># Query的变换矩阵</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Key的变换矩阵</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Value的变换矩阵</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_proj</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_input</span><span class="p">,</span> <span class="n">k_input</span><span class="p">,</span> <span class="n">v_input</span><span class="p">,</span> <span class="n">attn_mask</span><span class="p">):</span>
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;【步骤1】计算query、key和value向量</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_proj</span><span class="p">(</span><span class="n">q_input</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_proj</span><span class="p">(</span><span class="n">k_input</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_proj</span><span class="p">(</span><span class="n">v_input</span><span class="p">)</span>
+
+        <span class="c1"># 计算注意力分数：计算 query 和 key的转置 的点积，然后除以根号 hidden_size 进行缩放</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">)</span>
+
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;【步骤 2】计算注意力分数，掩码前的scores:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">attn_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scores</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">attn_mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e9</span><span class="p">)</span>
+            <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;【步骤 2-1】掩码后的scores:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 计算注意力权重：使用softmax函数，对每个样本的注意力分数进行归一化</span>
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;【步骤 3】计算注意力权重，注意力权重:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">attention_weights</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 计算加权和</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">attention_weights</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;【步骤 4】 计算加权和:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">attention_weights</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">18.2.3. </span>自注意力机制的应用实例<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+<span class="c1"># 1️⃣ 创建输入数据</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">seq_len</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">d_model</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="c1"># 创建输入张量</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;原始输入：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2️⃣ 设置数据的填充情况：第一条数据未填充，第二条数据的最后一个位置是填充的。</span>
+<span class="c1"># 创建注意力掩码矩阵，注意掩码矩阵为了告诉每一个 Token 哪些位置是填充的，所以这里创建的矩阵的形状是 [batch_size, seq_len, seq_len]</span>
+<span class="n">attn_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">)</span>
+
+<span class="c1"># 将第二条数据（索引为1）的最后一个位置设为填充（0）</span>
+<span class="n">attn_mask</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 将第2个样本的所有行的最后一个位置设为0，表示该位置是填充的</span>
+
+<span class="c1"># 3️⃣ 初始化单头自注意力层</span>
+<span class="n">attn</span> <span class="o">=</span> <span class="n">SingleHeadAttention</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;单头注意力层：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">attn</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4️⃣ 使用单头自注意力层进行计算</span>
+<span class="n">hidden_states</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attn</span><span class="p">(</span><span class="n">q_input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">k_input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">v_input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">attn_mask</span><span class="o">=</span><span class="n">attn_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">原始输入：</span>
+tensor([[[ 0.9029,  0.1884, -3.5338,  0.7972],
+         [-0.4688, -0.1722, -0.3909, -0.6140],
+         [ 0.3304,  0.6514,  0.7144,  0.0405]],
+
+        [[ 0.6229,  0.3723, -0.0573, -1.3910],
+         [-0.5353, -1.2963, -1.7738, -0.9884],
+         [ 0.0204,  2.1202,  0.8002, -1.8564]]]) 
+
+<span class=" -Color -Color-Red">单头注意力层：</span>
+SingleHeadAttention(
+  (q_proj): Linear(in_features=4, out_features=4, bias=False)
+  (k_proj): Linear(in_features=4, out_features=4, bias=False)
+  (v_proj): Linear(in_features=4, out_features=4, bias=False)
+) 
+
+<span class=" -Color -Color-Red">【步骤1】计算query、key和value向量</span>
+
+<span class=" -Color -Color-Red">【步骤 2】计算注意力分数，掩码前的scores:</span>
+tensor([[[ 1.5383,  0.4359, -0.6984],
+         [ 0.1596,  0.0670, -0.1410],
+         [-0.3198, -0.0908,  0.1471]],
+
+        [[-0.2235,  0.0154, -0.1355],
+         [-0.0538,  0.9528, -0.6552],
+         [-0.5346, -0.2195, -0.4333]]], grad_fn=&lt;DivBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 2-1】掩码后的scores:</span>
+tensor([[[ 1.5383e+00,  4.3592e-01, -6.9842e-01],
+         [ 1.5962e-01,  6.7045e-02, -1.4101e-01],
+         [-3.1977e-01, -9.0802e-02,  1.4713e-01]],
+
+        [[-2.2349e-01,  1.5379e-02, -1.0000e+09],
+         [-5.3758e-02,  9.5279e-01, -1.0000e+09],
+         [-5.3462e-01, -2.1949e-01, -1.0000e+09]]],
+       grad_fn=&lt;MaskedFillBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 3】计算注意力权重，注意力权重:</span>
+tensor([[[0.6950, 0.2308, 0.0742],
+         [0.3771, 0.3437, 0.2792],
+         [0.2596, 0.3264, 0.4140]],
+
+        [[0.4406, 0.5594, 0.0000],
+         [0.2677, 0.7323, 0.0000],
+         [0.4219, 0.5781, 0.0000]]], grad_fn=&lt;SoftmaxBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 4】 计算加权和:</span>
+tensor([[[-0.9885, -0.5199,  0.4081,  0.7878],
+         [-0.5386, -0.2718,  0.2932,  0.3942],
+         [-0.3856, -0.1897,  0.2493,  0.2249]],
+
+        [[-0.0747,  0.6024,  0.4616,  0.6949],
+         [-0.0043,  0.5680,  0.3469,  0.7681],
+         [-0.0671,  0.5986,  0.4492,  0.7028]]], grad_fn=&lt;UnsafeViewBackward0&gt;) 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2><span class="section-number">18.3. </span>层归一化<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>在Transformer架构中，层归一化（Layer Normalization）是确保模型稳定训练、加速收敛的关键技术。它通过对每个神经元层的输出进行标准化，将激活值调整到均值为0、方差为1的分布，有效缓解了深度网络中的梯度消失和爆炸问题。</p>
+<p><img alt="层归一化的输入和输出" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312140221.png" /></p>
+<section id="id7">
+<h3><span class="section-number">18.3.1. </span>层归一化的计算公式<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>\begin{align}
+\mu &amp;= \frac{1}{H} \sum_{i=1}^{H} x_i \tag{1}
+\end{align}</p>
+<p>\begin{align}
+\sigma^2 &amp;= \frac{1}{H} \sum_{i=1}^{H} (x_i - \mu)^2 \tag{2}
+\end{align}</p>
+<p>\begin{align}
+\hat{x} &amp;= \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}} \tag{3}
+\end{align}</p>
+<p>\begin{align}
+LayerNorm(X) &amp;= \gamma × \hat{x} + \beta \tag{4}
+\end{align}</p>
+</section>
+<section id="id8">
+<h3><span class="section-number">18.3.2. </span>层归一化的计算步骤<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>假设我们有一个输入向量 <span class="math notranslate nohighlight">\(x\)</span>，它代表了神经网络中某一层（例如Transformer中的前馈神经网络层或多头注意力层）的输出，这个向量有 <span class="math notranslate nohighlight">\(H\)</span> 个特征维度（可以理解为神经元的个数）。层归一化的计算过程可以分解为以下四个清晰的步骤，整个过程是针对单个样本，在其特征维度上进行的。具体过程如下：</p>
+<ul>
+<li><p><strong>步骤 1</strong>：计算均值和方差。</p>
+<p>对于这个包含 <span class="math notranslate nohighlight">\(H\)</span> 个数值的输入向量，我们首先计算它的均值 <span class="math notranslate nohighlight">\(μ\)</span> 和方差 <span class="math notranslate nohighlight">\(σ^2\)</span> 。</p>
+<ul class="simple">
+<li><p><strong>均值计算</strong>：把向量里所有的数值加起来，然后除以特征的数量 <span class="math notranslate nohighlight">\(H\)</span>，得到平均值 <span class="math notranslate nohighlight">\(μ\)</span>。</p></li>
+<li><p><strong>方差计算</strong>：衡量这 <span class="math notranslate nohighlight">\(H\)</span> 个数值偏离均值的程度。计算每个数值与均值的差的平方，把这些平方值加起来，再除以 <span class="math notranslate nohighlight">\(H\)</span>，得到方差 <span class="math notranslate nohighlight">\(σ^2\)</span> 。</p></li>
+</ul>
+</li>
+<li><p><strong>步骤 2</strong>：归一化。</p>
+<p>得到均值和方差后，我们对输入向量的每一个分量 <span class="math notranslate nohighlight">\(x_i\)</span> 进行归一化处理。将每个数值减去均值（使其中心化为 0），再除以标准差（即方差的平方根，使其缩放到单位方差）。</p>
+<p>为了确保计算过程防止除数为 0，会在分母上加上一个非常小的正数 <span class="math notranslate nohighlight">\(ϵ\)</span>。 经过这一步，原始的输入向量 <span class="math notranslate nohighlight">\(x\)</span> 就被转换成了一个均值为 0、方差为 1 的全新向量  <span class="math notranslate nohighlight">\(\hat{x}\)</span> 。此时，所有特征的数值尺度都统一了。</p>
+</li>
+<li><p><strong>步骤 3</strong>：进行缩放平移，恢复与增强模型的表示能力。</p>
+<p>数据全部变成标准的正态分布虽然稳定，但可能会破坏原始数据本身的分布特性，从而降低模型的表达能力。例如，原始数据中某些特征本身就具有较大的方差（即比较重要），这一步可能会抹掉这种差异。</p>
+<p>为了解决这个问题，层归一化引入了两个可学习的参数：缩放参数 <span class="math notranslate nohighlight">\(γ\)</span> 和平移参数 <span class="math notranslate nohighlight">\(β\)</span>。</p>
+<ul class="simple">
+<li><p><strong>缩放</strong>：将归一化后的向量 <span class="math notranslate nohighlight">\(\hat{x}\)</span> 与 <span class="math notranslate nohighlight">\(γ\)</span> 逐元素相乘。<span class="math notranslate nohighlight">\(γ\)</span> 的作用是调整每个特征的方差（可以放大或缩小特征的重要性）。</p></li>
+<li><p><strong>平移</strong>：再在乘积结果上加上 <span class="math notranslate nohighlight">\(β\)</span>。<span class="math notranslate nohighlight">\(β\)</span> 的作用是调整每个特征的均值（可以决定激活函数的饱和区）。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id9">
+<h3><span class="section-number">18.3.3. </span>层归一化的代码实现<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LayerNorm</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    层归一化（Layer Normalization）。</span>
+
+<span class="sd">    计算公式：</span>
+<span class="sd">        y = γ * (x - μ) / √(σ² + ε) + β</span>
+
+<span class="sd">    其中：</span>
+<span class="sd">        - x: 输入张量</span>
+<span class="sd">        - μ: 在特征维度上计算的均值</span>
+<span class="sd">        - σ²: 在特征维度上计算的方差（无偏估计）</span>
+<span class="sd">        - ε: 一个小常数（默认为 1e-5），防止除零</span>
+<span class="sd">        - γ: 可学习的缩放参数（初始化为全1）</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        normalized_shape (int): 特征维度。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized_shape</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 小常数 ε，防止除零</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-5</span>
+
+        <span class="c1"># 可学习的缩放参数 γ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">normalized_shape</span><span class="p">))</span>
+
+        <span class="c1"># 可学习的平移参数 β</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">normalized_shape</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        对最后一维进行归一化。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 输入张量，形状为 (..., normalized_shape)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 归一化后的张量，形状相同。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># 1️⃣ 计算特征维度上的均值，用于归一化</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 1️⃣ 计算特征维度上的方差，用于归一化（无偏=False表示使用有偏估计，样本方差直接除以样本数 n）</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unbiased</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># 2️⃣ 归一化输入 x，将其转换为零均值、单位方差的分布</span>
+        <span class="n">norm_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+
+        <span class="c1"># 3️⃣ 缩放和平移标准化后的输出</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">norm_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h3><span class="section-number">18.3.4. </span>层归一化的应用实例<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="c1"># 创建 LayerNorm 层</span>
+<span class="n">emb_dim</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
+
+<span class="c1"># 创建虚拟输入数据</span>
+<span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>  <span class="c1"># ［batch_size, sequence_length,embedding_dimension］</span>
+
+<span class="c1"># 应用 LayerNorm 层</span>
+<span class="n">normalized_output</span> <span class="o">=</span> <span class="n">layer_norm</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+
+<span class="c1"># 在样本维度上计算输出的均值和方差</span>
+<span class="n">dummy_input_mean</span> <span class="o">=</span> <span class="n">dummy_input</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">dummy_input_variance</span> <span class="o">=</span> <span class="n">dummy_input</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">unbiased</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># 重新在样本维度计算输出的均值和方差，用于验证层归一化的效果</span>
+<span class="n">normalized_output_mean</span> <span class="o">=</span> <span class="n">normalized_output</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">normalized_output_variance</span> <span class="o">=</span> <span class="n">normalized_output</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">unbiased</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;层归一化示例&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;归一化前的数据均值&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dummy_input_mean</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;归一化前的数据方差&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dummy_input_variance</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;归一化后的数据均值&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">normalized_output_mean</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;归一化后的数据方差&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">normalized_output_variance</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]]</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">层归一化示例：</span>
++--------------------+------------------------------------------------------------------------------------------+
+|    Information     |                                          Value                                           |
++--------------------+------------------------------------------------------------------------------------------+
+| 归一化前的数据均值 | [[0.0471, 0.2317, -0.1051, -0.1338, 0.0305], [0.0856, -0.0461, 0.0033, 0.0874, -0.0156]] |
+| 归一化前的数据方差 |    [[0.9303, 1.2771, 0.9971, 0.9122, 0.9878], [0.931, 0.8498, 0.9758, 0.8169, 1.062]]    |
+| 归一化后的数据均值 |                [[-0.0, -0.0, 0.0, 0.0, 0.0], [0.0, -0.0, 0.0, 0.0, -0.0]]                |
+| 归一化后的数据方差 |                  [[1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0]]                  |
++--------------------+------------------------------------------------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>观察输出结果可知，经过层归一化处理后，数据的均值等于 0，方差为单位方差 1。这表明层归一化层起到了预期的作用。</p>
+</section>
+</section>
+<section id="id11">
+<h2><span class="section-number">18.4. </span>残差连接<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>在 Transformer 模型中，残差连接（Residual Connection），也称为跳跃连接（Skip Connection），是架构中一个至关重要的组件。它最早由 He 等人在 ResNet 中提出，用于解决深层神经网络训练中的梯度消失和网络退化问题。Transformer 将其与层归一化结合，使得模型能够构建非常深的堆叠结构，同时保持训练的稳定性和效率。</p>
+<p>残差连接和之前优化 Seq2Seq 模型中使用的信息偷窥的思路基本一致。即将子层（如自注意力或前馈网络）的输入直接加到该子层的输出上。这保证了信息可以无损地绕过子层直接传递到后续层，梯度也能通过这条“捷径”反向传播，从而缓解梯度消失。这样，模型能够更充分的利用输入数据中的信息，防止信息丢失。</p>
+</section>
+<section id="id12">
+<h2><span class="section-number">18.5. </span>前馈神经网络层<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<p>前馈网络层是 Transformer 编码器层中的第二个子层，位于多头自注意力层之后。它通过非线性变换、维度扩展与压缩等方式，对 Token 的信息进一步的融合，从而增强模型的表达能力。</p>
+<p>前馈网络层包括三个线性层：</p>
+<ul class="simple">
+<li><p>第一个线性层是升维层，将输入升维到一个高维空间（通常是嵌入维度的 4 倍），然后通过激活函数进行非线性变换。</p></li>
+<li><p>第二个线性层是门控层，目的是引入一个并行的”门”，来控制信息的流动，允许模型在某些特征上进行更重要的关注。</p></li>
+<li><p>第三个线性层是降维层，将特征降维回原始维度。这种维度扩展与压缩的过程增加了模型的容量，允许更复杂的特征表示。</p></li>
+</ul>
+<p><img alt="前馈网络层的升维和降维" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312131611.png" /></p>
+<p>前馈网络层的内部结构如下图所示：</p>
+<p><img alt="前馈网络层的计算图" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260313143448.png" /></p>
+<section id="id13">
+<h3><span class="section-number">18.5.1. </span>前馈网络层的代码实现<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">transformers.activations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ACT2FN</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    带有门控机制的前馈神经网络（GLU变体）。</span>
+
+<span class="sd">    该模块包含三个线性变换：</span>
+<span class="sd">        - up_layer: 将输入维度从 d_model 扩展到 4 * d_model</span>
+<span class="sd">        - gate_layer: 同样将输入扩展到 4 * d_model，作为门控信号</span>
+<span class="sd">        - down_layer: 将合并后的 4 * d_model 维度压缩回 d_model</span>
+
+<span class="sd">    计算公式：</span>
+<span class="sd">        output = down_layer(activation(gate_layer(x)) * up_layer(x) )</span>
+
+<span class="sd">    其中 activation 默认为 GELU，通过门控机制实现特征选择。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): 配置字典，必须包含键 &quot;d_model&quot;（模型维度）。</span>
+<span class="sd">        hidden_act (str): 激活函数名称，默认为 &quot;gelu&quot;。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">feedforward_size</span><span class="p">,</span> <span class="n">hidden_act</span><span class="o">=</span><span class="s2">&quot;gelu&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># 升维线性层：将输入升维到隐藏维度</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">up_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">d_model</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">feedforward_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 门控线性层：生成门控信号，用于控制信息流动</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gate_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">d_model</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">feedforward_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 降维线性层：将隐藏维度降回原始维度</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">down_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">feedforward_size</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">d_model</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 激活函数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation_fn</span> <span class="o">=</span> <span class="n">ACT2FN</span><span class="p">[</span><span class="n">hidden_act</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 输入张量，形状为 (batch_size, seq_len, d_model)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 输出张量，形状与输入相同。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 门控机制：激活(门控(x)) * 升维(x)</span>
+        <span class="n">gated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gate_layer</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">up_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># 降维到原始维度</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">down_layer</span><span class="p">(</span><span class="n">gated</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id14">
+<h3><span class="section-number">18.5.2. </span>前馈网络层的详细信息<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 设置前馈网络的中间层大小为模型维度的 4 倍</span>
+<span class="n">feedforward_size</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">d_model</span>
+
+<span class="c1"># 创建MLP实例，输入维度为d_model，隐藏层大小为feedforward_size</span>
+<span class="n">mlp</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">feedforward_size</span><span class="p">)</span>
+
+<span class="c1"># 打印MLP对象的信息</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mlp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MLP(
+  (up_layer): Linear(in_features=4, out_features=16, bias=False)
+  (gate_layer): Linear(in_features=4, out_features=16, bias=False)
+  (down_layer): Linear(in_features=16, out_features=4, bias=False)
+  (activation_fn): GELUActivation()
+)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id15">
+<h2><span class="section-number">18.6. </span>本章小结<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<p>本章我们深入剖析了 Transformer 编码器的内部结构，并一步步动手实现了其中的核心组件。通过代码实践，我们不仅理解了每个模块的数学原理，更直观地看到了它们如何协同工作——自注意力机制捕捉序列内部依赖，层归一化稳定训练过程，前馈网络增强模型的非线性表达能力。</p>
+<p>这些组件的组合构成了现代 Transformer 编码器的基本单元，动手实现的过程也让我们体会到，从理论到代码的转化是真正掌握模型精髓的关键一步。</p>
+</section>
+<section id="id16">
+<h2><span class="section-number">18.7. </span>答疑讨论<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+                <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                    <div class="qe-sidebar__header">
+
+                        目录
+
+                    </div>
+
+                    <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+
+                    </nav>
+
+                    <div class="qe-sidebar__footer">
+
+                    </div>
+
+                </div> <!-- .sidebar -->
+                
+            </div> <!-- .main -->
+
+            <div class="qe-toolbar">
+
+                <div class="qe-toolbar__inner">
+
+                    <ul class="qe-toolbar__main">
+                        <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                        <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    </ul>
+
+                    <ul class="qe-toolbar__links">
+                        <li data-tippy-content="搜索" class="btn__search">
+                            <form action="../search.html" method="get">
+                                <input type="search" class="form-control" name="q" id="search-input"
+                                    placeholder="Search..." aria-label="Search..."
+                                    autocomplete="off" accesskey="k">
+                                <i data-feather="search" id="search-icon"></i>
+                            </form>
+                        </li>
+                        <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                        <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                        </li>
+                        <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- .toolbar -->
+            <div id="downloadPDFModal" style="display: none;">
+                <ul class="pdf-options" style="display: block;">
+                    <li class="download-pdf-book" onClick="window.print()">
+                        <p>Lecture (PDF)</p>
+                    </li>
+                    <li class="download-pdf-file">
+                        <a href="" download>
+                            <p>Book (PDF)</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="settingsModal" style="display: none;">
+                <p class="modal-title"> Notebook Launcher </p>
+                <div class="modal-desc">
+                    <p>
+                        Choose public or private cloud service for "Launch" button.
+                    </p>
+                </div>
+                <p class="modal-subtitle">Select a server</p>
+                <ul class="modal-servers">
+                    <li class="active launcher-public">
+                        <span class="label">Public</span>
+                        <select id="launcher-public-input">
+                            
+                        </select>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                    <li class="launcher-private">
+                        <span class="label">Private</span>
+                        <input type="text" id="launcher-private-input" data-repourl=""
+                            data-urlpath="" data-branch=>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+                <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                        Notebook</a></p>
+                <script>
+                    // QuantEcon Notebook Launcher
+                    const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                    // Highlight the server type if previous selection exists
+                    if (typeof localStorage.launcherType !== 'undefined') {
+                        for (var i = 0; i < launcherTypeElements.length; i++) {
+                            launcherTypeElements[i].classList.remove('active');
+                            if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                                launcherTypeElements[i].classList.add('active');
+                            }
+                        }
+                    }
+                    // Highlight server type on click and set local storage value
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].addEventListener('click', function () {
+                            for (var j = 0; j < launcherTypeElements.length; j++) {
+                                launcherTypeElements[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+                            if (this.classList.contains('launcher-private')) {
+                                localStorage.launcherType = 'launcher-private';
+                            } else if (this.classList.contains('launcher-public')) {
+                                localStorage.launcherType = 'launcher-public';
+                            }
+                            setLaunchServer();
+                        })
+                    }
+                    const launcherPublic = document.getElementById('launcher-public-input');
+                    const launcherPrivate = document.getElementById('launcher-private-input');
+                    const pageName = "notebooks/18实现 Transformer Encoder 组件";
+                    const repoURL = "";
+                    const urlPath = "";
+                    const branch = ""
+                    const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                    // Highlight public server option if previous selection exists
+                    if (typeof localStorage.launcherPublic !== 'undefined') {
+                        launcherPublic.value = localStorage.launcherPublic;
+                    }
+                    // Update local storage upon public server selection
+                    launcherPublic.addEventListener('change', (event) => {
+                        setLaunchServer();
+                    });
+                    // Populate private server input if previous entry exists
+                    if (typeof localStorage.launcherPrivate !== 'undefined') {
+                        launcherPrivate.value = localStorage.launcherPrivate;
+                    }
+                    // Update local storage when a private server is entered
+                    launcherPrivate.addEventListener('input', (event) => {
+                        setLaunchServer();
+                    });
+
+                    // Function to update the "Launch Notebook" link href
+                    function setLaunchServer() {
+                        launchNotebookLink.removeAttribute("style")
+                        if (localStorage.launcherType == 'launcher-private') {
+                            let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                            launcherPrivateValue = launcherPrivate.value
+                            if (!launcherPrivateValue) {
+                                launchNotebookLink.removeAttribute("href")
+                                launchNotebookLink.style.background = "grey"
+                                return
+                            }
+                            localStorage.launcherPrivate = launcherPrivateValue;
+                            privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                            if (!privateServer.includes("http")) {
+                                privateServer = "http://" + privateServer
+                            }
+                            launchNotebookLinkURL = privateServer + repoPrefix;
+                        } else if (localStorage.launcherType == 'launcher-public') {
+                            launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                            localStorage.launcherPublic = launcherPublicValue;
+                            launchNotebookLinkURL = localStorage.launcherPublic;
+                        }
+                        if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                    }
+                    // Check if user has previously selected a server
+                    if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                        setLaunchServer();
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- .wrapper-->
+  </body>
+</html>

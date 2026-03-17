@@ -39,15 +39,14 @@ create_date: 2026.01.01
 
 ![图片.png](https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/%E5%9B%BE%E7%89%87.png)
 
-
 ### 本书面向的读者
 
 本书是为这样的你准备的：
 
-* 具备Python编程基础，渴望深入AI领域但被理论门槛所阻的程序员。
-* 已在使用大模型API或框架进行应用开发，希望洞悉其底层原理以提升竞争力的开发者。
-* 厌倦了浮于表面的概念介绍，渴望通过“做中学”来获得扎实技能的技术实践者。
-* 希望在面试中能对模型细节侃侃而谈，从而抓住高薪机遇的求职者。
+- 具备Python编程基础，渴望深入AI领域但被理论门槛所阻的程序员。
+- 已在使用大模型API或框架进行应用开发，希望洞悉其底层原理以提升竞争力的开发者。
+- 厌倦了浮于表面的概念介绍，渴望通过“做中学”来获得扎实技能的技术实践者。
+- 希望在面试中能对模型细节侃侃而谈，从而抓住高薪机遇的求职者。
 
 为帮助你高效学习，每个章节将提供**可运行的完整代码、明确的实验步骤，以及围绕代码展开的原理解读**。我希望你准备好开发环境，跟随本书的节奏，亲自运行、修改、甚至尝试重写这些代码——真正的理解，从动手开始。
 
@@ -55,10 +54,10 @@ create_date: 2026.01.01
 
 同时，明确本书的边界也同样重要：
 
-* 本书不会系统性地讲授机器学习或深度学习的全部理论基础。
-* 本书不会详细对比评测Hugging Face、LangChain等各类上层应用框架的使用技巧。
-* 本书不会追踪并详解每一篇最新顶会论文的前沿细节。
-* 本书不会涉及大规模分布式训练、极致推理优化等重型工业级工程议题。
+- 本书不会系统性地讲授机器学习或深度学习的全部理论基础。
+- 本书不会详细对比评测Hugging Face、LangChain等各类上层应用框架的使用技巧。
+- 本书不会追踪并详解每一篇最新顶会论文的前沿细节。
+- 本书不会涉及大规模分布式训练、极致推理优化等重型工业级工程议题。
 
 **本书聚焦于通过“手搓源码”来理解大模型的核心架构与训练逻辑。完成本书的实践后，你将具备足够的能力和信心，去更自如地阅读论文、更深入地使用框架，并为你自己的原创性项目打下坚实基础。**
 
@@ -78,28 +77,28 @@ create_date: 2026.01.01
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战01：机器何以学习.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-        <h4 class="mt-3">
-        1. 机器何以学习
-        </h4>
-        <p class="text-truncate">
-        手动从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。
-        </p>
-    </div>
+<a href="./notebooks/01机器何以学习.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 1. 机器何以学习
+</h4>
+<p class="text-truncate">
+手动从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战02：神经网络启蒙.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    2. 神经网络启蒙
-    </h4>
-    <p class="text-truncate">
-    使用 PyTorch 训练第一个神经网络模型，快速掌握使用 PyTorch 处理回归任务基本流程。
-    </p>
-    </div>
+<a href="./notebooks/02神经网络启蒙.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 2. 神经网络启蒙
+</h4>
+<p class="text-truncate">
+使用 PyTorch 训练第一个神经网络模型，快速掌握使用 PyTorch 处理回归任务基本流程。
+</p>
+</div>
 </a>
 :::
 ::::
@@ -110,32 +109,31 @@ create_date: 2026.01.01
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战03：深度学习初探.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    3. 深度学习初探
-    </h4>
-    <p class="text-truncate">
-    从回归问题升级到多分类问题，快速掌握使用PyTorch处理多分类任务的基本流程。
-    </p>
-    </div>
+<a href="./notebooks/03深度学习初探.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 3. 深度学习初探
+</h4>
+<p class="text-truncate">
+从回归问题升级到多分类问题，快速掌握使用PyTorch处理多分类任务的基本流程。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战04：PyTorch Lightning 重构.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    4. 工程的进化
-    </h4>
-    <p class="text-truncate">
-    使用 PyTorch Lightning 重构咖啡风味质检模型。
-    </p>
-    </div>
+<a href="./notebooks/04PyTorch Lightning 重构.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 4. 工程的进化
+</h4>
+<p class="text-truncate">
+使用 PyTorch Lightning 重构咖啡风味质检模型。
+</p>
+</div>
 </a>
 :::
 ::::
-
 
 ### 第三部分 《动手学：循环神经网络》
 
@@ -143,339 +141,394 @@ create_date: 2026.01.01
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战05：语言的序章.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    5. 语言的序章
-    </h4>
-    <p class="text-truncate">
-    迈出自然语言处理的第一步，构建并训练一个用于情感分类的神经网络模型。
-    </p>
-    </div>
+<a href="./notebooks/05语言的序章.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 5. 语言的序章
+</h4>
+<p class="text-truncate">
+迈出自然语言处理的第一步，构建并训练一个用于情感分类的神经网络模型。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战06：表示的困境.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    6. 表示的困境
-    </h4>
-    <p class="text-truncate">
-    通过将文本从简单的字符索引序列升级为结构化的One-Hot向量，我们成功解决了上一章中因ID数值任意性导致的模型不稳定与过拟合问题。
-    </p>
-    </div>
+<a href="./notebooks/06表示的困境.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 6. 表示的困境
+</h4>
+<p class="text-truncate">
+通过将文本从简单的字符索引序列升级为结构化的One-Hot向量，我们成功解决了上一章中因ID数值任意性导致的模型不稳定与过拟合问题。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战07：记忆的萌芽.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    7. 记忆的萌芽
-    </h4>
-    <p class="text-truncate">
-    系统阐述循环神经网络（RNN）的基本原理与实现方法。通过引入循环结构，RNN能够将历史信息（即隐藏状态）传递至当前时刻，从而有效捕捉序列数据中的时序依赖关系。
-    </p>
-    </div>
+<a href="./notebooks/07记忆的萌芽.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 7. 记忆的萌芽
+</h4>
+<p class="text-truncate">
+系统阐述循环神经网络（RNN）的基本原理与实现方法。通过引入循环结构，RNN能够将历史信息（即隐藏状态）传递至当前时刻，从而有效捕捉序列数据中的时序依赖关系。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战08：语义的飞跃.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    8. 语义的飞跃
-    </h4>
-    <p class="text-truncate">
-    本章系统性地介绍了词嵌入（Word Embedding）技术，这是自然语言处理中从离散符号表示转向连续语义表示的关键突破。
-    </p>
-    </div>
+<a href="./notebooks/08语义的飞跃.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 8. 语义的飞跃
+</h4>
+<p class="text-truncate">
+本章系统性地介绍了词嵌入（Word Embedding）技术，这是自然语言处理中从离散符号表示转向连续语义表示的关键突破。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战09：记忆的进化.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    9. 记忆的进化
-    </h4>
-    <p class="text-truncate">
-    本章重点介绍了Gated RNN，旨在解决简单RNN中普遍存在的梯度消失或梯度爆炸问题。我们指出，以LSTM和GRU为代表的门控循环神经网络通过引入“门”机制，能够对信息流进行精细调控，选择性地保留关键历史信息并过滤无关内容，从而更有效地控制数据与梯度的传递。
-    </p>
-    </div>
+<a href="./notebooks/09记忆的进化.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 9. 记忆的进化
+</h4>
+<p class="text-truncate">
+本章重点介绍了Gated RNN，旨在解决简单RNN中普遍存在的梯度消失或梯度爆炸问题。我们指出，以LSTM和GRU为代表的门控循环神经网络通过引入“门”机制，能够对信息流进行精细调控，选择性地保留关键历史信息并过滤无关内容，从而更有效地控制数据与梯度的传递。
+</p>
+</div>
 </a>
 :::
 ::::
-
 
 ### 第四部分 《动手学：Seq2Seq》
 
-
-
 ::::{grid} 1 2 2 2
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战10：穷举的困境.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    10. 穷举的困境
-    </h4>
-    <p class="text-truncate">
-    通过本次任务，你将会尝试解决一个实际问题：如何让机器“理解”加法运算，并认知到分类模型的局限性。
-    </p>
-    </div>
+<a href="./notebooks/10穷举的困境.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 10. 穷举的困境
+</h4>
+<p class="text-truncate">
+通过本次任务，你将会尝试解决一个实际问题：如何让机器“理解”加法运算，并认知到分类模型的局限性。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战11：从理解到创造.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    11. 从理解到创造
-    </h4>
-    <p class="text-truncate">
-    通过本次任务，你将学会如何使用 Seq2Seq 生成式模型解决加法计算问题。
-    </p>
-    </div>
+<a href="./notebooks/11从理解到创造.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 11. 从理解到创造
+</h4>
+<p class="text-truncate">
+通过本次任务，你将学会如何使用 Seq2Seq 生成式模型解决加法计算问题。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战12：技巧的力量.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    12. 改进Seq2Seq模型：技巧的力量
-    </h4>
-    <p class="text-truncate">
-    通过本次任务，你将学会如何使用反转输入改进 Seq2Seq 生成式模型的效果。
-    </p>
-    </div>
+<a href="./notebooks/12技巧的力量.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 12. 改进Seq2Seq模型：技巧的力量
+</h4>
+<p class="text-truncate">
+通过本次任务，你将学会如何使用反转输入改进 Seq2Seq 生成式模型的效果。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战13：信息的价值.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    13. 改进Seq2Seq模型：信息的价值
-    </h4>
-    <p class="text-truncate">
-    通过本次任务，你将学会如何使用信息偷窥改进 Seq2Seq 生成式模型的效果。
-    </p>
-    </div>
+<a href="./notebooks/13信息的价值.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 13. 改进Seq2Seq模型：信息的价值
+</h4>
+<p class="text-truncate">
+通过本次任务，你将学会如何使用信息偷窥改进 Seq2Seq 生成式模型的效果。
+</p>
+</div>
 </a>
 :::
 ::::
-
 
 ### 第五部分 《动手学：Transformer》
 
-
 ::::{grid} 1 2 2 2
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战14：注意力革命.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    14. 注意力革命
-    </h4>
-    <p class="text-truncate">
-    本章将系统介绍 Transformer 模型及其工作原理。
-    </p>
-    </div>
+<a href="./notebooks/14注意力革命.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 14. 注意力革命
+</h4>
+<p class="text-truncate">
+本章将系统介绍 Transformer 模型及其工作原理。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战15：定义 Transformer 分词器.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    15. 定义 Transformer 分词器
-    </h4>
-    <p class="text-truncate">
-    本章我们将介绍 Transformer 模型的数据需求以及如何定义 Transformer 的分词器。
-    </p>
-    </div>
+<a href="./notebooks/15定义 Transformer 分词器.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 15. 定义 Transformer 分词器
+</h4>
+<p class="text-truncate">
+本章我们将介绍 Transformer 模型的数据需求以及如何定义 Transformer 的分词器。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战16：构造 Transformer 数据集.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    16. 构造 Transformer 数据集
-    </h4>
-    <p class="text-truncate">
-    本章将学习构造训练 Transformer 模型所需的数据集的方法。
-    </p>
-    </div>
+<a href="./notebooks/16构造 Transformer 数据集.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 16. 构造 Transformer 数据集
+</h4>
+<p class="text-truncate">
+本章将学习构造训练 Transformer 模型所需的数据集的方法。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战17：实现 Transformer Input 组件.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    17. 实现 Transformer Input 组件
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何实现位置编码等 Transformer 输入模块相关组件。
-    </p>
-    </div>
+<a href="./notebooks/17实现 Transformer Input 组件.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 17. 实现 Transformer Input 组件
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现位置编码等 Transformer 输入模块相关组件。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战18：实现 Transformer Encoder 组件.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    18. 实现 Transformer Encoder 组件
-    </h4>
-    <p class="text-truncate">
-    介绍如何实现自注意力层、前馈网络层等 Transformer 编码器相关组件。
-    </div>
+<a href="./notebooks/18实现 Transformer Encoder 组件.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 18. 实现 Transformer Encoder 组件
+</h4>
+<p class="text-truncate">
+介绍如何实现自注意力层、前馈网络层等 Transformer 编码器相关组件。
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战19：实现 Transformer Decoder 组件.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    19. 实现 Transformer Decoder 组件
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何实现 Transformer 模型的解码器组件。
-    </p>
-    </div>
+<a href="./notebooks/19实现 Transformer Decoder 组件.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 19. 实现 Transformer Decoder 组件
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 Transformer 模型的解码器组件。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战20：实现完整的 Transformer 模型.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    20. 实现完整的 Transformer 模型
-    </h4>
-    <p class="text-truncate">
-    本章将串联编码器和解码器，并实现完整的 Transformer 模型。
-    </p>
-    </div>
+<a href="./notebooks/20实现完整的 Transformer 模型.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 20. 实现完整的 Transformer 模型
+</h4>
+<p class="text-truncate">
+本章将串联编码器和解码器，并实现完整的 Transformer 模型。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战21：Transformer 模型训练和评估.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    21. Transformer 模型训练和评估
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何训练和评估 Transformer 模型。
-    </div>
+<a href="./notebooks/21Transformer 模型训练和评估.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 21. Transformer 模型训练和评估
+</h4>
+<p class="text-truncate">
+本章将介绍如何训练和评估 Transformer 模型。
+</div>
 </a>
 :::
 
 ::::
-
 
 ### 第六部分 《动手学：从零训练 GPT》
 
-
 ::::{grid} 1 2 2 2
 :gutter: 3
 
 :::{grid-item}
-<a href="./notebooks/实战22：从零实现GPT.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    22. 从零实现GPT
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何从零实现 GPT 模型。
-    </div>
+<a href="./notebooks/22从零构建 GPT 模型.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 22. 从零构建 GPT 模型
+</h4>
+<p class="text-truncate">
+本章将介绍如何从零构建 GPT 模型。
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战23：定义 GPT 分词器.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    23. 定义 GPT 分词器
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何定义 GPT 模型所需要的分词器。
-    </p>
-    </div>
+<a href="./notebooks/23定义 GPT 分词器.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 23. 定义 GPT 分词器
+</h4>
+<p class="text-truncate">
+本章将介绍如何定义 GPT 模型所需要的分词器。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战24：构造 GPT 预训练数据集.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    24. 构造 GPT 预训练数据集
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何构造 GPT 模型的预训练数据集。
-    </div>
+<a href="./notebooks/24构造 GPT 预训练数据集.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 24. 构造 GPT 预训练数据集
+</h4>
+<p class="text-truncate">
+本章将介绍如何构造 GPT 模型的预训练数据集。
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战25：实现 GPT 模型核心组件.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    25. 实现 GPT 模型核心组件
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何实现 GPT 模型的核心组件。
-    </p>
-    </div>
+<a href="./notebooks/25实现 GPT 嵌入层.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 25. 实现 GPT 嵌入层
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的嵌入层。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战26：实现 GPT 模型生成解码策略.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    26. 实现 GPT 模型生成解码策略
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何实现 GPT 模型的生成解码策略。
-    </p>
-    </div>
+<a href="./notebooks/26实现 GPT 层归一化.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 26. 实现 GPT 层归一化
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的层归一化。
+</p>
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战27：GPT 模型训练与评估.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    27. GPT 模型训练与评估
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何训练和评估 GPT 模型。
-    </div>
+<a href="./notebooks/27实现 GPT 多头注意力层.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 27. 实现 GPT 多头注意力层
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的多头注意力层。
+</div>
 </a>
 :::
 
 :::{grid-item}
-<a href="./notebooks/实战28. 更具多样性的生成解码策略.html">
-    <div class="alert alert-light simple-tilt2 custom-card">
-    <h4 class="mt-3">
-    28. 更具多样性的生成解码策略
-    </h4>
-    <p class="text-truncate">
-    本章将介绍如何通过温度系数和Top-k策略实现更具多样性的生成解码策略。
-    </div>
+<a href="./notebooks/28实现 GPT 前馈网络层.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 28. 实现 GPT 前馈网络层
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的前馈网络层。
+</div>
 </a>
 :::
+
+:::{grid-item}
+<a href="./notebooks/29定义 Transformer Block 模块.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 29. 定义 Transformer Block 模块
+</h4>
+<p class="text-truncate">
+本章将介绍如何定义 Transformer 模型的 Block 模块。
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="./notebooks/30构建完整的 GPT 模型.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 30. 构建完整的 GPT 模型
+</h4>
+<p class="text-truncate">
+本章将介绍如何构建完整的 GPT 模型。
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="./notebooks/31实现 GPT 模型的生成策略.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 31. 实现 GPT 模型的生成策略
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的生成策略。
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="./notebooks/32GPT 模型的训练与评估.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 32. GPT 模型的训练与评估
+</h4>
+<p class="text-truncate">
+本章将介绍如何训练和评估 GPT 模型。
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="./notebooks/33更具多样性的生成策略.html">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 33. 更具多样性的生成策略
+</h4>
+<p class="text-truncate">
+本章将介绍如何实现 GPT 模型的更具多样性的生成策略。
+</div>
+</a>
+:::
+
 ::::
 
 ## 版权
+
 本作品由 `吾辈亦有感` 创作，并已完成著作权登记。
 
 为保护创作成果与读者体验，请遵守以下规则：
@@ -487,7 +540,6 @@ create_date: 2026.01.01
 🚫 请勿将本作品用于任何商业用途。
 
 本站文章包含大量图示、代码及自定义样式，旨在为读者提供最佳的阅读与学习体验。如需分享，请直接转发原始文章链接，以便读者获取最新版本并享受完整的阅读设计。感谢您的理解与支持。
-
 
 ## 讨论
 
@@ -511,7 +563,6 @@ create_date: 2026.01.01
 ## 致谢
 
 谨向参与本书 Beta 版试读的悟空、磊哥、至尊宝、格物致知、XiangHe、欢乐Ma、稳中向好、飞凡等诸位朋友致以诚挚谢意。你们的指正与建议，助我克服了‘知识诅咒’，提升了内容的可理解性。
-
 
 ## 推荐
 

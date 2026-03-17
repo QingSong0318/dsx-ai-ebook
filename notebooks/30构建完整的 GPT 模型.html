@@ -1,0 +1,1020 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>30. 构建完整的 GPT 模型 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a4444a4c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/30构建完整的 GPT 模型';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="31. 实现 GPT 模型的生成策略" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html" />
+    <link rel="prev" title="29. 实现 Transformer Block 模块" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=构建完整的 GPT 模型  介绍  前面我们已经实现了 GPT 模型中的所有核心组件，本小节将继续使用它们构建完整的 GPT 模型。  构建 GPT 模型  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util import show_ver />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="构建完整的 GPT 模型" />
+<meta name="twitter:description" content="构建完整的 GPT 模型  介绍  前面我们已经实现了 GPT 模型中的所有核心组件，本小节将继续使用它们构建完整的 GPT 模型。  构建 GPT 模型  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util import show_ver">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="构建完整的 GPT 模型" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="构建完整的 GPT 模型  介绍  前面我们已经实现了 GPT 模型中的所有核心组件，本小节将继续使用它们构建完整的 GPT 模型。  构建 GPT 模型  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util import show_ver" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+    <!-- Override QuantEcon theme colors -->
+    <style>
+        a {
+            color: #313131;
+        }
+
+        a:hover {
+            color: #313131;
+        }
+
+        a:visited {
+            color: #111111;
+        }
+
+        .main-index {
+            #qe-page-author-links {
+                border-bottom: 5px solid #313131;
+            }
+        }
+
+        .qe-page__header {
+            border-bottom: 5px solid #313131;
+        }
+
+        .qe-page__footer {
+            border-top: 5px solid #313131;
+        }
+
+        .toctree-wrapper {
+            .caption-text {
+                color: #111111
+            }
+        }
+    </style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/30构建完整的 GPT 模型>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">30.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">30.2. 环境配置</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">30.3. 安装依赖</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">30.3.1. 环境版本</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">30.4. GPT 模型架构</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">30.5. GPT 模型的代码实现</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">30.6. GPT 模型的详细信息</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">30.7. 答疑讨论</a></li>
+</ul>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top">
+                                    <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                        type="button">
+                                        <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                            focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                            <path fill="currentColor"
+                                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                            </path>
+                                        </svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com -->
+                                        返回顶部
+                                    </button>
+                                </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                    <p class="qe-page__header-authors" font-size="18">
+                        <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                        更新于：2026.01.01
+                    </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+
+                <div class="cover-container simple-tilt">
+                    
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260317164945.png" class="cover-image">
+                    
+                </div>
+
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="gpt">
+<h1><span class="section-number">30. </span>构建完整的 GPT 模型<a class="headerlink" href="#gpt" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">30.1. </span>介绍<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>前面我们已经实现了 GPT 模型中的所有核心组件，本小节将继续使用它们构建完整的 GPT 模型。</p>
+<p><img alt="构建 GPT 模型" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260314100339.png" /></p>
+</section>
+<section id="id2">
+<h2><span class="section-number">30.2. </span>环境配置<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+</section>
+<section id="id3">
+<h2><span class="section-number">30.3. </span>安装依赖<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm
+</pre></div>
+</div>
+</div>
+</div>
+<section id="id4">
+<h3><span class="section-number">30.3.1. </span>环境版本<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">本书愿景：</span>
++------+--------------------------------------------------------+
+| Info |                  《动手学大语言模型》                  |
++------+--------------------------------------------------------+
+| 作者 |                       吾辈亦有感                       |
+| 哔站 |      https://space.bilibili.com/3546632320715420       |
+| 定位 | 基于&#39;从零构建&#39;的理念，用实战帮助程序员快速入门大模型。 |
+| 愿景 | 若让你的AI学习之路走的更容易一点，我将倍感荣幸！祝好😄 |
++------+--------------------------------------------------------+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.10.0    |         2.6.1          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2><span class="section-number">30.4. </span>GPT 模型架构<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>在动手写代码之前，我们重新温习一下 GPT 模型的结构和计算的流程。</p>
+<p>GPT 模型的总体结构：</p>
+<p><img alt="GPT 模型架构" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260314100409.png" /></p>
+<p>使用GPT 模型计算的流程：</p>
+<p><img alt="GPT模型的整体流程" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260314100347.png" /></p>
+</section>
+<section id="id6">
+<h2><span class="section-number">30.5. </span>GPT 模型的代码实现<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>由于 GPT 模型需要配置的参数较多，我们在初始化模型时，将这些参数封装在一个配置字典 <code class="docutils literal notranslate"><span class="pre">cfg</span></code> 中，方便统一管理。在下面的代码中有以下几点需要注意：</p>
+<ol class="arabic simple">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> 方法中，我们为了防止过拟合添加了 Dropout 层，为了训练的稳定性在输出层之前又添加了一个 LayerNorm 层。</p></li>
+<li><p>我们使用 <code class="docutils literal notranslate"><span class="pre">torch.nn.Sequential</span></code> 创建了几个相互堆叠的 Transfomer 块，在 <code class="docutils literal notranslate"><span class="pre">forward</span></code> 计算时，会顺序执行这些 Transformer 块。</p></li>
+<li><p>另外还添加了用于记录训练和验证过程中的损失的列表和方便展示模型结构的示例输入 <code class="docutils literal notranslate"><span class="pre">example_input_array</span></code>。</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.layer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformerBlock</span><span class="p">,</span> <span class="n">LayerNorm</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GPTModel</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GPT 语言模型，基于 Transformer 解码器架构。</span>
+
+<span class="sd">    模型结构：</span>
+<span class="sd">        - Token Embedding：将 token ID 映射为 d_model 维向量</span>
+<span class="sd">        - Position Embedding：为每个位置添加可学习的位置编码</span>
+<span class="sd">        - Dropout：对嵌入向量进行正则化</span>
+<span class="sd">        - Transformer 块堆叠：多个 TransformerBlock</span>
+<span class="sd">        - 最终层归一化</span>
+<span class="sd">        - 输出线性层（LM Head）：将 d_model 映射回词汇表大小</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg (dict): 配置字典，必须包含以下键：</span>
+<span class="sd">            - vocab_size: 词汇表大小</span>
+<span class="sd">            - d_model: 嵌入维度</span>
+<span class="sd">            - seq_len: 最大上下文长度</span>
+<span class="sd">            - drop_rate: Dropout 概率</span>
+<span class="sd">            - n_layers: Transformer 块的数量</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Token 嵌入层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;vocab_size&quot;</span><span class="p">],</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;d_model&quot;</span><span class="p">])</span>
+
+        <span class="c1"># 位置嵌入层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">],</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;d_model&quot;</span><span class="p">])</span>
+
+        <span class="c1"># 嵌入后的 Dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedding_dropout</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;drop_rate&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Transformer 块堆叠</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer_blocks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span>
+                <span class="n">TransformerBlock</span><span class="p">(</span>
+                    <span class="n">d_model</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;d_model&quot;</span><span class="p">],</span>
+                    <span class="n">seq_len</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">],</span>
+                    <span class="n">n_heads</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;n_heads&quot;</span><span class="p">],</span>
+                    <span class="n">drop_rate</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;drop_rate&quot;</span><span class="p">],</span>
+                    <span class="n">qkv_bias</span><span class="o">=</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;qkv_bias&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;n_layers&quot;</span><span class="p">])</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 最终层归一化</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_layer_norm</span> <span class="o">=</span> <span class="n">LayerNorm</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;d_model&quot;</span><span class="p">])</span>
+
+        <span class="c1"># 输出层（语言模型头），无偏置</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;d_model&quot;</span><span class="p">],</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;vocab_size&quot;</span><span class="p">],</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># 用于记录训练和验证过程中的损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每个 step 的损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每个 epoch 的平均损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_step_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每个 step 的验证损失</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_epoch_losses</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># 每个 epoch 的平均验证损失</span>
+
+        <span class="c1"># 示例输入</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">example_input_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;vocab_size&quot;</span><span class="p">],</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播，计算下一个 token 的 logits。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_ids (torch.Tensor): 输入 token ID 序列，形状为 (batch_size, seq_len)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 预测 logits，形状为 (batch_size, seq_len, vocab_size)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">device</span>
+
+        <span class="c1"># Token 嵌入</span>
+        <span class="n">token_embeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_embedding</span><span class="p">(</span><span class="n">input_ids</span><span class="p">)</span>  <span class="c1"># (batch, seq_len, d_model)</span>
+
+        <span class="c1"># 位置嵌入（生成位置索引 [0, 1, ..., seq_len-1]）</span>
+        <span class="n">position_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">position_embeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position_embedding</span><span class="p">(</span><span class="n">position_ids</span><span class="p">)</span>  <span class="c1"># (seq_len, d_model)</span>
+
+        <span class="c1"># 将 token 嵌入和位置嵌入相加，得到最终的输入表示，形状为 (batch, seq_len, d_model)</span>
+        <span class="n">hidden_states</span> <span class="o">=</span> <span class="n">token_embeds</span> <span class="o">+</span> <span class="n">position_embeds</span>
+
+        <span class="c1"># 应用 Dropout</span>
+        <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding_dropout</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
+
+        <span class="c1"># 通过所有 Transformer 块</span>
+        <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer_blocks</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
+
+        <span class="c1"># 最终层归一化</span>
+        <span class="n">hidden_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_layer_norm</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
+
+        <span class="c1"># 通过语言模型头得到 logits，形状为 (batch, seq_len, vocab_size)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lm_head</span><span class="p">(</span><span class="n">hidden_states</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">logits</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_train_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_loss_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;清空所有缓存的损失列表，释放内存。&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_epoch_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_step_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_epoch_losses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h2><span class="section-number">30.6. </span>GPT 模型的详细信息<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 导入PyTorch Lightning的模型摘要工具，用于查看模型结构和参数信息</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lightning.pytorch.utilities.model_summary</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelSummary</span>
+
+<span class="c1"># 定义GPT模型的配置参数（对应124M参数版本的GPT）</span>
+<span class="n">GPT_CONFIG_124M</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;vocab_size&quot;</span><span class="p">:</span> <span class="mi">50257</span><span class="p">,</span>  <span class="c1"># 词汇表大小，即模型可以表示的不同token的数量</span>
+    <span class="s2">&quot;seq_len&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>  <span class="c1"># 上下文长度（原为1024，此处缩短为256），决定模型一次处理的最大序列长度</span>
+    <span class="s2">&quot;d_model&quot;</span><span class="p">:</span> <span class="mi">768</span><span class="p">,</span>  <span class="c1"># 嵌入维度（embedding dimension），每个token被映射到的向量维度</span>
+    <span class="s2">&quot;n_heads&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1"># 注意力头数量（number of attention heads），用于多头注意力机制</span>
+    <span class="s2">&quot;n_layers&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1"># 层数，Transformer块的数量</span>
+    <span class="s2">&quot;drop_rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>  <span class="c1"># Dropout率，用于防止过拟合的概率值</span>
+    <span class="s2">&quot;qkv_bias&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># 查询-键-值偏置（query-key-value bias），是否在注意力计算中使用偏置项</span>
+<span class="p">}</span>
+
+<span class="c1"># 根据定义的配置创建GPT模型实例</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GPTModel</span><span class="p">(</span><span class="n">GPT_CONFIG_124M</span><span class="p">)</span>
+
+
+<span class="c1"># 创建模型摘要对象，max_depth=-1表示显示完整的模型层次结构</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">ModelSummary</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 打印模型摘要信息</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   | Name                  | Type             | Params | Mode  | FLOPs  | In sizes      | Out sizes      
+---------------------------------------------------------------------------------------------------------------
+0  | token_embedding       | Embedding        | 38.6 M | train | 0      | [2, 256]      | [2, 256, 768]  
+1  | position_embedding    | Embedding        | 196 K  | train | 0      | [256]         | [256, 768]     
+2  | embedding_dropout     | Dropout          | 0      | train | 0      | [2, 256, 768] | [2, 256, 768]  
+3  | transformer_blocks    | Sequential       | 113 M  | train | 120 B  | [2, 256, 768] | [2, 256, 768]  
+4  | transformer_blocks.0  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+5  | transformer_blocks.1  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+6  | transformer_blocks.2  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+7  | transformer_blocks.3  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+8  | transformer_blocks.4  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+9  | transformer_blocks.5  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+10 | transformer_blocks.6  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+11 | transformer_blocks.7  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+12 | transformer_blocks.8  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+13 | transformer_blocks.9  | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+14 | transformer_blocks.10 | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+15 | transformer_blocks.11 | TransformerBlock | 9.4 M  | train | 10.1 B | [2, 256, 768] | [2, 256, 768]  
+16 | final_layer_norm      | LayerNorm        | 1.5 K  | train | 0      | [2, 256, 768] | [2, 256, 768]  
+17 | lm_head               | Linear           | 38.6 M | train | 39.5 B | [2, 256, 768] | [2, 256, 50257]
+---------------------------------------------------------------------------------------------------------------
+190 M     Trainable params
+0         Non-trainable params
+190 M     Total params
+762.741   Total estimated model params size (MB)
+186       Modules in train mode
+0         Modules in eval mode
+160 B     Total Flops
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h2><span class="section-number">30.7. </span>答疑讨论<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+                <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                    <div class="qe-sidebar__header">
+
+                        目录
+
+                    </div>
+
+                    <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+
+                    </nav>
+
+                    <div class="qe-sidebar__footer">
+
+                    </div>
+
+                </div> <!-- .sidebar -->
+                
+            </div> <!-- .main -->
+
+            <div class="qe-toolbar">
+
+                <div class="qe-toolbar__inner">
+
+                    <ul class="qe-toolbar__main">
+                        <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                        <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    </ul>
+
+                    <ul class="qe-toolbar__links">
+                        <li data-tippy-content="搜索" class="btn__search">
+                            <form action="../search.html" method="get">
+                                <input type="search" class="form-control" name="q" id="search-input"
+                                    placeholder="Search..." aria-label="Search..."
+                                    autocomplete="off" accesskey="k">
+                                <i data-feather="search" id="search-icon"></i>
+                            </form>
+                        </li>
+                        <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                        <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                        </li>
+                        <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- .toolbar -->
+            <div id="downloadPDFModal" style="display: none;">
+                <ul class="pdf-options" style="display: block;">
+                    <li class="download-pdf-book" onClick="window.print()">
+                        <p>Lecture (PDF)</p>
+                    </li>
+                    <li class="download-pdf-file">
+                        <a href="" download>
+                            <p>Book (PDF)</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="settingsModal" style="display: none;">
+                <p class="modal-title"> Notebook Launcher </p>
+                <div class="modal-desc">
+                    <p>
+                        Choose public or private cloud service for "Launch" button.
+                    </p>
+                </div>
+                <p class="modal-subtitle">Select a server</p>
+                <ul class="modal-servers">
+                    <li class="active launcher-public">
+                        <span class="label">Public</span>
+                        <select id="launcher-public-input">
+                            
+                        </select>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                    <li class="launcher-private">
+                        <span class="label">Private</span>
+                        <input type="text" id="launcher-private-input" data-repourl=""
+                            data-urlpath="" data-branch=>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+                <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                        Notebook</a></p>
+                <script>
+                    // QuantEcon Notebook Launcher
+                    const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                    // Highlight the server type if previous selection exists
+                    if (typeof localStorage.launcherType !== 'undefined') {
+                        for (var i = 0; i < launcherTypeElements.length; i++) {
+                            launcherTypeElements[i].classList.remove('active');
+                            if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                                launcherTypeElements[i].classList.add('active');
+                            }
+                        }
+                    }
+                    // Highlight server type on click and set local storage value
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].addEventListener('click', function () {
+                            for (var j = 0; j < launcherTypeElements.length; j++) {
+                                launcherTypeElements[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+                            if (this.classList.contains('launcher-private')) {
+                                localStorage.launcherType = 'launcher-private';
+                            } else if (this.classList.contains('launcher-public')) {
+                                localStorage.launcherType = 'launcher-public';
+                            }
+                            setLaunchServer();
+                        })
+                    }
+                    const launcherPublic = document.getElementById('launcher-public-input');
+                    const launcherPrivate = document.getElementById('launcher-private-input');
+                    const pageName = "notebooks/30构建完整的 GPT 模型";
+                    const repoURL = "";
+                    const urlPath = "";
+                    const branch = ""
+                    const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                    // Highlight public server option if previous selection exists
+                    if (typeof localStorage.launcherPublic !== 'undefined') {
+                        launcherPublic.value = localStorage.launcherPublic;
+                    }
+                    // Update local storage upon public server selection
+                    launcherPublic.addEventListener('change', (event) => {
+                        setLaunchServer();
+                    });
+                    // Populate private server input if previous entry exists
+                    if (typeof localStorage.launcherPrivate !== 'undefined') {
+                        launcherPrivate.value = localStorage.launcherPrivate;
+                    }
+                    // Update local storage when a private server is entered
+                    launcherPrivate.addEventListener('input', (event) => {
+                        setLaunchServer();
+                    });
+
+                    // Function to update the "Launch Notebook" link href
+                    function setLaunchServer() {
+                        launchNotebookLink.removeAttribute("style")
+                        if (localStorage.launcherType == 'launcher-private') {
+                            let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                            launcherPrivateValue = launcherPrivate.value
+                            if (!launcherPrivateValue) {
+                                launchNotebookLink.removeAttribute("href")
+                                launchNotebookLink.style.background = "grey"
+                                return
+                            }
+                            localStorage.launcherPrivate = launcherPrivateValue;
+                            privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                            if (!privateServer.includes("http")) {
+                                privateServer = "http://" + privateServer
+                            }
+                            launchNotebookLinkURL = privateServer + repoPrefix;
+                        } else if (localStorage.launcherType == 'launcher-public') {
+                            launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                            localStorage.launcherPublic = launcherPublicValue;
+                            launchNotebookLinkURL = localStorage.launcherPublic;
+                        }
+                        if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                    }
+                    // Check if user has previously selected a server
+                    if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                        setLaunchServer();
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- .wrapper-->
+  </body>
+</html>

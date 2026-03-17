@@ -1,0 +1,1569 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>33. 更具多样性的生成策略 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a4444a4c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/33更具多样性的生成策略';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="32. GPT 模型的训练与评估" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=更具多样性的生成策略  介绍  在上一节中，我们完成了 GPT 模型的训练，但是在后几个评估 Epoch 中，我们发现模型生成的文本是重复的，这说明模型生成内容时少了一些多样性。本小节将介绍如何通过调整生成策略，使模型生成的文本更加多样化。  环境配置  安装依赖  !pip install --upgrade dsx />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="更具多样性的生成策略" />
+<meta name="twitter:description" content="更具多样性的生成策略  介绍  在上一节中，我们完成了 GPT 模型的训练，但是在后几个评估 Epoch 中，我们发现模型生成的文本是重复的，这说明模型生成内容时少了一些多样性。本小节将介绍如何通过调整生成策略，使模型生成的文本更加多样化。  环境配置  安装依赖  !pip install --upgrade dsx">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="更具多样性的生成策略" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="更具多样性的生成策略  介绍  在上一节中，我们完成了 GPT 模型的训练，但是在后几个评估 Epoch 中，我们发现模型生成的文本是重复的，这说明模型生成内容时少了一些多样性。本小节将介绍如何通过调整生成策略，使模型生成的文本更加多样化。  环境配置  安装依赖  !pip install --upgrade dsx" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+    <!-- Override QuantEcon theme colors -->
+    <style>
+        a {
+            color: #313131;
+        }
+
+        a:hover {
+            color: #313131;
+        }
+
+        a:visited {
+            color: #111111;
+        }
+
+        .main-index {
+            #qe-page-author-links {
+                border-bottom: 5px solid #313131;
+            }
+        }
+
+        .qe-page__header {
+            border-bottom: 5px solid #313131;
+        }
+
+        .qe-page__footer {
+            border-top: 5px solid #313131;
+        }
+
+        .toctree-wrapper {
+            .caption-text {
+                color: #111111
+            }
+        }
+    </style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/33更具多样性的生成策略>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">33.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">33.2. 环境配置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">33.2.1. 安装依赖</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">33.2.2. 环境版本</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpt">33.3. 训练 GPT 模型</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">33.4. 模型生成中存在的问题</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">33.5. 如何增加模型生成的多样性？</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">33.5.1. 创建示例数据</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">33.5.2. 贪婪解码策略</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">33.5.3. 概率采样策略</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">33.6. 温度缩放</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#softmax">33.6.1. 带有温度缩放的Softmax 的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">33.6.2. 使用不同的温度系数缩放词元的概率分布</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">33.6.3. 可视化不同的温度系数对词元概率分布的影响</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tok-k">33.7. Tok-K 采样</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#top-k">33.7.1. Top-K 采样的代码实现</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">33.8. 改进生成解码策略</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">33.9. 使用改进的生成解码策略</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">33.10. 答疑讨论</a></li>
+</ul>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top">
+                                    <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                        type="button">
+                                        <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                            focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                            <path fill="currentColor"
+                                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                            </path>
+                                        </svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com -->
+                                        返回顶部
+                                    </button>
+                                </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                    <p class="qe-page__header-authors" font-size="18">
+                        <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                        更新于：2026.01.01
+                    </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+
+                <div class="cover-container simple-tilt">
+                    
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260317165053.png" class="cover-image">
+                    
+                </div>
+
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1><span class="section-number">33. </span>更具多样性的生成策略<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
+<section id="id2">
+<h2><span class="section-number">33.1. </span>介绍<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>在上一节中，我们完成了 GPT 模型的训练，但是在后几个评估 <code class="docutils literal notranslate"><span class="pre">Epoch</span></code> 中，我们发现模型生成的文本是重复的，这说明模型生成内容时少了一些多样性。本小节将介绍如何通过调整生成策略，使模型生成的文本更加多样化。</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">33.2. </span>环境配置<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h3><span class="section-number">33.2.1. </span>安装依赖<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">33.2.2. </span>环境版本<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">本书愿景：</span>
++------+--------------------------------------------------------+
+| Info |                  《动手学大语言模型》                  |
++------+--------------------------------------------------------+
+| 作者 |                       吾辈亦有感                       |
+| 哔站 |      https://space.bilibili.com/3546632320715420       |
+| 定位 | 基于&#39;从零构建&#39;的理念，用实战帮助程序员快速入门大模型。 |
+| 愿景 | 若让你的AI学习之路走的更容易一点，我将倍感荣幸！祝好😄 |
++------+--------------------------------------------------------+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.10.0    |         2.6.1          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="gpt">
+<h2><span class="section-number">33.3. </span>训练 GPT 模型<a class="headerlink" href="#gpt" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPTDataModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPTModel</span><span class="p">,</span> <span class="n">SampleTestCallback</span>
+
+
+<span class="c1"># 定义GPT模型的配置参数（对应124M参数版本的GPT）</span>
+<span class="n">GPT_CONFIG_124M</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;vocab_size&quot;</span><span class="p">:</span> <span class="mi">50257</span><span class="p">,</span>  <span class="c1"># 词汇表大小，即模型可以表示的不同token的数量</span>
+    <span class="s2">&quot;seq_len&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>  <span class="c1"># 上下文长度（原为1024，此处缩短为256），决定模型一次处理的最大序列长度</span>
+    <span class="s2">&quot;d_model&quot;</span><span class="p">:</span> <span class="mi">768</span><span class="p">,</span>  <span class="c1"># 嵌入维度（embedding dimension），每个token被映射到的向量维度</span>
+    <span class="s2">&quot;n_heads&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1"># 注意力头数量（number of attention heads），用于多头注意力机制</span>
+    <span class="s2">&quot;n_layers&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>  <span class="c1"># 层数，Transformer块的数量</span>
+    <span class="s2">&quot;drop_rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>  <span class="c1"># Dropout率，用于防止过拟合的概率值</span>
+    <span class="s2">&quot;qkv_bias&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># 查询-键-值偏置（query-key-value bias），是否在注意力计算中使用偏置项</span>
+<span class="p">}</span>
+
+<span class="c1"># 超参配置：</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">max_length</span> <span class="o">=</span> <span class="n">GPT_CONFIG_124M</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">]</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">GPT_CONFIG_124M</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># 1️⃣ 初始化 GPT-2 使用的分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3️⃣ 加载数据模组</span>
+<span class="n">data_filepath</span> <span class="o">=</span> <span class="s2">&quot;./dataset/llm_corpus.txt&quot;</span>
+<span class="n">datamodule</span> <span class="o">=</span> <span class="n">GPTDataModule</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+    <span class="n">train_data_file</span><span class="o">=</span><span class="n">data_filepath</span><span class="p">,</span>
+    <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+    <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 4️⃣ 初始化模型</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GPTModel</span><span class="p">(</span><span class="n">GPT_CONFIG_124M</span><span class="p">)</span>
+
+<span class="c1"># 5️⃣ 初始化训练器</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">check_val_every_n_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_sanity_val_steps</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">enable_progress_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">SampleTestCallback</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">,</span> <span class="n">context_size</span><span class="o">=</span><span class="n">max_length</span><span class="p">)],</span>
+    <span class="n">enable_checkpointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 6️⃣ 训练模型</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GPU available: True (mps), used: True
+TPU available: False, using: 0 TPU cores
+💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">┏━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">   </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Name               </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Type       </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Params </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold"> Mode  </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">  FLOPs </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">      In sizes </span>┃<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">       Out sizes </span>┃
+┡━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 0 </span>│ token_embedding    │ Embedding  │ 38.6 M │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">      [2, 256] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [2, 256, 768] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 1 </span>│ position_embedding │ Embedding  │  196 K │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">         [256] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">      [256, 768] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 2 </span>│ embedding_dropout  │ Dropout    │      0 │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [2, 256, 768] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [2, 256, 768] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 3 </span>│ transformer_blocks │ Sequential │  113 M │ train │  120 B │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [2, 256, 768] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [2, 256, 768] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 4 </span>│ final_layer_norm   │ LayerNorm  │  1.5 K │ train │      0 │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [2, 256, 768] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0">   [2, 256, 768] </span>│
+│<span style="color: #7f7f7f; text-decoration-color: #7f7f7f"> 5 </span>│ lm_head            │ Linear     │ 38.6 M │ train │ 39.5 B │<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [2, 256, 768] </span>│<span style="color: #c0c0c0; text-decoration-color: #c0c0c0"> [2, 256, 50257] </span>│
+└───┴────────────────────┴────────────┴────────┴───────┴────────┴───────────────┴─────────────────┘
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="font-weight: bold">Trainable params</span>: 190 M                                                                                            
+<span style="font-weight: bold">Non-trainable params</span>: 0                                                                                            
+<span style="font-weight: bold">Total params</span>: 190 M                                                                                                
+<span style="font-weight: bold">Total estimated model params size (MB)</span>: 762                                                                        
+<span style="font-weight: bold">Modules in train mode</span>: 186                                                                                         
+<span style="font-weight: bold">Modules in eval mode</span>: 0                                                                                            
+<span style="font-weight: bold">Total FLOPs</span>: 160 B                                                                                                 
+</pre>
+</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+----------------+
+| Epoch | Start_Token | Generated_Text |
++-------+-------------+----------------+
+|   0   |      I      |  I,,,,,,,,,,   |
++-------+-------------+----------------+
+***** 【Epoch 0】 Val Avg Loss: 8.6662 *****
+***** 【Epoch 0】 Train Avg Loss: 9.8946 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+----------------+
+| Epoch | Start_Token | Generated_Text |
++-------+-------------+----------------+
+|   1   |      I      |  I, the, the.  |
+|       |             |                |
+|       |             |                |
+|       |             |                |
+|       |             |                |
+|       |             |                |
++-------+-------------+----------------+
+***** 【Epoch 1】 Val Avg Loss: 7.3752 *****
+***** 【Epoch 1】 Train Avg Loss: 7.8780 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+----------------------------+
+| Epoch | Start_Token |       Generated_Text       |
++-------+-------------+----------------------------+
+|   2   |      I      | I, and, and, and, and, and |
++-------+-------------+----------------------------+
+***** 【Epoch 2】 Val Avg Loss: 6.5450 *****
+***** 【Epoch 2】 Train Avg Loss: 6.3474 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+-----------------------+
+| Epoch | Start_Token |     Generated_Text    |
++-------+-------------+-----------------------+
+|   3   |      I      | I-------------------- |
++-------+-------------+-----------------------+
+***** 【Epoch 3】 Val Avg Loss: 6.4690 *****
+***** 【Epoch 3】 Train Avg Loss: 6.8890 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+----------------------------+
+| Epoch | Start_Token |       Generated_Text       |
++-------+-------------+----------------------------+
+|   4   |      I      | I, the, the, and, and, the |
++-------+-------------+----------------------------+
+***** 【Epoch 4】 Val Avg Loss: 6.2576 *****
+***** 【Epoch 4】 Train Avg Loss: 4.7287 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+-------------------------------------+
+| Epoch | Start_Token |            Generated_Text           |
++-------+-------------+-------------------------------------+
+|   5   |      I      | I he had the, and I had a little of |
++-------+-------------+-------------------------------------+
+***** 【Epoch 5】 Val Avg Loss: 6.1180 *****
+***** 【Epoch 5】 Train Avg Loss: 4.0857 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------+
+| Epoch | Start_Token |            Generated_Text            |
++-------+-------------+--------------------------------------+
+|   6   |      I      | I he had been, and I was a little of |
++-------+-------------+--------------------------------------+
+***** 【Epoch 6】 Val Avg Loss: 6.1419 *****
+***** 【Epoch 6】 Train Avg Loss: 3.3987 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+-------------------------------+
+| Epoch | Start_Token |         Generated_Text        |
++-------+-------------+-------------------------------+
+|   7   |      I      | I had the sun of the picture. |
+|       |             |                               |
+|       |             |                               |
+|       |             |                               |
++-------+-------------+-------------------------------+
+***** 【Epoch 7】 Val Avg Loss: 6.1154 *****
+***** 【Epoch 7】 Train Avg Loss: 2.8955 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+-----------------------------+
+| Epoch | Start_Token |        Generated_Text       |
++-------+-------------+-----------------------------+
+|   8   |      I      | I could the sunlit terrace. |
+|       |             |                             |
+|       |             |                             |
+|       |             |                             |
++-------+-------------+-----------------------------+
+***** 【Epoch 8】 Val Avg Loss: 6.2984 *****
+***** 【Epoch 8】 Train Avg Loss: 2.1331 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+---------------------------+
+| Epoch | Start_Token |       Generated_Text      |
++-------+-------------+---------------------------+
+|   9   |      I      | I had the sunlit terrace. |
+|       |             |                           |
+|       |             |                           |
+|       |             |                           |
++-------+-------------+---------------------------+
+***** 【Epoch 9】 Val Avg Loss: 6.2883 *****
+***** 【Epoch 9】 Train Avg Loss: 1.5858 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+------------------------+
+| Epoch | Start_Token |     Generated_Text     |
++-------+-------------+------------------------+
+|   10  |      I      | I, the sunlit terrace. |
+|       |             |                        |
+|       |             |                        |
+|       |             |                        |
++-------+-------------+------------------------+
+***** 【Epoch 10】 Val Avg Loss: 6.3661 *****
+***** 【Epoch 10】 Train Avg Loss: 1.1139 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   11  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 11】 Val Avg Loss: 6.4084 *****
+***** 【Epoch 11】 Train Avg Loss: 0.7803 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   12  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 12】 Val Avg Loss: 6.5458 *****
+***** 【Epoch 12】 Train Avg Loss: 0.5518 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   13  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 13】 Val Avg Loss: 6.5581 *****
+***** 【Epoch 13】 Train Avg Loss: 0.4093 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   14  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 14】 Val Avg Loss: 6.6557 *****
+***** 【Epoch 14】 Train Avg Loss: 0.3129 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   15  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 15】 Val Avg Loss: 6.7371 *****
+***** 【Epoch 15】 Train Avg Loss: 0.2637 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   16  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 16】 Val Avg Loss: 6.7717 *****
+***** 【Epoch 16】 Train Avg Loss: 0.2326 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   17  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 17】 Val Avg Loss: 6.8461 *****
+***** 【Epoch 17】 Train Avg Loss: 0.2052 *****
+<span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   18  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 18】 Val Avg Loss: 6.8152 *****
+***** 【Epoch 18】 Train Avg Loss: 0.1853 *****
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>`Trainer.fit` stopped: `max_epochs=20` reached.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">生成测试：</span>
++-------+-------------+--------------------------------------------+
+| Epoch | Start_Token |               Generated_Text               |
++-------+-------------+--------------------------------------------+
+|   19  |      I      | I HAD always thought Jack Gisburn rather a |
++-------+-------------+--------------------------------------------+
+***** 【Epoch 19】 Val Avg Loss: 6.8078 *****
+***** 【Epoch 19】 Train Avg Loss: 0.1731 *****
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2><span class="section-number">33.4. </span>模型生成中存在的问题<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>使用训练好的 GPT 模型多次生成文本，观察模型生成的结果。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">text_to_token_ids</span><span class="p">,</span> <span class="n">token_ids_to_text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_generate</span>
+
+<span class="c1"># 将模型移动到 CPU 上进行推理</span>
+<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="c1"># 设置模型为评估模式（关闭 dropout 和 batch normalization 的训练行为）</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="c1"># 初始化 GPT-2 分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用训练好的模型生成并打印 5 次文本</span>
+<span class="n">generate_samples</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="c1"># 调用 greedy_generate 函数生成文本</span>
+    <span class="n">generated_text</span> <span class="o">=</span> <span class="n">greedy_generate</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">start_ids</span><span class="o">=</span><span class="n">text_to_token_ids</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">),</span>
+        <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">context_size</span><span class="o">=</span><span class="n">GPT_CONFIG_124M</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">],</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 将生成的 token ID 序列解码为可读文本</span>
+    <span class="n">generate_samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">generated_text</span><span class="p">))</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;模型生成效果&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;生成次数&quot;</span><span class="p">,</span> <span class="s2">&quot;生成结果&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">generate_samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">模型生成效果：</span>
++----------+--------------------------------------------+
+| 生成次数 |                  生成结果                  |
++----------+--------------------------------------------+
+|    0     | I HAD always thought Jack Gisburn rather a |
+|    1     | I HAD always thought Jack Gisburn rather a |
+|    2     | I HAD always thought Jack Gisburn rather a |
+|    3     | I HAD always thought Jack Gisburn rather a |
+|    4     | I HAD always thought Jack Gisburn rather a |
++----------+--------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+<p>我们以 <code class="docutils literal notranslate"><span class="pre">I</span></code> 开头生成了 5 次文本，发现每次生成的结果都是 <code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">HAD</span> <span class="pre">always</span> <span class="pre">thought</span> <span class="pre">Jack</span> <span class="pre">Gisburn</span> <span class="pre">rather</span> <span class="pre">a</span></code>，GPT 模型生成文本时，缺少了一些多样性。因为我们选择下一次生成的 token 时，只选择了概率最高的 token，而没有考虑其他可能的 token。</p>
+</section>
+<section id="id7">
+<h2><span class="section-number">33.5. </span>如何增加模型生成的多样性？<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<p>想要提高生成文本的多样性，我们可以使用概率采样策略代替贪心解码策略。</p>
+<ul class="simple">
+<li><p>贪心解码策略：模型生成下一个词元时，总是选择概率最高的词元作为下一个词元。</p></li>
+<li><p>概率采样策略：模型生成下一个词元时，根据概率分数进行采样，而不是选择概率最高的词元作为下一个词元。</p></li>
+</ul>
+<p>下面使用一个示例来演示概率采样策略的效果。</p>
+<section id="id8">
+<h3><span class="section-number">33.5.1. </span>创建示例数据<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="c1"># 示例数据（请根据你的实际数据替换）</span>
+<span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;动&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;手&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;学&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;：&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;大&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;语&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;言&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;模&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;型&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># 创建反向词汇表，用于从索引获取词</span>
+<span class="n">reverse_vocab</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<span class="c1"># 定义下一个 token 的 logits（模型输出的原始值）</span>
+<span class="n">next_token_logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+    <span class="p">[</span><span class="mf">4.51</span><span class="p">,</span> <span class="mf">0.89</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.90</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.63</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.62</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.89</span><span class="p">,</span> <span class="mf">6.28</span><span class="p">,</span> <span class="mf">1.79</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id9">
+<h3><span class="section-number">33.5.2. </span>贪婪解码策略<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<p>使用贪婪解码策略，模型会在每一步选择概率最高的词元作为下一个词元。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用贪婪解码选择 10 次</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">next_token_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">next_token_logits</span><span class="p">)</span>
+    <span class="c1"># 根据索引获取对应的词</span>
+    <span class="n">next_token_word</span> <span class="o">=</span> <span class="n">reverse_vocab</span><span class="p">[</span><span class="n">next_token_index</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;【贪婪解码策略】第 </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> 次选择：索引=</span><span class="si">{</span><span class="n">next_token_index</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">, 词=&#39;</span><span class="si">{</span><span class="n">next_token_word</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>【贪婪解码策略】第 1 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 2 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 3 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 4 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 5 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 6 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 7 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 8 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 9 次选择：索引=7, 词=&#39;模&#39;
+【贪婪解码策略】第 10 次选择：索引=7, 词=&#39;模&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h3><span class="section-number">33.5.3. </span>概率采样策略<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<p>使用概率采样策略，模型会根据每个词元的概率分布随机选择下一个词元（概率越高的词越有可能被选择，但是概率低的词也有被选择的可能）。这种策略可以引入更多的随机性，使生成的文本更加多样化。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用概率采样选择 10 次</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">next_token_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">next_token_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">next_token_word</span> <span class="o">=</span> <span class="n">reverse_vocab</span><span class="p">[</span><span class="n">next_token_index</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;【概率采样策略】第 </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> 次选择：索引=</span><span class="si">{</span><span class="n">next_token_index</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">, 词=&#39;</span><span class="si">{</span><span class="n">next_token_word</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>【概率采样策略】第 1 次选择：索引=0, 词=&#39;动&#39;
+【概率采样策略】第 2 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 3 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 4 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 5 次选择：索引=0, 词=&#39;动&#39;
+【概率采样策略】第 6 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 7 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 8 次选择：索引=0, 词=&#39;动&#39;
+【概率采样策略】第 9 次选择：索引=7, 词=&#39;模&#39;
+【概率采样策略】第 10 次选择：索引=7, 词=&#39;模&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>虽然使用概率采样策略代替贪婪解码策略让模型生成的文本具有了多样性。但是，它还是会以较大的概率选择最可能的词元，会导致生成的文本过于相似。这时可以通过一个称为温度缩放的方法，进一步控制候选词分布和选择过程。</p>
+</section>
+</section>
+<section id="id11">
+<h2><span class="section-number">33.6. </span>温度缩放<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<p>为了控制模型生成的文本的多样性，我们可以使用温度缩放（temperature scaling）技术，通过调整温度参数 <span class="math notranslate nohighlight">\(\tau\)</span> 来改变模型输出的分布，让模型在生成文本时更加随机。</p>
+<p>温度缩放的计算公式：</p>
+<div class="math notranslate nohighlight">
+\[
+\text{softmax}(x_i) = \frac{e^{x_i / \tau}}{\sum_j e^{x_j / \tau}}
+\]</div>
+<section id="softmax">
+<h3><span class="section-number">33.6.1. </span>带有温度缩放的Softmax 的代码实现<a class="headerlink" href="#softmax" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">softmax_with_temperature</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+    <span class="c1"># 对 logits 按温度系数进行缩放，温度越低，概率分布越集中（更“自信”）；温度越高，概率分布越均匀（更“随机”）</span>
+    <span class="n">scaled_logits</span> <span class="o">=</span> <span class="n">logits</span> <span class="o">/</span> <span class="n">temperature</span>
+
+    <span class="c1"># 使用 softmax 函数将缩放后的 logits 转换为概率分布</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">scaled_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id12">
+<h3><span class="section-number">33.6.2. </span>使用不同的温度系数缩放词元的概率分布<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 示例数据</span>
+<span class="n">vocab</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;动&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;手&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;学&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;：&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">&quot;大&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;语&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;言&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s2">&quot;模&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;型&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># 定义下一个 token 的 logits（模型输出的原始值）</span>
+<span class="n">next_token_logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+    <span class="p">[</span><span class="mf">4.51</span><span class="p">,</span> <span class="mf">0.89</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.90</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.63</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.62</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.89</span><span class="p">,</span> <span class="mf">6.28</span><span class="p">,</span> <span class="mf">1.79</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># 温度值列表</span>
+<span class="n">temperatures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># 分别表示原始温度、低温度（多样性越低）和高温度（多样性越高）</span>
+
+<span class="c1"># 计算不同温度下的概率分布</span>
+<span class="n">scaled_probas</span> <span class="o">=</span> <span class="p">[</span><span class="n">softmax_with_temperature</span><span class="p">(</span><span class="n">next_token_logits</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="n">temperatures</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">scaled_probas</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[tensor([1.3968e-01, 3.7411e-03, 2.2978e-04, 1.8716e-02, 7.8410e-03, 3.0403e-04,
+        2.3209e-04, 8.2005e-01, 9.2015e-03]), tensor([2.8174e-02, 2.0210e-05, 7.6243e-08, 5.0582e-04, 8.8781e-05, 1.3348e-07,
+        7.7783e-08, 9.7109e-01, 1.2226e-04]), tensor([0.2186, 0.0358, 0.0089, 0.0800, 0.0518, 0.0102, 0.0089, 0.5297, 0.0561])]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id13">
+<h3><span class="section-number">33.6.3. </span>可视化不同的温度系数对词元概率分布的影响<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.express</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">px</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 构建 DataFrame 用于 Plotly 可视化</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temperatures</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vocab</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;词汇&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+            <span class="s2">&quot;概率&quot;</span><span class="p">:</span> <span class="n">scaled_probas</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s2">&quot;温度系数&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;温度系数 = </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">})</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># 使用 Plotly 绘制分组柱状图</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span>
+    <span class="n">df</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;词汇&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;概率&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;温度系数&quot;</span><span class="p">,</span>
+    <span class="n">barmode</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;不同温度下的词汇概率分布&quot;</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;词汇&quot;</span><span class="p">:</span> <span class="s2">&quot;词汇&quot;</span><span class="p">,</span> <span class="s2">&quot;概率&quot;</span><span class="p">:</span> <span class="s2">&quot;概率值&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="c1"># 调整图表尺寸以适应notebook显示</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># 设置图表宽度</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>  <span class="c1"># 设置图表高度</span>
+    <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span>  <span class="c1"># 水平排列图例</span>
+        <span class="n">yanchor</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span>
+        <span class="n">xanchor</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># 显示图表</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<p>从结果中我们可以看到：</p>
+<ul class="simple">
+<li><p>较高的温度值会让下一个词元的概率分布更均匀，从而产生更多样化的输出，因为它降低了模型重复选择最可能词元的可能性。</p></li>
+<li><p>较低的温度值会让下一个词元的概率分布更集中，从而产生更确定的输出，因为它增加了模型选择最可能词元的可能性。</p></li>
+</ul>
+<p>虽然概率采样允许模型探索概率较低但可能更具创造性和趣味性的生成路径。然而，这种方法的一个缺点是，它有时会导致语法不正确或完全无意义的输出。所以需要使用 Top-k 的方式缩小候选词的范围，保证生成的文本符合语法规则。</p>
+</section>
+</section>
+<section id="tok-k">
+<h2><span class="section-number">33.7. </span>Tok-K 采样<a class="headerlink" href="#tok-k" title="Link to this heading">#</a></h2>
+<p>Top-K 采样是一种广泛应用于大语言模型（LLM）文本生成的关键解码策略，其核心目标是在生成文本的多样性与连贯性之间取得平衡。与基础的贪心解码（总是选择概率最高的词元）相比，Top-K 采样通过引入可控的随机性，有效避免了输出文本的单调和重复。其基本思想是：在模型为下一个词元生成的概率分布中，仅保留概率值排名前K的候选词元，然后从这个缩小的候选池中进行随机采样，从而既允许较高概率的词元有机会被选中以保持连贯性，又避免了极低概率、不合理词元的干扰。</p>
+<p>Top-K 采样的实现过程可以分解为以下几个清晰步骤：</p>
+<ul class="simple">
+<li><p><strong>获取概率分布</strong>：模型根据当前上下文，为词汇表中的所有可能词元计算一个原始概率分布。</p></li>
+<li><p><strong>筛选 Top-K 词元</strong>：将所有词元按其概率值从高到低排序，并仅保留排名前K位的词元。</p></li>
+<li><p><strong>重新归一化概率</strong>：将筛选出的 K 个词元的概率值进行重新归一化处理，使其概率之和为 1，构成一个新的、用于采样的概率分布。</p></li>
+<li><p><strong>随机采样</strong>：依据这个新的概率分布，使用随机采样选择一个词元作为输出。</p></li>
+</ul>
+<p>在代码实现中，类似因果注意力掩码，使用负无穷大（-inf）来屏蔽非 Top-K 词元。</p>
+<section id="top-k">
+<h3><span class="section-number">33.7.1. </span>Top-K 采样的代码实现<a class="headerlink" href="#top-k" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 获取前 k 个概率最大的 token 的 logits 和位置</span>
+<span class="n">top_k</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">top_logits</span><span class="p">,</span> <span class="n">top_pos</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">next_token_logits</span><span class="p">,</span> <span class="n">top_k</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top </span><span class="si">{</span><span class="n">top_k</span><span class="si">}</span><span class="s2"> logits:&quot;</span><span class="p">,</span> <span class="n">top_logits</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top </span><span class="si">{</span><span class="n">top_k</span><span class="si">}</span><span class="s2"> positions:&quot;</span><span class="p">,</span> <span class="n">top_pos</span><span class="p">)</span>
+
+<span class="c1"># 添加掩码：处理 logits，将其中不符合条件的值替换为负无穷大（经Softmax转化为概率时，其概率为0）</span>
+<span class="n">new_logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+    <span class="n">condition</span><span class="o">=</span><span class="n">next_token_logits</span> <span class="o">&lt;</span> <span class="n">top_logits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># 条件：筛选出小于 top_logits[-1] 的 logits 值</span>
+    <span class="nb">input</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)),</span>  <span class="c1"># 如果条件为 True，则将值替换为负无穷大 (-inf)</span>
+    <span class="n">other</span><span class="o">=</span><span class="n">next_token_logits</span>  <span class="c1"># 如果条件为 False，则保留原始的 next_token_logits 值</span>
+<span class="p">)</span>
+
+<span class="c1"># 计算原始的下一个词元概率和经过 Top-k 限制的下一个词元概率</span>
+<span class="n">next_token_probas</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">next_token_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">topk_probas</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">new_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;Top-k 采样效果&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;原始预测得分&quot;</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">logit</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">logit</span> <span class="ow">in</span> <span class="n">next_token_logits</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;原始预测概率&quot;</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">logit</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">logit</span> <span class="ow">in</span> <span class="n">next_token_probas</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;Top-3 采样得分&quot;</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">new_logits</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+    <span class="p">[</span><span class="s2">&quot;Top-3 采样概率&quot;</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prob</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">topk_probas</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]],</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Top 3 logits: tensor([6.2800, 4.5100, 2.5000])
+Top 3 positions: tensor([7, 0, 3])
+<span class=" -Color -Color-Red">Top-k 采样效果：</span>
++----------------+-----------------------------------------------------------------------------------------------+
+|  Information   |                                             Value                                             |
++----------------+-----------------------------------------------------------------------------------------------+
+|  原始预测得分  | [&#39;4.5100&#39;, &#39;0.8900&#39;, &#39;-1.9000&#39;, &#39;2.5000&#39;, &#39;1.6300&#39;, &#39;-1.6200&#39;, &#39;-1.8900&#39;, &#39;6.2800&#39;, &#39;1.7900&#39;] |
+|  原始预测概率  |   [&#39;0.1397&#39;, &#39;0.0037&#39;, &#39;0.0002&#39;, &#39;0.0187&#39;, &#39;0.0078&#39;, &#39;0.0003&#39;, &#39;0.0002&#39;, &#39;0.8201&#39;, &#39;0.0092&#39;]  |
+| Top-3 采样得分 |         [&#39;4.5100&#39;, &#39;-inf&#39;, &#39;-inf&#39;, &#39;2.5000&#39;, &#39;-inf&#39;, &#39;-inf&#39;, &#39;-inf&#39;, &#39;6.2800&#39;, &#39;-inf&#39;]        |
+| Top-3 采样概率 |   [&#39;0.1428&#39;, &#39;0.0000&#39;, &#39;0.0000&#39;, &#39;0.0191&#39;, &#39;0.0000&#39;, &#39;0.0000&#39;, &#39;0.0000&#39;, &#39;0.8381&#39;, &#39;0.0000&#39;]  |
++----------------+-----------------------------------------------------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id14">
+<h2><span class="section-number">33.8. </span>改进生成解码策略<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
+<p>使用温度系数和 Top-k 采样改进 GPT 的生成解码策略：</p>
+<ul class="simple">
+<li><p>温度系数：多样性</p></li>
+<li><p>Top-k 采样：连贯性</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">start_ids</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">,</span> <span class="n">context_size</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eos_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    使用温度系数和Top-k采样的更具多样性的生成文本。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: 语言模型（应处于 eval 模式）</span>
+<span class="sd">        start_ids (torch.Tensor): 输入的提示 token ID 序列，形状为 (batch_size, seq_len)</span>
+<span class="sd">        max_new_tokens (int): 要生成的最大新 token 数量</span>
+<span class="sd">        context_size (int): 模型支持的最大上下文长度</span>
+<span class="sd">        tokenizer: 用于将 token IDs 解码为文本的分词器</span>
+<span class="sd">        temperature (float): 温度系数，用于控制生成的多样性（默认0.0表示不使用温度系数）</span>
+<span class="sd">        top_k (int): Top-k采样的参数，仅保留前k个最大的logits值（默认None表示不使用Top-k采样）</span>
+<span class="sd">        eos_id (int): 结束 token ID，用于判断是否停止生成（默认None表示不使用结束 token）</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: 生成的完整文本（包含原始提示）</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">generated_ids</span> <span class="o">=</span> <span class="n">start_ids</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># generated_ids 是当前上下文中的 Token IDs 数组</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_new_tokens</span><span class="p">):</span>
+        <span class="c1"># 1️⃣ 如果当前序列长度超过上下文窗口，仅保留最后 context_size 个 token 作为输入</span>
+        <span class="c1"># 例如，如果 LLM 仅支持 3 个 token，而上下文大小为 10，则仅使用最后 3 个 token 作为上下文</span>
+        <span class="n">input_context</span> <span class="o">=</span> <span class="n">generated_ids</span><span class="p">[:,</span> <span class="o">-</span><span class="n">context_size</span><span class="p">:]</span>
+
+        <span class="c1"># 2️⃣ 使用模型预测每个位置的下一个 Token 在词表上的预测得分，形状为 (batch, seq_len, vocab_size)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_context</span><span class="p">)</span>
+
+        <span class="c1"># 3️⃣ 仅关注最后一个时间步，取最后一个时间步的预测得分作为下一个词的预测，(batch, context_size, vocab_size) 变为 (batch, vocab_size)</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1"># 4️⃣ 新增：使用Top-k采样过滤logits</span>
+        <span class="k">if</span> <span class="n">top_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># 保留前k个最大的logits值</span>
+            <span class="n">top_logits</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">top_k</span><span class="p">)</span>
+            <span class="n">min_val</span> <span class="o">=</span> <span class="n">top_logits</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 获取第k大的值作为阈值</span>
+            <span class="c1"># 将小于阈值的logits替换为负无穷（在softmax中会被视为概率为0）</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">logits</span> <span class="o">&lt;</span> <span class="n">min_val</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">logits</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">logits</span><span class="p">)</span>
+
+
+        <span class="c1"># 5️⃣ 新增：应用温度系数缩放</span>
+        <span class="k">if</span> <span class="n">temperature</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="c1"># 新增：应用温度系数缩放</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span> <span class="o">/</span> <span class="n">temperature</span>  <span class="c1"># 对logits进行温度缩放</span>
+
+            <span class="c1"># 应用softmax函数得到概率分布，形状为 (batch_size, vocab_size)</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># 从概率分布中随机采样下一个token，形状为 (batch_size, 1)</span>
+            <span class="n">idx_next</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 否则与之前相同：取logits最高的词汇表索引，形状为 (batch_size, 1)</span>
+            <span class="n">idx_next</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+
+        <span class="c1"># 如果遇到序列结束标记并且指定了eos_id，则提前停止生成</span>
+        <span class="k">if</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="n">eos_id</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># 与之前相同：将采样的索引追加到序列中，形状为 (batch_size, num_tokens+1)</span>
+        <span class="n">generated_ids</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">generated_ids</span><span class="p">,</span> <span class="n">idx_next</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 将 token IDs 转换为文本</span>
+    <span class="k">return</span> <span class="n">token_ids_to_text</span><span class="p">(</span><span class="n">generated_ids</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id15">
+<h2><span class="section-number">33.9. </span>使用改进的生成解码策略<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">text_to_token_ids</span><span class="p">,</span> <span class="n">token_ids_to_text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.gpt.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">greedy_generate</span>
+
+<span class="c1"># 将模型移动到 CPU 上进行推理</span>
+<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="c1"># 设置模型为评估模式（关闭 dropout 和 batch normalization 的训练行为）</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="c1"># 初始化 GPT-2 分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用训练好的模型生成并打印 5 次文本</span>
+<span class="n">generate_samples</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="c1"># 调用 generate 函数生成文本</span>
+    <span class="n">generated_text</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">start_ids</span><span class="o">=</span><span class="n">text_to_token_ids</span><span class="p">(</span><span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">),</span>
+        <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">context_size</span><span class="o">=</span><span class="n">GPT_CONFIG_124M</span><span class="p">[</span><span class="s2">&quot;seq_len&quot;</span><span class="p">],</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1"># 温度系数，控制生成结果的多样性</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="c1"># Top-k采样，只保留前5个概率最大的token</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 将生成的 token ID 序列解码为可读文本</span>
+    <span class="n">generate_samples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">generated_text</span><span class="p">))</span>
+
+<span class="n">print_table</span><span class="p">(</span><span class="s2">&quot;模型生成效果&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;生成次数&quot;</span><span class="p">,</span> <span class="s2">&quot;生成结果&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">generate_samples</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">模型生成效果：</span>
++----------+-----------------------------------------------+
+| 生成次数 |                    生成结果                   |
++----------+-----------------------------------------------+
+|    0     |   I HAD always thought Jack Gisburn rather a  |
+|    1     | I could the prism of began to go tears I felt |
+|    2     |   I HAD always thought Jack Gisburn rather a  |
+|    3     |   I more than if I&#39;d never touched a brush.&quot;  |
+|    4     |     I HAD always, through, and, pushed one    |
++----------+-----------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id16">
+<h2><span class="section-number">33.10. </span>答疑讨论<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+                <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                    <div class="qe-sidebar__header">
+
+                        目录
+
+                    </div>
+
+                    <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+
+                    </nav>
+
+                    <div class="qe-sidebar__footer">
+
+                    </div>
+
+                </div> <!-- .sidebar -->
+                
+            </div> <!-- .main -->
+
+            <div class="qe-toolbar">
+
+                <div class="qe-toolbar__inner">
+
+                    <ul class="qe-toolbar__main">
+                        <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                        <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    </ul>
+
+                    <ul class="qe-toolbar__links">
+                        <li data-tippy-content="搜索" class="btn__search">
+                            <form action="../search.html" method="get">
+                                <input type="search" class="form-control" name="q" id="search-input"
+                                    placeholder="Search..." aria-label="Search..."
+                                    autocomplete="off" accesskey="k">
+                                <i data-feather="search" id="search-icon"></i>
+                            </form>
+                        </li>
+                        <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                        <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                        </li>
+                        <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- .toolbar -->
+            <div id="downloadPDFModal" style="display: none;">
+                <ul class="pdf-options" style="display: block;">
+                    <li class="download-pdf-book" onClick="window.print()">
+                        <p>Lecture (PDF)</p>
+                    </li>
+                    <li class="download-pdf-file">
+                        <a href="" download>
+                            <p>Book (PDF)</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="settingsModal" style="display: none;">
+                <p class="modal-title"> Notebook Launcher </p>
+                <div class="modal-desc">
+                    <p>
+                        Choose public or private cloud service for "Launch" button.
+                    </p>
+                </div>
+                <p class="modal-subtitle">Select a server</p>
+                <ul class="modal-servers">
+                    <li class="active launcher-public">
+                        <span class="label">Public</span>
+                        <select id="launcher-public-input">
+                            
+                        </select>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                    <li class="launcher-private">
+                        <span class="label">Private</span>
+                        <input type="text" id="launcher-private-input" data-repourl=""
+                            data-urlpath="" data-branch=>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+                <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                        Notebook</a></p>
+                <script>
+                    // QuantEcon Notebook Launcher
+                    const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                    // Highlight the server type if previous selection exists
+                    if (typeof localStorage.launcherType !== 'undefined') {
+                        for (var i = 0; i < launcherTypeElements.length; i++) {
+                            launcherTypeElements[i].classList.remove('active');
+                            if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                                launcherTypeElements[i].classList.add('active');
+                            }
+                        }
+                    }
+                    // Highlight server type on click and set local storage value
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].addEventListener('click', function () {
+                            for (var j = 0; j < launcherTypeElements.length; j++) {
+                                launcherTypeElements[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+                            if (this.classList.contains('launcher-private')) {
+                                localStorage.launcherType = 'launcher-private';
+                            } else if (this.classList.contains('launcher-public')) {
+                                localStorage.launcherType = 'launcher-public';
+                            }
+                            setLaunchServer();
+                        })
+                    }
+                    const launcherPublic = document.getElementById('launcher-public-input');
+                    const launcherPrivate = document.getElementById('launcher-private-input');
+                    const pageName = "notebooks/33更具多样性的生成策略";
+                    const repoURL = "";
+                    const urlPath = "";
+                    const branch = ""
+                    const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                    // Highlight public server option if previous selection exists
+                    if (typeof localStorage.launcherPublic !== 'undefined') {
+                        launcherPublic.value = localStorage.launcherPublic;
+                    }
+                    // Update local storage upon public server selection
+                    launcherPublic.addEventListener('change', (event) => {
+                        setLaunchServer();
+                    });
+                    // Populate private server input if previous entry exists
+                    if (typeof localStorage.launcherPrivate !== 'undefined') {
+                        launcherPrivate.value = localStorage.launcherPrivate;
+                    }
+                    // Update local storage when a private server is entered
+                    launcherPrivate.addEventListener('input', (event) => {
+                        setLaunchServer();
+                    });
+
+                    // Function to update the "Launch Notebook" link href
+                    function setLaunchServer() {
+                        launchNotebookLink.removeAttribute("style")
+                        if (localStorage.launcherType == 'launcher-private') {
+                            let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                            launcherPrivateValue = launcherPrivate.value
+                            if (!launcherPrivateValue) {
+                                launchNotebookLink.removeAttribute("href")
+                                launchNotebookLink.style.background = "grey"
+                                return
+                            }
+                            localStorage.launcherPrivate = launcherPrivateValue;
+                            privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                            if (!privateServer.includes("http")) {
+                                privateServer = "http://" + privateServer
+                            }
+                            launchNotebookLinkURL = privateServer + repoPrefix;
+                        } else if (localStorage.launcherType == 'launcher-public') {
+                            launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                            localStorage.launcherPublic = launcherPublicValue;
+                            launchNotebookLinkURL = localStorage.launcherPublic;
+                        }
+                        if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                    }
+                    // Check if user has previously selected a server
+                    if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                        setLaunchServer();
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- .wrapper-->
+  </body>
+</html>

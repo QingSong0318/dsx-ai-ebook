@@ -1,8 +1,13 @@
 @import url("https://fontsapi.zeoseven.com/293/main/result.css");
 /*@import url("https://fontsapi.zeoseven.com/84/main/result.css");*/
 @import url("https://fontsapi.zeoseven.com/66/main/result.css");
-@import url("https://fontsapi.zeoseven.com/442/main/result.css"); /* Maple Mono NF CN */
-@import url("https://fontsapi.zeoseven.com/293/main/result.css"); /* LXGW WenKai Mono */
+/* @import url("https://fontsapi.zeoseven.com/442/main/result.css");
+Maple Mono NF CN */
+@import url("https://ik.imagekit.io/u2v7ktp8b/LXGWBrightCode-Regular/result.css");
+/* LXGW Bright Code */
+/* ZSFT-391：IBM Plex Mono */
+@import url("data:text/css,%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fbold.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A700%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fbold.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A700%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fextra-light.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A200%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fextra-light-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A200%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fitalic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A400%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Flight.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A300%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Flight-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A300%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fmedium.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A500%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fmedium-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A500%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fmain.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A400%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fsemi-bold.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A600%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fsemi-bold-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A600%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Ftext.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A450%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Ftext-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A450%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fthin.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Anormal%3Bfont-weight%3A100%3Bfont-display%3Aswap%3B%7D%40font-face%7Bfont-family%3A%22ZSFT-391%22%3Bsrc%3Aurl(%22https%3A%2F%2Ffontsapi.zeoseven.com%2F391%2Fthin-italic.woff2%22)%20format(%22woff2%22)%3Bfont-style%3Aitalic%3Bfont-weight%3A100%3Bfont-display%3Aswap%3B%7D");
+
 
 
 html {
@@ -195,14 +200,15 @@ body {
     line-height: 1.8;
     letter-spacing: 0.08rem;
     font-weight: normal;
-    font-family: "LXGW WenKai Mono", sans-serif;
+    font-family: "LXGW Bright Code", sans-serif;
     background-color: #f5f4ef;
     color: var(--color-body);
 
 
-    div.cell:has(> *:nth-child(2)) div.cell_input:first-child, div.cell:has(> *:nth-child(2)) details:first-child {
-         border-bottom-left-radius: .4rem !important;
-         border-bottom-right-radius: .4rem !important;
+    div.cell:has(> *:nth-child(2)) div.cell_input:first-child,
+    div.cell:has(> *:nth-child(2)) details:first-child {
+        border-bottom-left-radius: .4rem !important;
+        border-bottom-right-radius: .4rem !important;
     }
 
     div.cell div.cell_input {
@@ -225,7 +231,11 @@ body {
     max-width: 800px !important;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     font-family: "寒蝉团圆体 Round", -apple-system, Microsoft Yahei, sans-serif !important;
     font-weight: 400 !important;
     color: #444 !important;
@@ -252,7 +262,7 @@ h1 {
 
 pre {
     word-wrap: break-word;
-    font-family: "Maple Mono NF CN", sans-serif !important;
+    font-family: "ZSFT-391", "寒蝉团圆体 Round", sans-serif !important;
     font-size: .9rem;
     white-space: pre-wrap;
     line-height: 1.5rem;
@@ -261,7 +271,7 @@ pre {
 }
 
 div.cell_output pre {
-    font-family: "Maple Mono NF CN", sans-serif !important;
+    font-family: "LXGW Bright Code", sans-serif !important;
     letter-spacing: 0 !important;
 }
 
@@ -316,13 +326,15 @@ a {
     overflow-wrap: break-word;
     text-decoration: none;
     transition: all .15s linear;
-    text-decoration: none !important; /* 移除默认下划线 */
+    text-decoration: none !important;
+    /* 移除默认下划线 */
 }
 
 /* 鼠标悬停状态 */
 a:hover {
     color: var(--color-accent) !important;
-    text-decoration: none !important; /* 移除默认下划线 */
+    text-decoration: none !important;
+    /* 移除默认下划线 */
 }
 
 .custom-card:hover {
@@ -356,7 +368,7 @@ code.literal {
 
 .cover-image {
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .qe-page__toc .inner {
@@ -365,12 +377,15 @@ code.literal {
     height: auto !important;
 }
 
-b, strong {
-    color: var(--color-primary); /* 使用主题主色 */
+b,
+strong {
+    color: var(--color-primary);
+    /* 使用主题主色 */
 }
 
 /*圆角*/
-.qe-page__content .cell_output .output.stream, .qe-page__content .cell_output .output.text_plain {
+.qe-page__content .cell_output .output.stream,
+.qe-page__content .cell_output .output.text_plain {
     border-radius: .25rem !important;
 }
 

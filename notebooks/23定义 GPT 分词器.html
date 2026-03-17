@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>粗调和精调：从一道Google的面试题谈起 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+    <title>23. 实现 GPT 分词器 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
 
 <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -163,29 +163,31 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'docs/粗调和精调';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/23定义 GPT 分词器';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="24. 构造 GPT 预训练数据集" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html" />
+    <link rel="prev" title="22. 从零构建 GPT 模型" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="吾辈亦有感" />
 <meta name="keywords" content="" />
-<meta name="description" content=粗调和精调：从一道Google的面试题谈起  来源  吴军：《硅谷来信》  我们从几个顶级公司的面试题入手，谈谈Google、微软和高盛是如何遴选毕业生的，并且回顾一下在硅谷吸纳人才最成功的肖克利半导体的一些做法，从雇主的角度看我们所需要具有的的能力。  今天先讲Google的一道面试题，它其实是考察候选人的工程思维， />
+<meta name="description" content=实现 GPT 分词器  介绍  在预训练大语言模型时，模型需要逐词处理文本。通过下一词预测任务，我们可以训练参数量达数百万乃至数十亿的大模型，使其具备强大的语言理解与生成能力。这些模型经过进一步的微调，便可遵循通用指令或执行特定的目标任务。然而，在着手实现和训练大语言模型之前，我们首先需要准备好用于训练的数据集。  定 />
 
 <!-- Twitter tags -->
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:site" content="@" />
-<meta name="twitter:title" content="粗调和精调：从一道Google的面试题谈起" />
-<meta name="twitter:description" content="粗调和精调：从一道Google的面试题谈起  来源  吴军：《硅谷来信》  我们从几个顶级公司的面试题入手，谈谈Google、微软和高盛是如何遴选毕业生的，并且回顾一下在硅谷吸纳人才最成功的肖克利半导体的一些做法，从雇主的角度看我们所需要具有的的能力。  今天先讲Google的一道面试题，它其实是考察候选人的工程思维，">
+<meta name="twitter:title" content="实现 GPT 分词器" />
+<meta name="twitter:description" content="实现 GPT 分词器  介绍  在预训练大语言模型时，模型需要逐词处理文本。通过下一词预测任务，我们可以训练参数量达数百万乃至数十亿的大模型，使其具备强大的语言理解与生成能力。这些模型经过进一步的微调，便可遵循通用指令或执行特定的目标任务。然而，在着手实现和训练大语言模型之前，我们首先需要准备好用于训练的数据集。  定">
 <meta name="twitter:creator" content="@">
 <meta name="twitter:image" content="">
 
 <!-- Opengraph tags -->
-<meta property="og:title" content="粗调和精调：从一道Google的面试题谈起" />
+<meta property="og:title" content="实现 GPT 分词器" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="None" />
 <meta property="og:image" content="" />
-<meta property="og:description" content="粗调和精调：从一道Google的面试题谈起  来源  吴军：《硅谷来信》  我们从几个顶级公司的面试题入手，谈谈Google、微软和高盛是如何遴选毕业生的，并且回顾一下在硅谷吸纳人才最成功的肖克利半导体的一些做法，从雇主的角度看我们所需要具有的的能力。  今天先讲Google的一道面试题，它其实是考察候选人的工程思维，" />
+<meta property="og:description" content="实现 GPT 分词器  介绍  在预训练大语言模型时，模型需要逐词处理文本。通过下一词预测任务，我们可以训练参数量达数百万乃至数十亿的大模型，使其具备强大的语言理解与生成能力。这些模型经过进一步的微调，便可遵循通用指令或执行特定的目标任务。然而，在着手实现和训练大语言模型之前，我们首先需要准备好用于训练的数据集。  定" />
 <meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
 <meta name="theme-color" content="#ffffff" />
 
@@ -233,17 +235,34 @@
 
         <div class="qe-main">
 
-            <div class="qe-page" id=docs/粗调和精调>
+            <div class="qe-page" id=notebooks/23定义 GPT 分词器>
 
                 <div class="qe-page__toc">
 
                     <div class="inner">
 
                         
+                        <div class="qe-page__toc-header">
+                        </div>
 
 
                         <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
-                            
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">23.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">23.2. 分词器在 GPT 中的作用</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">23.3. GPT 中的分词方法</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">23.4. 环境配置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">23.4.1. 安装依赖</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">23.4.2. 环境版本</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tiktoken">23.5. 使用 Tiktoken 分词器</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">23.5.1. 定义编码和解码方法</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">23.5.2. 测试编码和解码方法</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">23.6. 答疑讨论</a></li>
+</ul>
 
                         </nav>
 
@@ -294,6 +313,8 @@
 
                 <div class="cover-container simple-tilt">
                     
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092951.png" class="cover-image">
+                    
                 </div>
 
 
@@ -303,48 +324,178 @@
                     
                     <div>
                         
-  <section class="tex2jax_ignore mathjax_ignore" id="google">
-<h1>粗调和精调：从一道Google的面试题谈起<a class="headerlink" href="#google" title="Link to this heading">#</a></h1>
-<div class="admonition- admonition">
-<p class="admonition-title">来源</p>
-<p>吴军：《硅谷来信》</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="gpt">
+<h1><span class="section-number">23. </span>实现 GPT 分词器<a class="headerlink" href="#gpt" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">23.1. </span>介绍<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>在预训练大语言模型时，模型需要逐词处理文本。通过下一词预测任务，我们可以训练参数量达数百万乃至数十亿的大模型，使其具备强大的语言理解与生成能力。这些模型经过进一步的微调，便可遵循通用指令或执行特定的目标任务。然而，在着手实现和训练大语言模型之前，我们首先需要准备好用于训练的数据集。</p>
+<p><img alt="定义分词器" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260311143323.png" /></p>
+<p>本节将带你学习如何通过分词器实现 GPT 的编码和解码过程，为训练大语言模型做好数据准备。具体包括：将文本切分为独立的单词词元和子词词元，将这些词元转换为模型能够处理的数值表示，以及将模型输出的预测结果重新还原为可读的文本。</p>
+</section>
+<section id="id2">
+<h2><span class="section-number">23.2. </span>分词器在 GPT 中的作用<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>分词器（Tokenizer）是连接人类语言与机器模型之间的桥梁，其核心功能可以概括为以下两个方面：</p>
+<ul class="simple">
+<li><p><strong>编码（Encoding）</strong>：将连续的原始文本切分为离散的语义单元（Token），并将这些单元映射为对应的数字编号。这一过程使原本不可计算的文本转化为模型能够处理的结构化输入。</p></li>
+<li><p><strong>解码（Decoding）</strong>：将模型输出的词元编号序列还原为自然语言文本，使得生成结果可以被人类理解和使用。</p></li>
+</ul>
+<p>GPT 模型的文本生成过程，本质上是一个“编码—处理—解码”的循环：</p>
+<ul class="simple">
+<li><p><strong>编码阶段</strong>：分词器将用户输入的文本拆解并转换为词元 ID 序列，为模型提供数值化的输入。</p></li>
+<li><p><strong>处理阶段</strong>：模型以这些 ID 为输入进行前向计算，输出一个 logits 向量（即下一个词元的概率分布），用于预测下一个最可能的词元。</p></li>
+<li><p><strong>解码阶段</strong>：将模型选定的最高概率词元 ID 交还给分词器，由分词器将其还原为可读的文字，完成一次完整的生成步。</p></li>
+</ul>
+<p>本节将带领你亲手实现编码与解码的流程，为后续构建 GPT 模型奠定基础。</p>
+<p><img alt="自定义 GPT 分词器" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260311144103.png" /></p>
+</section>
+<section id="id3">
+<h2><span class="section-number">23.3. </span>GPT 中的分词方法<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>将输入文本分割为独立的词元（Token）是生成嵌入向量的必要预处理步骤，也是大语言模型理解语言的基础。词元可以是单个单词，也可以是标点符号等特殊字符。然而，GPT 模型采用的并非传统的单词分词，而是一种基于字节对编码（Byte Pair Encoding，BPE）的分词方法。BPE 属于子词分词（Subword Tokenization）技术，它通过将单词进一步拆分为更小的语义单元或字符组合，从而在词表规模与生僻词处理能力之间取得平衡。</p>
+<p>以句子 <code class="docutils literal notranslate"><span class="pre">动手学大语言模型</span> <span class="pre">Hands-on</span> <span class="pre">Large</span> <span class="pre">Language</span> <span class="pre">Models</span></code> 为例，使用 GPT 分词器得到的分词结果如下图所示：</p>
+<p><img alt="分词结果展示" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260311144530.png" /></p>
+<p>从结果中可以看到，GPT 分词器会将某些常用单词（如 Hands-on）分解为更小的子词单元。这种分解方式允许模型利用相同的词根来表征不同单词，从而有效处理未登录词（OOV）问题，并在多语言场景及词形变化丰富的语境中表现更佳。GPT 之所以选择 BPE 而非传统的单词级分词，正是为了在控制词表大小的同时，保持对罕见或新异词汇的建模能力。</p>
+<p>接下来，我们将动手实现 GPT 的编码与解码方法。在开始之前，请确保已安装 <code class="docutils literal notranslate"><span class="pre">dsxllm</span></code> 库，并确认运行环境已准备就绪。</p>
+</section>
+<section id="id4">
+<h2><span class="section-number">23.4. </span>环境配置<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h3><span class="section-number">23.4.1. </span>安装依赖<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm
+</pre></div>
 </div>
-<p>我们从几个顶级公司的面试题入手，谈谈Google、微软和高盛是如何遴选毕业生的，并且回顾一下在硅谷吸纳人才最成功的肖克利半导体的一些做法，从雇主的角度看我们所需要具有的的能力。</p>
-<p>今天先讲Google的一道面试题，它其实是考察候选人的工程思维，题目是这么说的：</p>
-<p>给你两个一模一样的玻璃球。这两个球如果从一定高度掉到地上就会摔碎，当然，如果在这个高度以下往下扔，怎么都不会碎，超过这个高度肯定就一次摔碎了。</p>
-<p>现在已知这个恰巧摔碎的高度范围在1层楼到100层楼之间。如何用最少的试验次数，用这两个玻璃球测试出玻璃球恰好摔碎的楼高。</p>
-<p>为了便于你理解这道题，我不妨讲两个具体的策略。</p>
-<p><strong>第一个策略是从第一层楼开始，一层一层往上试验。</strong> 你拿着球跑到第一层，一摔，没有碎，接下来你又跑到第二层去试，也没有摔碎。你一层层试下去，比如说到了第59层摔碎了，那么你就知道它摔碎的高度是59层。这个策略能保证你获得成功，但显然不是很有效。</p>
-<p><strong>第二个策略是预测一下，试一试</strong>， 你跑到30层楼一试，没有碎，再跑到80层楼一试，碎了。虽然你把摔碎高度的范围从1-100减小到30-80，但接下来你就犯难了，因为你就剩一个球了，再这样凭感觉做试验，可能两个球都摔碎了，也测不出想知道的高度。</p>
-<p>这道题好的方法是什么呢？两个球，一个用来做粗调，一个用来做精调，具体做法是以下这样的。</p>
-<p>首先拿第一个球到10层楼去试，如果没有摔碎，就去20层楼，每次增加10层楼。如果在某个十层摔碎了，比如60层，就知道摔碎的高度在51-60层之间，接下来从51层开始一层层地试验，这样可以保证不出二十次，一定能试出恰巧摔碎玻璃球的高度。</p>
-<p>数学好的读者朋友可以去证明一下这是从统计的角度讲最优的策略，为了照顾所有的读者，我就不占用时间证明了。</p>
-<p>这道题和计算机技术完全无关，和产品设计或者市场推广似乎也无关，<strong>那么为什么Google要考这道题？其实有两个目的， 一是为了找到聪明人，二是为了判断这个候选人的工程素养。</strong></p>
-<p>世界上顶级的公司在招人时都要强调一个人未来的可塑性，其中的一条就是要足够聪明便于培养，因此都会考一些看似智力题的问题。这个传统在IT行业，特别是在硅谷，源于诺贝尔奖获得者夏克利挑选人的思维方式。</p>
-<p>为什么可塑性比过去的经历重要呢？因为大部分公司招人是做未来的事情，而不是重复过去的事情，尤其是对于大学刚毕业的年轻人，过去在大学几年学的东西，和后来一辈子要不断学习的东西相比，实在少得可怜。</p>
-<p>因此， <strong>如果一个资质平庸、学习能力不强的学生在大学时多学了一点专业知识，比那些聪明好学，少学一两门专业课的人相比，后劲是不足的。</strong></p>
-<p>那么这道题考的是什么样的工程素养呢？就是今天标题所说的粗调和精调。如果我要问，有一个数字是40.365，比如说天文望远镜的焦距，你怎样达到它？</p>
-<p>一般人按照生活直觉，直奔这个数字去就可以了。但是在工程上，这样简单的一个数字并非抽象的，而是非常具体的。</p>
-<p>如果是天文望远镜的焦距，你是否会用手把握着望远镜的那个圆筒，前后移动，估摸着镜片之间的距离来调整呢？如果这是导弹发射的角度，你自己是否会用个量角器估算导弹和水平线的角度呢？</p>
-<p>显然我们不能这么做，我们必须有一个可以准确达到这个数字的办法，<strong>这就是工程的思维—— 不仅仅要知道目标在哪里，还必须设计一个能够达到目标的道路。</strong></p>
-<p>对于天文望远镜，设计它们的工程师必须设计一个能够转动的旋钮，让它的长度接近40.365这个数字。</p>
-<p>但是接下来的问题来了，如果这个旋钮每转动一圈，调整的幅度太大，要调到小数点后面三位几乎不可能。如果每转动一圈调整的幅度太小，比如每次调整0.001，那么可能要花很长时间才能调到40.365这个数。类似地，调整导弹的角度也是如此。</p>
-<p><strong>那么工程师们是怎么做的呢？就是要 设计各种粗调和精调的方法。</strong></p>
-<p>在中国学习生物时用过光学显微镜的朋友，可能还会记得<strong>在显微镜上有两个旋钮， 第一个是粗调，让你大致看到图像，第二个是精调，能让你看清楚图像。</strong></p>
-<p><strong>如果不用粗调，只用精调，不仅做事的效率会很低</strong>，而且可能会因为一开始的范围找得不对，在花了半天时间后没有找到后，最后干脆放弃了尝试。</p>
-<p>今天最先进的手术机器人的精度可以做到0.001毫米，这样精密的仪器里面的电机一开始速度相对比较快，否则一个手术做的时间会长得不得了。</p>
-<p>但是手术刀接近目标距离时，会变得非常慢，但精度会非常高。这样，手术机器人才能同时保证效率和准确性。</p>
-<p><strong>类似地，任何一个机器学习的过程，其实都是不断地调整数学模型参数的过程，直到参数收敛到最佳点。</strong></p>
-<p><strong>每一次调整被称为是一次迭代，调整的幅度被称为迭代的步长。一开始的时候，迭代的步长要比较大，这样能够很快地确定大致范围，效率比较高。</strong></p>
-<p>这就如同测试玻璃球的那个问题中，一开始一次测试10层是一样。但是，如果总是把步长设计得很大，那么最后可能会找不到最佳的参数，因为要么走过头了，要么没有走到。因此，机器学习到最后需要缩小步长，进行精调，以保证最后收敛到最佳点。</p>
-<p>世界上每年有很多机器学习方面的论文，都是围绕提高学习效率展开的，而其中的核心其实就是怎样用最少次迭代，完成模型的训练。当然，任何好的机器学习算法都不是事先人为设定步长，而是在学习的过程中，自动找到合适的步长。</p>
-<p><strong>这种粗调和精调结合的工程设计方式，并不限于“调节”这个范围，而且用于了很多工程产品的设计。</strong></p>
-<p>比如本田最新的超级跑车NSX有四个发动机。一个传统的汽油发动机提供主要动力，这相当于是粗调。一个电动发动机提供在起跑一瞬间快速的加速，这相当于精调。</p>
-<p>一辆汽车如果发动机功率太小，加速会比较慢，如果功率太大，在平时巡航的时候会太费油。因此混合动力的汽车就通过粗调和精调解决了这个矛盾，这也是为什么它比较省油的原因。</p>
-<p>至于NSX为什么还有第三、第四个发动机，那是分别安装在两个前轮上的，主要是给它转向时提供动力，这两个很小的发动机甚至可以让轮子一个加速，一个减速，以减小拐弯半径，做大家在电影里看到的特技转弯的动作。当然这个功能用得更少了，属于进一步的精调。</p>
-<p>能否通过一个发动机达到同样的目的呢？不是不可以，有一些极致的超级跑车就是这么做的，比如后轮可以拐弯，但是这样的工程极为复杂，成本比四个发动机要高得多。</p>
-<p><strong>粗调和精调的思维方式其实在生活中也有应用。很多时候我们先用低成本解决主要问题，然后再想办法把最后5%、10%做好。</strong></p>
-<p>从Google面试的这道看似和计算机技术无关的智力题，你是否体会到它对好的工程师的要求了呢？</p>
+</div>
+</div>
+</section>
+<section id="id6">
+<h3><span class="section-number">23.4.2. </span>环境版本<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">本书愿景：</span>
++------+--------------------------------------------------------+
+| Info |                  《动手学大语言模型》                  |
++------+--------------------------------------------------------+
+| 作者 |                       吾辈亦有感                       |
+| 哔站 |      https://space.bilibili.com/3546632320715420       |
+| 定位 | 基于&#39;从零构建&#39;的理念，用实战帮助程序员快速入门大模型。 |
+| 愿景 | 若让你的AI学习之路走的更容易一点，我将倍感荣幸！祝好😄 |
++------+--------------------------------------------------------+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.10.0    |         2.6.1          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="tiktoken">
+<h2><span class="section-number">23.5. </span>使用 Tiktoken 分词器<a class="headerlink" href="#tiktoken" title="Link to this heading">#</a></h2>
+<p>Tiktoken 是由 OpenAI 开源的一款专为大语言模型设计的高性能分词器。其核心功能在于将自然语言文本高效地拆解为模型可识别的词元（Tokens）序列，这是所有 GPT 模型处理文本的必经环节。</p>
+<p>该工具完整实现了字节对编码（BPE）算法，能够将文本无损地转换为数字序列，也能将模型输出的数字序列精准还原为原文。因此，我们可以直接复用这一成熟、高效的官方方案，无需自行构建分词器。</p>
+<section id="id7">
+<h3><span class="section-number">23.5.1. </span>定义编码和解码方法<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+
+<span class="c1"># 将文本编码为token ID序列，并转换为PyTorch张量</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">text_to_token_ids</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">):</span>
+    <span class="c1"># 使用指定的分词器将文本编码为token ID列表</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">allowed_special</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;&lt;|endoftext|&gt;&quot;</span><span class="p">})</span>  <span class="c1"># 允许特殊字符</span>
+    <span class="c1"># 将token ID列表转换为PyTorch张量，并添加batch维度 (1, sequence_length)</span>
+    <span class="n">encoded_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 添加 batch 维度</span>
+    <span class="k">return</span> <span class="n">encoded_tensor</span>
+
+
+<span class="c1"># 将token ID张量解码为原始文本</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">token_ids_to_text</span><span class="p">(</span><span class="n">token_ids</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">):</span>
+    <span class="c1"># 移除batch维度，得到形状为(sequence_length,)的一维张量</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="n">token_ids</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 删除 batch 维度</span>
+    <span class="c1"># 将张量转换为Python列表，并使用分词器解码为文本</span>
+    <span class="k">return</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">flat</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id8">
+<h3><span class="section-number">23.5.2. </span>测试编码和解码方法<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tiktoken</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_table</span>
+
+<span class="c1"># 初始化 GPT-2 使用的分词器</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tiktoken</span><span class="o">.</span><span class="n">get_encoding</span><span class="p">(</span><span class="s2">&quot;gpt2&quot;</span><span class="p">)</span>
+
+<span class="c1"># 示例文本</span>
+<span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;动手学 GPT&quot;</span>  
+
+<span class="c1"># 将示例文本编码为token ID序列</span>
+<span class="n">token_ids</span> <span class="o">=</span> <span class="n">text_to_token_ids</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
+
+<span class="c1"># 打印分词结果表格</span>
+<span class="n">print_table</span><span class="p">(</span>
+    <span class="s2">&quot;分词示例&quot;</span><span class="p">,</span>
+    <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Information&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;原始文本&quot;</span><span class="p">,</span> <span class="n">txt</span><span class="p">],</span>  <span class="c1"># 显示原始文本</span>
+        <span class="p">[</span><span class="s2">&quot;编码结果&quot;</span><span class="p">,</span> <span class="n">token_ids</span><span class="p">],</span>  <span class="c1"># 显示编码后的token ID序列</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;解码结果&quot;</span><span class="p">,</span>
+            <span class="n">token_ids_to_text</span><span class="p">(</span><span class="n">token_ids</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">),</span>
+        <span class="p">],</span>  <span class="c1"># 显示从token ID解码回的文本</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">分词示例：</span>
++-------------+--------------------------------------------------------------------+
+| Information |                               Value                                |
++-------------+--------------------------------------------------------------------+
+|   原始文本  |                             动手学 GPT                             |
+|   编码结果  | tensor([[27950,   101, 33699,   233, 27764,    99,   402, 11571]]) |
+|   解码结果  |                             动手学 GPT                             |
++-------------+--------------------------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2><span class="section-number">23.6. </span>答疑讨论<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -360,7 +511,7 @@
         },
         kernelOptions: {
             name: "python3",
-            path: "./docs"
+            path: "./notebooks"
         },
         predefinedOutput: true
     }
@@ -398,12 +549,12 @@
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
    1. 从零开始：机器何以学习？
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
    2. 神经网络启蒙：PyTorch 入门实战
   </a>
  </li>
@@ -415,12 +566,12 @@
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
    3. 深度学习初探：多分类任务实战
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
    4. 工程的进化：用 PyTorch Lightning 重构
   </a>
  </li>
@@ -432,27 +583,27 @@
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
    5. 语言的序章：分词与情感分析初探
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    6. 表示的困境：OneHot编码与模型局限
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
    7. 记忆的萌芽：RNN与序列建模入门
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
    8. 语义的飞跃：词嵌入技术与稠密表示
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
    9. 记忆的进化：GRU与长期依赖问题
   </a>
  </li>
@@ -464,22 +615,22 @@
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
    10. 穷举的困境：无限膨胀的类别
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
    11. 从理解到创造：初识序列生成任务
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
    12. 改进Seq2Seq模型：反转输入
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
    13. 改进Seq2Seq模型：信息偷窥
   </a>
  </li>
@@ -491,42 +642,42 @@
 </p>
 <ul class="nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
    14. 注意力革命：Transformer
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
    15. 定义 Transformer 分词器
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
    16. 构造 Transformer 数据集
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
    17. 实现 Transformer Input 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
    18. 实现 Transformer Encoder 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+  <a class="reference internal" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
    19. 实现 Transformer Decoder 组件
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
    20. 实现完整的 Transformer 模型
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
    21. Transformer 模型训练和评估
   </a>
  </li>
@@ -536,64 +687,64 @@
   动手学：GPT
  </span>
 </p>
-<ul class="nav bd-sidenav nav sidenav_l1">
+<ul class="current nav bd-sidenav nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
    22. 从零构建 GPT 模型
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
    23. 实现 GPT 分词器
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
    24. 构造 GPT 预训练数据集
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
    25. 实现 GPT 嵌入层
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
    26. 实现 GPT 层归一化
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+  <a class="reference internal" href="27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
    27. 实现 GPT 多头注意力层
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
    28. 实现 GPT 前馈网络层
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
    29. 实现 Transformer Block 模块
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+  <a class="reference internal" href="30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
    30. 构建完整的 GPT 模型
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
    31. 实现 GPT 模型的生成策略
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
    32. GPT 模型的训练与评估
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../notebooks/33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+  <a class="reference internal" href="33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
    33. 更具多样性的生成策略
   </a>
  </li>
@@ -702,7 +853,7 @@
                     }
                     const launcherPublic = document.getElementById('launcher-public-input');
                     const launcherPrivate = document.getElementById('launcher-private-input');
-                    const pageName = "docs/粗调和精调";
+                    const pageName = "notebooks/23定义 GPT 分词器";
                     const repoURL = "";
                     const urlPath = "";
                     const branch = ""

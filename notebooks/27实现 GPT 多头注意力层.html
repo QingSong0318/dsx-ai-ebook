@@ -1,0 +1,1094 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>27. 实现 GPT 多头注意力层 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a4444a4c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/27实现 GPT 多头注意力层';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="28. 实现 GPT 前馈网络层" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html" />
+    <link rel="prev" title="26. 实现 GPT 层归一化" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=实现 GPT 多头注意力层  介绍  上一节我们已成实现 Transformer 块的层归一化组件，本小节将继续实现 Transformer 块的多头注意力层。  多头注意力层  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util impo />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="实现 GPT 多头注意力层" />
+<meta name="twitter:description" content="实现 GPT 多头注意力层  介绍  上一节我们已成实现 Transformer 块的层归一化组件，本小节将继续实现 Transformer 块的多头注意力层。  多头注意力层  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util impo">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="实现 GPT 多头注意力层" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="实现 GPT 多头注意力层  介绍  上一节我们已成实现 Transformer 块的层归一化组件，本小节将继续实现 Transformer 块的多头注意力层。  多头注意力层  环境配置  安装依赖  !pip install --upgrade dsxllm  环境版本  from dsxllm.util impo" />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+    <!-- Override QuantEcon theme colors -->
+    <style>
+        a {
+            color: #313131;
+        }
+
+        a:hover {
+            color: #313131;
+        }
+
+        a:visited {
+            color: #111111;
+        }
+
+        .main-index {
+            #qe-page-author-links {
+                border-bottom: 5px solid #313131;
+            }
+        }
+
+        .qe-page__header {
+            border-bottom: 5px solid #313131;
+        }
+
+        .qe-page__footer {
+            border-top: 5px solid #313131;
+        }
+
+        .toctree-wrapper {
+            .caption-text {
+                color: #111111
+            }
+        }
+    </style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/27实现 GPT 多头注意力层>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">27.1. 介绍</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">27.2. 环境配置</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">27.2.1. 安装依赖</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">27.2.2. 环境版本</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">27.3. 带掩码多头注意力层</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">27.3.1. 自注意力机制</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">27.3.2. 多头注意力机制</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">27.3.3. 因果注意力掩码</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">27.4. 带掩码多头注意力层的代码实现</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">27.5. 带掩码多头注意力层的应用实例</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">27.6. 答疑讨论</a></li>
+</ul>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top">
+                                    <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                        type="button">
+                                        <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                            focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                            <path fill="currentColor"
+                                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                            </path>
+                                        </svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com -->
+                                        返回顶部
+                                    </button>
+                                </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                    <p class="qe-page__header-authors" font-size="18">
+                        <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                        更新于：2026.01.01
+                    </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+
+                <div class="cover-container simple-tilt">
+                    
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260317163042.png" class="cover-image">
+                    
+                </div>
+
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="gpt">
+<h1><span class="section-number">27. </span>实现 GPT 多头注意力层<a class="headerlink" href="#gpt" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">27.1. </span>介绍<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>上一节我们已成实现 Transformer 块的层归一化组件，本小节将继续实现 Transformer 块的多头注意力层。</p>
+<p><img alt="多头注意力层" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260313135559.png" /></p>
+</section>
+<section id="id2">
+<h2><span class="section-number">27.2. </span>环境配置<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h3><span class="section-number">27.2.1. </span>安装依赖<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h3><span class="section-number">27.2.2. </span>环境版本<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">show_version</span>
+
+<span class="n">show_version</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">本书愿景：</span>
++------+--------------------------------------------------------+
+| Info |                  《动手学大语言模型》                  |
++------+--------------------------------------------------------+
+| 作者 |                       吾辈亦有感                       |
+| 哔站 |      https://space.bilibili.com/3546632320715420       |
+| 定位 | 基于&#39;从零构建&#39;的理念，用实战帮助程序员快速入门大模型。 |
+| 愿景 | 若让你的AI学习之路走的更容易一点，我将倍感荣幸！祝好😄 |
++------+--------------------------------------------------------+
+<span class=" -Color -Color-Red">环境信息：</span>
++-------------+--------------+------------------------+
+| Python 版本 | PyTorch 版本 | PyTorch Lightning 版本 |
++-------------+--------------+------------------------+
+|   3.12.12   |    2.10.0    |         2.6.1          |
++-------------+--------------+------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2><span class="section-number">27.3. </span>带掩码多头注意力层<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<p>在 GPT 中，带掩码的多头注意力层（Masked Multi-Head Self-Attention）是其核心组件之一，负责捕捉序列内部的依赖关系，同时确保生成过程是自回归的——即每个位置只能依赖于它之前的位置，不能“看到”未来的信息。</p>
+<section id="id6">
+<h3><span class="section-number">27.3.1. </span>自注意力机制<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<p>首先，标准的缩放点积自注意力（Scaled Dot-Product Self-Attention）允许序列中的每个位置与序列中的所有其他位置进行交互，计算注意力权重，从而聚合全局信息。公式如下：</p>
+<div class="math notranslate nohighlight">
+\[
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+\]</div>
+<p>其中，<span class="math notranslate nohighlight">\(Q, K, V\)</span> 分别是通过输入嵌入与权重矩阵相乘得到的查询、键和值矩阵。对于长度为 <span class="math notranslate nohighlight">\(n\)</span> 的序列，注意力矩阵 <span class="math notranslate nohighlight">\(QK^T\)</span> 的大小为 <span class="math notranslate nohighlight">\(n \times n\)</span>，元素 <span class="math notranslate nohighlight">\((i, j)\)</span> 表示位置 <span class="math notranslate nohighlight">\(i\)</span> 对位置 <span class="math notranslate nohighlight">\(j\)</span> 的注意力分数。经过softmax后，每个位置会聚合所有位置的值。</p>
+</section>
+<section id="id7">
+<h3><span class="section-number">27.3.2. </span>多头注意力机制<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<p>多头注意力机制（Multi-Head Attention）通过并行计算多个注意力头，每个头关注序列中的不同子空间，从而捕捉到不同类型的依赖关系。在学习多头注意力详细的计算过程之前，我们先回顾一下标准的单头自注意力机制计算细节。</p>
+<p>单头注意力层的计算图如下所示：</p>
+<p><img alt="单头注意力层" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312151333.png" /></p>
+<p>多头注意力 是指将查询、键、值分别投影到 <code class="docutils literal notranslate"><span class="pre">head</span></code> 个不同的低维空间（称为“头”），然后在每个头上独立地执行注意力计算，最后将所有头的结果拼接并投影回原始维度。这样做的好处是：</p>
+<ul class="simple">
+<li><p><strong>捕捉不同类型的依赖关系</strong>：不同的头可以关注序列中不同位置的关系（例如，语法关系、长距离依赖、局部关系等）。</p></li>
+<li><p><strong>增强表达能力</strong>：通过多个头，模型可以从多个角度理解序列，提升表示能力。</p></li>
+</ul>
+<p>虽然在 GPT 中，每个头虽然独立地进行自注意力计算，但是每个头的Q、K、V矩阵都是从原始输入通过一个大的线性变换得到的，然后再将大的Q、K、V矩阵分别切分成多个小的Q、K、V矩阵。这样做的好处是，将多个小矩阵的计算转换成了一个大矩阵的计算，可以充分利用 GPU 并行计算的能力，提高计算效率。</p>
+<p>所以，多头注意力层的计算图如下所示：</p>
+<p><img alt="多头注意力层" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312151343.png" /></p>
+<p>进行多头注意力计算时，有两个额外的拆分和合并操作：</p>
+<ul class="simple">
+<li><p><strong>拆分操作</strong>：将大的Q、K、V矩阵分别切分成多个小的Q、K、V矩阵，每个小矩阵的大小为 <code class="docutils literal notranslate"><span class="pre">head_dim</span></code>。</p></li>
+<li><p><strong>合并操作</strong>：将多个头的输出拼接起来，将拼接后的矩阵再通过一个线性变换融合信息，就得到最终的多头注意力输出。</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3><span class="section-number">27.3.3. </span>因果注意力掩码<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>在 GPT 这样的自回归语言模型中，目标是预测下一个词，因此生成时必须确保当前位置不能访问未来位置的信息。否则，模型会“作弊”，导致训练和推理不一致。这里使用的掩码是因果注意力掩码，它的作用是在计算注意力时，将未来位置的信息屏蔽掉。</p>
+<p>掩码的作用就是在计算注意力权重时，将未来位置的注意力分数设置为负无穷（通常用 −∞ 或一个非常大的负数），使得经过softmax后这些位置的权重变为0。这样，每个位置只能关注它自己和之前的位置。</p>
+<p>在GPT这样的自回归语言模型中，目标是预测下一个词，因此生成时必须确保当前位置不能访问未来位置的信息。否则，模型会“作弊”，导致训练和推理不一致。这里使用的掩码是因果注意力掩码，它的作用是在计算注意力时，将未来位置的信息屏蔽掉。</p>
+<p>掩码的作用就是在计算注意力权重时，将未来位置的注意力分数设置为负无穷（通常用 −∞ 或一个非常大的负数），使得经过softmax后这些位置的权重变为0。这样，每个位置只能关注它自己和之前的位置。</p>
+<p>以输入序列 <code class="docutils literal notranslate"><span class="pre">动手学大模型</span></code> 为例，使用因果注意力掩码的过程如下所示：</p>
+<ol class="arabic simple">
+<li><p>序列长度为 6，则其对应的注意力矩阵为：</p></li>
+</ol>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312171616.png" /></p>
+<ol class="arabic simple" start="2">
+<li><p>假设每个 Token 之间自注意力得分矩阵为：</p></li>
+</ol>
+<p><img alt="自注意力得分" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312171622.png" /></p>
+<ol class="arabic simple" start="3">
+<li><p>应用因果注意力掩码，将未来位置的注意力分数设置为负无穷：</p></li>
+</ol>
+<p><img alt="应用注意力掩码" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312171631.png" /></p>
+<ol class="arabic simple" start="4">
+<li><p>使用 softmax 计算注意力权重，掩码位置的权重为 0：</p></li>
+</ol>
+<p><img alt="注意力权重" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260312171637.png" /></p>
+</section>
+</section>
+<section id="id9">
+<h2><span class="section-number">27.4. </span>带掩码多头注意力层的代码实现<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiHeadAttention</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    多头自注意力模块。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_dim (int): 输入特征维度。</span>
+<span class="sd">        output_dim (int): 输出特征维度（必须能被 num_heads 整除）。</span>
+<span class="sd">        context_length (int): 最大序列长度，用于生成因果掩码。</span>
+<span class="sd">        dropout (float): Dropout 概率。</span>
+<span class="sd">        num_heads (int): 注意力头的数量。</span>
+<span class="sd">        qkv_bias (bool): 是否在 Q、K、V 线性投影中使用偏置。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">context_length</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">qkv_bias</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">output_dim</span> <span class="o">%</span> <span class="n">num_heads</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;output_dim must be divisible by num_heads&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span> <span class="o">=</span> <span class="n">output_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span> <span class="o">=</span> <span class="n">num_heads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span> <span class="o">=</span> <span class="n">output_dim</span> <span class="o">//</span> <span class="n">num_heads</span>  <span class="c1"># 每个头的维度</span>
+
+        <span class="c1"># 定义查询、键、值的线性层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">qkv_bias</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 定义输出层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="o">=</span><span class="n">output_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="n">output_dim</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+
+        <span class="c1"># 因果掩码：上三角矩阵，用于屏蔽未来位置的注意力</span>
+        <span class="c1"># 注册为缓冲区，不会作为模型参数更新，但会随模型移动</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span>
+            <span class="s2">&quot;mask&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">context_length</span><span class="p">,</span> <span class="n">context_length</span><span class="p">),</span> <span class="n">diagonal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): 输入张量，形状为 (batch_size, seq_len, input_dim)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 输出张量，形状为 (batch_size, seq_len, output_dim)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># 1. 通过线性层得到 Q、K、V，形状为 (batch_size, seq_len, output_dim)</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># 2. 将 Q、K、V 拆分为多头，重塑为 (batch_size, seq_len, num_heads, head_dim)</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="n">queries</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="p">)</span>
+
+        <span class="c1"># 转置为 (batch_size, seq_len, num_heads, head_dim) ➡️ (batch_size, num_heads, seq_len, head_dim)</span>
+        <span class="c1"># 这一步是为了将序列长度维度和头维度交换，方便后续的分头进行自注意力计算</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="n">queries</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># 3. 使用矩阵计算缩放点积注意力分数，keys 转置最后两维：(batch_size, num_heads, seq_len, head_dim) ➡️ (batch_size, num_heads, head_dim, seq_len)</span>
+        <span class="c1"># 在PyTorch中，当使用 @ 运算符（或 torch.matmul 函数）进行矩阵乘法时，会自动处理批量维度并对最后两个维度执行标准矩阵乘法</span>
+        <span class="c1"># 这一步计算的是每个头的注意力分数，形状为 (batch_size, num_heads, seq_len, seq_len)</span>
+        <span class="n">attention_scores</span> <span class="o">=</span> <span class="n">queries</span> <span class="o">@</span> <span class="n">keys</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">1. 注意力分数:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">attention_scores</span><span class="p">)</span>
+
+        <span class="c1"># 4. 应用因果掩码（屏蔽未来位置）</span>
+        <span class="c1"># 将原始掩码截断到当前序列长度，并转换为布尔类型，布尔类型张量比浮点数或整数类型占用更少的内存（每个元素 1 字节），这使得它在处理大规模数据时更加高效。</span>
+        <span class="n">causal_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()[:</span><span class="n">seq_len</span><span class="p">,</span> <span class="p">:</span><span class="n">seq_len</span><span class="p">]</span>
+        <span class="n">attention_scores</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">causal_mask</span><span class="p">,</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">2. 应用因果掩码后的注意力分数:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">attention_scores</span><span class="p">)</span>
+
+        <span class="c1"># 5. 计算注意力权重（softmax）并应用 dropout</span>
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span>
+            <span class="n">attention_scores</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_dim</span><span class="o">**</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">3. 应用因果掩码后的注意力权重:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">attention_weights</span><span class="p">)</span>
+
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">attention_weights</span><span class="p">)</span>
+
+        <span class="c1"># 6. 加权求和得到上下文向量，形状为 (batch_size, num_heads, seq_len, head_dim)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">attention_weights</span> <span class="o">@</span> <span class="n">values</span>
+
+        <span class="c1"># 7. 合并多头输出</span>
+        <span class="c1"># 先转置为 (batch_size, num_tokens, num_heads, head_dim)，然后重塑为 (batch_size, num_tokens, output_dim)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
+
+        <span class="c1"># 8. 输出投影（可选）</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_layer</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/kong/opt/anaconda3/envs/dsx-ai/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id10">
+<h2><span class="section-number">27.5. </span>带掩码多头注意力层的应用实例<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">seq_len</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">input_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">num_heads</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">2</span>
+
+<span class="c1"># 创建输入数据</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">多头自注意力层最初输入的数据形状：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># 初始化多头自注意力层</span>
+<span class="n">multi_head_attn</span> <span class="o">=</span> <span class="n">MultiHeadAttention</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;多头自注意力层：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">multi_head_attn</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用多头自注意力层进行计算</span>
+<span class="n">context_vec</span> <span class="o">=</span> <span class="n">multi_head_attn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">多头自注意力层最终输出的数据形状：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">context_vec</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>多头自注意力层最初输入的数据形状：
+ torch.Size([1, 6, 4]) 
+
+多头自注意力层：
+ MultiHeadAttention(
+  (query_layer): Linear(in_features=4, out_features=4, bias=False)
+  (key_layer): Linear(in_features=4, out_features=4, bias=False)
+  (value_layer): Linear(in_features=4, out_features=4, bias=False)
+  (output_layer): Linear(in_features=4, out_features=4, bias=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+) 
+
+
+<span class=" -Color -Color-Red">1. 注意力分数:</span>
+tensor([[[[-1.9254,  0.5550,  0.0929, -0.0293,  0.5207, -1.0635],
+          [ 0.6581,  0.2271, -0.2832,  0.8665, -1.7912, -0.1338],
+          [-0.3595, -0.0062,  0.0836, -0.2311,  0.5223, -0.0676],
+          [-0.4889,  0.2849, -0.0633,  0.2884, -0.4250, -0.4419],
+          [ 1.0251, -0.5967,  0.1322, -0.6032,  0.8883,  0.9255],
+          [-1.6281,  0.1580,  0.2664, -0.6645,  1.6453, -0.5279]],
+
+         [[-0.0861, -0.3119,  0.1356, -0.1364,  0.3260,  0.2548],
+          [ 0.4471, -1.1365,  0.2674, -0.1142,  0.2327,  1.0212],
+          [-0.1740,  0.1345,  0.0044, -0.0474,  0.1245, -0.1356],
+          [-0.7856,  0.1128,  0.1942, -0.3616,  0.9074, -0.1919],
+          [ 1.2710, -0.0874, -0.3478,  0.6135, -1.5345,  0.2295],
+          [-0.4169,  0.4893, -0.0483, -0.0637,  0.1815, -0.4671]]]],
+       grad_fn=&lt;UnsafeViewBackward0&gt;)
+
+<span class=" -Color -Color-Red">2. 应用因果掩码后的注意力分数:</span>
+tensor([[[[-1.9254,    -inf,    -inf,    -inf,    -inf,    -inf],
+          [ 0.6581,  0.2271,    -inf,    -inf,    -inf,    -inf],
+          [-0.3595, -0.0062,  0.0836,    -inf,    -inf,    -inf],
+          [-0.4889,  0.2849, -0.0633,  0.2884,    -inf,    -inf],
+          [ 1.0251, -0.5967,  0.1322, -0.6032,  0.8883,    -inf],
+          [-1.6281,  0.1580,  0.2664, -0.6645,  1.6453, -0.5279]],
+
+         [[-0.0861,    -inf,    -inf,    -inf,    -inf,    -inf],
+          [ 0.4471, -1.1365,    -inf,    -inf,    -inf,    -inf],
+          [-0.1740,  0.1345,  0.0044,    -inf,    -inf,    -inf],
+          [-0.7856,  0.1128,  0.1942, -0.3616,    -inf,    -inf],
+          [ 1.2710, -0.0874, -0.3478,  0.6135, -1.5345,    -inf],
+          [-0.4169,  0.4893, -0.0483, -0.0637,  0.1815, -0.4671]]]],
+       grad_fn=&lt;MaskedFillBackward0&gt;)
+
+<span class=" -Color -Color-Red">3. 应用因果掩码后的注意力权重:</span>
+tensor([[[[1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000],
+          [0.5756, 0.4244, 0.0000, 0.0000, 0.0000, 0.0000],
+          [0.2738, 0.3516, 0.3746, 0.0000, 0.0000, 0.0000],
+          [0.1720, 0.2974, 0.2325, 0.2981, 0.0000, 0.0000],
+          [0.3254, 0.1034, 0.1730, 0.1029, 0.2954, 0.0000],
+          [0.0442, 0.1563, 0.1687, 0.0873, 0.4473, 0.0962]],
+
+         [[1.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000],
+          [0.7539, 0.2461, 0.0000, 0.0000, 0.0000, 0.0000],
+          [0.2960, 0.3682, 0.3358, 0.0000, 0.0000, 0.0000],
+          [0.1603, 0.3027, 0.3206, 0.2164, 0.0000, 0.0000],
+          [0.4054, 0.1551, 0.1291, 0.2547, 0.0558, 0.0000],
+          [0.1255, 0.2381, 0.1628, 0.1610, 0.1915, 0.1211]]]],
+       grad_fn=&lt;SoftmaxBackward0&gt;)
+
+多头自注意力层最终输出的数据形状：
+ torch.Size([1, 6, 4])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id11">
+<h2><span class="section-number">27.6. </span>答疑讨论<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+                <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                    <div class="qe-sidebar__header">
+
+                        目录
+
+                    </div>
+
+                    <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+
+                    </nav>
+
+                    <div class="qe-sidebar__footer">
+
+                    </div>
+
+                </div> <!-- .sidebar -->
+                
+            </div> <!-- .main -->
+
+            <div class="qe-toolbar">
+
+                <div class="qe-toolbar__inner">
+
+                    <ul class="qe-toolbar__main">
+                        <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                        <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    </ul>
+
+                    <ul class="qe-toolbar__links">
+                        <li data-tippy-content="搜索" class="btn__search">
+                            <form action="../search.html" method="get">
+                                <input type="search" class="form-control" name="q" id="search-input"
+                                    placeholder="Search..." aria-label="Search..."
+                                    autocomplete="off" accesskey="k">
+                                <i data-feather="search" id="search-icon"></i>
+                            </form>
+                        </li>
+                        <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                        <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                        </li>
+                        <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- .toolbar -->
+            <div id="downloadPDFModal" style="display: none;">
+                <ul class="pdf-options" style="display: block;">
+                    <li class="download-pdf-book" onClick="window.print()">
+                        <p>Lecture (PDF)</p>
+                    </li>
+                    <li class="download-pdf-file">
+                        <a href="" download>
+                            <p>Book (PDF)</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="settingsModal" style="display: none;">
+                <p class="modal-title"> Notebook Launcher </p>
+                <div class="modal-desc">
+                    <p>
+                        Choose public or private cloud service for "Launch" button.
+                    </p>
+                </div>
+                <p class="modal-subtitle">Select a server</p>
+                <ul class="modal-servers">
+                    <li class="active launcher-public">
+                        <span class="label">Public</span>
+                        <select id="launcher-public-input">
+                            
+                        </select>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                    <li class="launcher-private">
+                        <span class="label">Private</span>
+                        <input type="text" id="launcher-private-input" data-repourl=""
+                            data-urlpath="" data-branch=>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+                <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                        Notebook</a></p>
+                <script>
+                    // QuantEcon Notebook Launcher
+                    const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                    // Highlight the server type if previous selection exists
+                    if (typeof localStorage.launcherType !== 'undefined') {
+                        for (var i = 0; i < launcherTypeElements.length; i++) {
+                            launcherTypeElements[i].classList.remove('active');
+                            if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                                launcherTypeElements[i].classList.add('active');
+                            }
+                        }
+                    }
+                    // Highlight server type on click and set local storage value
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].addEventListener('click', function () {
+                            for (var j = 0; j < launcherTypeElements.length; j++) {
+                                launcherTypeElements[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+                            if (this.classList.contains('launcher-private')) {
+                                localStorage.launcherType = 'launcher-private';
+                            } else if (this.classList.contains('launcher-public')) {
+                                localStorage.launcherType = 'launcher-public';
+                            }
+                            setLaunchServer();
+                        })
+                    }
+                    const launcherPublic = document.getElementById('launcher-public-input');
+                    const launcherPrivate = document.getElementById('launcher-private-input');
+                    const pageName = "notebooks/27实现 GPT 多头注意力层";
+                    const repoURL = "";
+                    const urlPath = "";
+                    const branch = ""
+                    const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                    // Highlight public server option if previous selection exists
+                    if (typeof localStorage.launcherPublic !== 'undefined') {
+                        launcherPublic.value = localStorage.launcherPublic;
+                    }
+                    // Update local storage upon public server selection
+                    launcherPublic.addEventListener('change', (event) => {
+                        setLaunchServer();
+                    });
+                    // Populate private server input if previous entry exists
+                    if (typeof localStorage.launcherPrivate !== 'undefined') {
+                        launcherPrivate.value = localStorage.launcherPrivate;
+                    }
+                    // Update local storage when a private server is entered
+                    launcherPrivate.addEventListener('input', (event) => {
+                        setLaunchServer();
+                    });
+
+                    // Function to update the "Launch Notebook" link href
+                    function setLaunchServer() {
+                        launchNotebookLink.removeAttribute("style")
+                        if (localStorage.launcherType == 'launcher-private') {
+                            let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                            launcherPrivateValue = launcherPrivate.value
+                            if (!launcherPrivateValue) {
+                                launchNotebookLink.removeAttribute("href")
+                                launchNotebookLink.style.background = "grey"
+                                return
+                            }
+                            localStorage.launcherPrivate = launcherPrivateValue;
+                            privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                            if (!privateServer.includes("http")) {
+                                privateServer = "http://" + privateServer
+                            }
+                            launchNotebookLinkURL = privateServer + repoPrefix;
+                        } else if (localStorage.launcherType == 'launcher-public') {
+                            launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                            localStorage.launcherPublic = launcherPublicValue;
+                            launchNotebookLinkURL = localStorage.launcherPublic;
+                        }
+                        if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                    }
+                    // Check if user has previously selected a server
+                    if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                        setLaunchServer();
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- .wrapper-->
+  </body>
+</html>

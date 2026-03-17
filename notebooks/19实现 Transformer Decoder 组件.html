@@ -1,0 +1,1254 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>19. 实现 Transformer Decoder 组件 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a4444a4c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/19实现 Transformer Decoder 组件';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="20. 实现完整的 Transformer 模型" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html" />
+    <link rel="prev" title="18. 实现 Transformer Encoder 组件" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感" />
+<meta name="keywords" content="" />
+<meta name="description" content=实现 Transformer Decoder 组件  Transformer Decoder 概览  Transformer 的 Decoder 部分是整个 Transformer 架构中负责生成的组件。Decoder 的目标是根据已有的输入和编码器的输出，逐个时间步地预测后面的序列。  image.png  标准的  />
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="实现 Transformer Decoder 组件" />
+<meta name="twitter:description" content="实现 Transformer Decoder 组件  Transformer Decoder 概览  Transformer 的 Decoder 部分是整个 Transformer 架构中负责生成的组件。Decoder 的目标是根据已有的输入和编码器的输出，逐个时间步地预测后面的序列。  image.png  标准的 ">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="实现 Transformer Decoder 组件" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="None" />
+<meta property="og:image" content="" />
+<meta property="og:description" content="实现 Transformer Decoder 组件  Transformer Decoder 概览  Transformer 的 Decoder 部分是整个 Transformer 架构中负责生成的组件。Decoder 的目标是根据已有的输入和编码器的输出，逐个时间步地预测后面的序列。  image.png  标准的 " />
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南" />
+<meta name="theme-color" content="#ffffff" />
+
+  </head>
+<body>
+
+    <!-- Override QuantEcon theme colors -->
+    <style>
+        a {
+            color: #313131;
+        }
+
+        a:hover {
+            color: #313131;
+        }
+
+        a:visited {
+            color: #111111;
+        }
+
+        .main-index {
+            #qe-page-author-links {
+                border-bottom: 5px solid #313131;
+            }
+        }
+
+        .qe-page__header {
+            border-bottom: 5px solid #313131;
+        }
+
+        .qe-page__footer {
+            border-top: 5px solid #313131;
+        }
+
+        .toctree-wrapper {
+            .caption-text {
+                color: #111111
+            }
+        }
+    </style>
+
+    <span id="top"></span>
+
+    <div class="qe-wrapper">
+
+        <div class="qe-main">
+
+            <div class="qe-page" id=notebooks/19实现 Transformer Decoder 组件>
+
+                <div class="qe-page__toc">
+
+                    <div class="inner">
+
+                        
+                        <div class="qe-page__toc-header">
+                        </div>
+
+
+                        <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                            <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">19.1. Transformer Decoder 概览</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">19.1.1. 解码器的解码过程</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">19.1.2. 解码器和编码器的差异</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pad-mask">19.2. 填充掩码（Pad Mask）</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">19.2.1. 填充掩码的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">19.2.2. 生成填充掩码矩阵</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#self-attention">19.2.3. 在 Self-Attention 层中使用填充掩码</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#causal-attention-mask">19.3. 因果注意力掩码（Causal Attention Mask）</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">19.3.1. 因果注意力掩码的代码实现</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">19.3.2. 生成因果注意力掩码</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#masked-attention">19.3.3. 在 Masked-Attention 层中使用因果注意力掩码</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-attention-mask">19.4. 交叉注意力掩码（Cross-Attention Mask）</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">19.4.1. 生成交叉注意力掩码</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-attention">19.4.2. 在 Cross-Attention 层中使用交叉注意力掩码</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">19.5. 本章小结</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">19.6. 答疑讨论</a></li>
+</ul>
+
+                        </nav>
+
+                        <div class="qe-page__toc-footer">
+                            
+                            
+                            <p><a href="#top">
+                                    <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                        type="button">
+                                        <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                            focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                            <path fill="currentColor"
+                                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                            </path>
+                                        </svg><!-- <i class="fa-solid fa-circle-arrow-up"></i> Font Awesome fontawesome.com -->
+                                        返回顶部
+                                    </button>
+                                </a></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="qe-page__header alert alert-light">
+
+                    <div class="qe-page__header-copy">
+
+                        <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+
+                    </div>
+
+                    <!-- Authors section -->
+                    <p class="qe-page__header-authors" font-size="18">
+                        <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                        更新于：2026.01.01
+                    </p>
+
+                    <!-- Last modified / Changelog dropdown -->
+
+                    <!-- Changelog dropdown content -->
+
+                </div> <!-- .page__header -->
+
+                <!-- 封面 -->
+
+                <div class="cover-container simple-tilt">
+                    
+                    <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260228092927.png" class="cover-image">
+                    
+                </div>
+
+
+
+                
+                <main class="qe-page__content alert alert-light" role="main">
+                    
+                    <div>
+                        
+  <section class="tex2jax_ignore mathjax_ignore" id="transformer-decoder">
+<h1><span class="section-number">19. </span>实现 Transformer Decoder 组件<a class="headerlink" href="#transformer-decoder" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">19.1. </span>Transformer Decoder 概览<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>Transformer 的 Decoder 部分是整个 Transformer 架构中负责生成的组件。Decoder 的目标是根据已有的输入和编码器的输出，逐个时间步地预测后面的序列。</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130456.png" /></p>
+<p>标准的 Transformer Decoder 由多个相同的解码器层（块）堆叠而成。</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316140016.png" /></p>
+<p>每一个解码器层内部主要由以下三个子层构成：</p>
+<ul class="simple">
+<li><p>带掩码多头注意力层：这是 Decoder 自带的注意力机制。它允许 Decoder 关注当前已生成的所有词，但由于是自回归生成，它必须通过掩码来阻止关注未来的词，需要使用掩码，确保预测位置智能看到当前位置之前的词，这种机制称为“因果掩码”（Causal Mask）。</p></li>
+<li><p>交叉注意力层：这是 Decoder 与 Encoder 交互的桥梁。该层使用 Decoder 自身的 Query，去查询 Encoder 输出的 Key 和 Value，让 Decoder 能够关注到输入序列中与当前生成相关的信息。</p></li>
+<li><p>前馈网络层：与 Encoder 中的完全相同，是一个全连接网络，对注意力层输出的数据进行非线性变换。</p></li>
+</ul>
+<p>此外，每个子层都使用了残差连接和层归一化，让模型在训练时能够更稳定地收敛。</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130520.png" /></p>
+<section id="id2">
+<h3><span class="section-number">19.1.1. </span>解码器的解码过程<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p><strong>Transformer 解码器的解码有以下步骤：</strong></p>
+<ol class="arabic simple">
+<li><p>首先，我们将解码器的输入转换为嵌入矩阵，然后将位置编码加入其中，并将其作为输入送入底层的解码器。</p></li>
+<li><p>解码器收到输入，并将其发送给 <code class="docutils literal notranslate"><span class="pre">带掩码的自注意力层</span></code>，生成融合了上下文信息的 Token 特征矩阵。</p></li>
+<li><p>然后，将特征矩阵和编码器输出的特征值作为 <code class="docutils literal notranslate"><span class="pre">交叉注意力层</span></code> 的输入，并再次生成新的融合了编码器输入信息的 Token 特征矩阵。</p></li>
+<li><p>把新得到的特征矩阵作为输入，送入前馈网络层，进一步在更精细的维度上重组融合，输出最终的 Token 特征矩阵。</p></li>
+<li><p>然后，我们用相同的方法，把从底层解码器得到的特征矩阵作为输入，将其送入下一层的解码器。</p></li>
+<li><p>经过多轮这样的处理，最终得到目标句的特征矩阵，我们可以用一个输出层将其映射到目标词汇表的大小，得到每个位置上的预测分布。</p></li>
+</ol>
+</section>
+<section id="id3">
+<h3><span class="section-number">19.1.2. </span>解码器和编码器的差异<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<p>前馈网络层、残差连接和层归一化的作用和实现方式与 Transformer Encoder 中的完全相同，这里就不再重新介绍。</p>
+<p>Decoder与Encoder主要有两点核心差异：</p>
+<ul class="simple">
+<li><p><strong>掩码机制</strong>：</p>
+<ul>
+<li><p>Encoder 使用普通注意力，在计算某个词时可以“看到”句子中所有的词（包括前后文），这是双向的。</p></li>
+<li><p>Decoder 则使用掩码注意力。在训练和推理时，通过一个上三角矩阵将未来的信息遮盖掉，让模型只能依赖当前位置之前的信息，这是单向的。这确保了模型在预测下一个词时不会“偷看”到正确答案。</p></li>
+</ul>
+</li>
+<li><p><strong>交叉注意力</strong>：</p>
+<ul>
+<li><p>Encoder 是独立的，只处理自己的输入，没有引入外部信息的模块。</p></li>
+<li><p>Decoder 则多了一个交叉注意力层，专门用来吸收 Encoder 提取的特征，实现从输入序列到输出序列的信息传递。</p></li>
+</ul>
+</li>
+</ul>
+<p>本章重点是实现 Transformer 中的掩码机制。Transformer 中使用了三种不同的掩码：</p>
+<ul class="simple">
+<li><p><strong>填充掩码（Padding Mask）</strong>：这种Mask用于处理输入序列长度不一致的问题。在自注意力机制中，较短的序列会被填充为相同的长度，而这些填充的位置会通过设置为无穷小（负无穷大）来忽略掉，从而不影响模型的计算结果。</p></li>
+<li><p><strong>因果掩码（Causal Mask）</strong>：这种Mask用于防止在解码器生成输出时，当前位置的信息被后续位置的信息影响。具体来说，它会在自注意力计算中遮盖掉当前位置之后的信息，确保生成的单词只依赖于之前已经生成的单词。</p></li>
+<li><p><strong>交叉掩码（Cross Mask）</strong>：在<strong>编码器-解码器交叉注意力层</strong>中，过滤编码器输出的填充部分（如补零位置）。确保解码器仅关注编码器输出的实际内容，忽略填充符号。</p></li>
+</ul>
+</section>
+</section>
+<section id="pad-mask">
+<h2><span class="section-number">19.2. </span>填充掩码（Pad Mask）<a class="headerlink" href="#pad-mask" title="Link to this heading">#</a></h2>
+<p>Padding Mask 是一种用于处理变长序列数据的掩码机制，主要用于在 Transformer 模型中区分输入序列中的真实数据和填充数据。</p>
+<p>Padding Mask 是一个布尔矩阵，用于指示输入序列中哪些位置是填充的（即用 0 填充的位置），哪些位置是实际数据（即非填充的位置）。其主要目的是在自注意力机制中屏蔽掉填充部分，确保模型不会将这些无意义的填充数据纳入计算，从而提高模型的效率和准确性。</p>
+<p>以 <code class="docutils literal notranslate"><span class="pre">1+100</span></code> 填充到长度 7 为例，它的填充掩码矩阵如下图所示，其中灰色的位置表示填充位置（用 <code class="docutils literal notranslate"><span class="pre">PAD</span></code> 填充的位置），绿色的位置表示实际数据位置（即非填充的位置）：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130527.png" /></p>
+<p>具体实现方式如下：
+- 在生成 Padding Mask 时，通常会根据输入序列的长度动态生成一个与输入序列形状相同的矩阵。例如，对于一个长度为 <code class="docutils literal notranslate"><span class="pre">seq_len</span></code> 的序列，Padding Mask 的形状可以是 <code class="docutils literal notranslate"><span class="pre">[batch_size,</span> <span class="pre">seq_len]</span></code>，其中 <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> 是批次大小。
+- 具体实现上，可以通过比较输入序列中的每个位置是否为填充符号（如 <code class="docutils literal notranslate"><span class="pre">PAD</span></code>），然后将填充位置标记为 <code class="docutils literal notranslate"><span class="pre">0</span></code>，非填充位置标记为 <code class="docutils literal notranslate"><span class="pre">1</span></code>。</p>
+<p>在 Transformer 的自注意力机制中，Padding Mask 被用来屏蔽掉填充部分的位置。具体来说，当计算注意力分数时，填充位置的注意力权重会被设置为一个非常大的负数（如负无穷），这样在经过 softmax 归一化后，这些位置的权重几乎为零，从而不会对模型的输出产生影响。</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130533.png" /></p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130539.png" /></p>
+<p>此外，在模型训练过程中，Padding Mask 还可以防止填充数据对模型学习产生干扰，确保模型只关注实际输入的有效部分。</p>
+<section id="id4">
+<h3><span class="section-number">19.2.1. </span>填充掩码的代码实现<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_cross_attn_pad_mask</span><span class="p">(</span><span class="n">query_ids</span><span class="p">,</span> <span class="n">key_ids</span><span class="p">,</span> <span class="n">pad_token_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    创建填充掩码矩阵，用于屏蔽padding位置的注意力</span>
+<span class="sd">    </span>
+<span class="sd">    :param query_ids: 查询ID序列，形状为[batch_size, query_len]</span>
+<span class="sd">    :param key_ids: 键ID序列，形状为[batch_size, key_len]</span>
+<span class="sd">    :param pad_token_id: 填充标记ID，用于识别哪些位置是padding</span>
+<span class="sd">    :return: 填充掩码矩阵，形状为[batch_size, query_len, key_len]，其中1表示有效位置，0表示padding位置</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">batch_size</span><span class="p">,</span> <span class="n">query_len</span> <span class="o">=</span> <span class="n">query_ids</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+    <span class="n">batch_size</span><span class="p">,</span> <span class="n">key_len</span> <span class="o">=</span> <span class="n">key_ids</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+    <span class="c1"># 生成Key序列的padding掩码：ne(pad_token_id)返回非填充位置为True，填充位置为False（ne 是 &quot;not equal&quot; 的缩写，表示&quot;不等于&quot;操作）</span>
+    <span class="c1"># unsqueeze(1)在第1维添加维度，形状变为[batch_size, 1, key_len]</span>
+    <span class="c1"># byte类型（torch.uint8）只需要1个字节的存储空间，对于只包含0和1的掩码矩阵，使用byte类型可以显著减少内存占用</span>
+    <span class="n">key_attn_pad_mask</span> <span class="o">=</span> <span class="n">key_ids</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ne</span><span class="p">(</span><span class="n">pad_token_id</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">byte</span><span class="p">()</span>
+
+    <span class="c1"># 将Key的填充mask信息，复制给每一个Query</span>
+    <span class="k">return</span> <span class="n">key_attn_pad_mask</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">query_len</span><span class="p">,</span> <span class="n">key_len</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">19.2.2. </span>生成填充掩码矩阵<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.transformer.tokenizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tokenizer</span>
+
+<span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;1+100&quot;</span>
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">get_tokenizer</span><span class="p">()</span>
+<span class="n">encoded_result</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;encoded_result：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoded_result</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">],</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">encoder_input_ids</span> <span class="o">=</span> <span class="n">encoded_result</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;encoder_input_ids：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoder_input_ids</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 生成被关注的Key的填充mask矩阵，0表示填充，1表示原始token</span>
+<span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
+<span class="n">key_attn_pad_mask</span> <span class="o">=</span> <span class="n">create_cross_attn_pad_mask</span><span class="p">(</span><span class="n">query_ids</span><span class="o">=</span><span class="n">encoder_input_ids</span><span class="p">,</span>
+                                               <span class="n">key_ids</span><span class="o">=</span><span class="n">encoder_input_ids</span><span class="p">,</span>
+                                               <span class="n">pad_token_id</span><span class="o">=</span><span class="n">pad_token_id</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;key_attn_pad_mask：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_attn_pad_mask</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>encoded_result：
+ tensor([ 1, 10,  1,  0,  0, 12, 12]) 
+
+encoder_input_ids：
+ tensor([[ 1, 10,  1,  0,  0, 12, 12]]) 
+
+key_attn_pad_mask：
+ tensor([[[1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0]]], dtype=torch.uint8) 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="self-attention">
+<h3><span class="section-number">19.2.3. </span>在 Self-Attention 层中使用填充掩码<a class="headerlink" href="#self-attention" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.transformer.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleHeadAttention</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dsxllm.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_red</span>
+
+<span class="c1"># 超参设置</span>
+<span class="n">d_model</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">num_embeddings</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">vocab_size</span>
+
+<span class="c1"># 1️⃣ 创建 Token Embedding 层</span>
+<span class="n">embed_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="o">=</span><span class="n">num_embeddings</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="n">d_model</span><span class="p">)</span>
+
+<span class="c1"># 创建输入数据的嵌入表示</span>
+<span class="n">encoder_input</span> <span class="o">=</span> <span class="n">embed_layer</span><span class="p">(</span><span class="n">encoder_input_ids</span><span class="p">)</span>
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;输入数据：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">encoder_input</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2、生成被关注的Key的填充mask矩阵，0表示填充，1表示原始token</span>
+<span class="n">pad_token_id</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
+<span class="n">key_attn_pad_mask</span> <span class="o">=</span> <span class="n">create_cross_attn_pad_mask</span><span class="p">(</span>
+    <span class="n">encoder_input_ids</span><span class="p">,</span> <span class="n">encoder_input_ids</span><span class="p">,</span> <span class="n">pad_token_id</span>
+<span class="p">)</span>
+
+<span class="c1"># 初始化单头自注意力层</span>
+<span class="n">attn</span> <span class="o">=</span> <span class="n">SingleHeadAttention</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">is_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">print_red</span><span class="p">(</span><span class="s2">&quot;单头自注意力层：&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">attn</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用单头自注意力层进行计算</span>
+<span class="n">hidden_states</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attn</span><span class="p">(</span>
+    <span class="n">q_input</span><span class="o">=</span><span class="n">encoder_input</span><span class="p">,</span>
+    <span class="n">k_input</span><span class="o">=</span><span class="n">encoder_input</span><span class="p">,</span>
+    <span class="n">v_input</span><span class="o">=</span><span class="n">encoder_input</span><span class="p">,</span>
+    <span class="n">attn_mask</span><span class="o">=</span><span class="n">key_attn_pad_mask</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">输入数据：</span>
+tensor([[[ 0.1085,  1.6926,  1.0728,  0.5288],
+         [-0.6277, -2.4309, -1.6768,  1.6910],
+         [ 0.1085,  1.6926,  1.0728,  0.5288],
+         [-1.6693, -0.1664,  0.6599,  0.1362],
+         [-1.6693, -0.1664,  0.6599,  0.1362],
+         [-0.6359, -0.6651,  0.0025, -2.1165],
+         [-0.6359, -0.6651,  0.0025, -2.1165]]], grad_fn=&lt;EmbeddingBackward0&gt;) 
+
+<span class=" -Color -Color-Red">单头自注意力层：</span>
+SingleHeadAttention(
+  (q_proj): Linear(in_features=4, out_features=4, bias=False)
+  (k_proj): Linear(in_features=4, out_features=4, bias=False)
+  (v_proj): Linear(in_features=4, out_features=4, bias=False)
+) 
+
+---------------------------------------------------------------------------------------------------- 
+
+<span class=" -Color -Color-Red">【步骤1】计算query、key和value向量 </span>
+
+<span class=" -Color -Color-Red">【步骤2】计算注意力分数</span>
+掩码前的scores:
+ tensor([[[-0.1930,  0.2184, -0.1930,  0.2117,  0.2117,  0.2241,  0.2241],
+         [-0.0022, -0.0814, -0.0022, -0.5068, -0.5068, -0.2059, -0.2059],
+         [-0.1930,  0.2184, -0.1930,  0.2117,  0.2117,  0.2241,  0.2241],
+         [ 0.0169, -0.1553,  0.0169,  0.6253,  0.6253,  0.4403,  0.4403],
+         [ 0.0169, -0.1553,  0.0169,  0.6253,  0.6253,  0.4403,  0.4403],
+         [ 0.3107, -0.3603,  0.3107,  0.4642,  0.4642,  0.0828,  0.0828],
+         [ 0.3107, -0.3603,  0.3107,  0.4642,  0.4642,  0.0828,  0.0828]]],
+       grad_fn=&lt;DivBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 2-2】根据掩码重设无需关注的注意力分数</span>
+掩码后的scores:
+ tensor([[[-1.9301e-01,  2.1841e-01, -1.9301e-01,  2.1167e-01,  2.1167e-01,
+          -1.0000e+09, -1.0000e+09],
+         [-2.1652e-03, -8.1440e-02, -2.1652e-03, -5.0683e-01, -5.0683e-01,
+          -1.0000e+09, -1.0000e+09],
+         [-1.9301e-01,  2.1841e-01, -1.9301e-01,  2.1167e-01,  2.1167e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 1.6892e-02, -1.5526e-01,  1.6892e-02,  6.2533e-01,  6.2533e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 1.6892e-02, -1.5526e-01,  1.6892e-02,  6.2533e-01,  6.2533e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 3.1067e-01, -3.6031e-01,  3.1067e-01,  4.6423e-01,  4.6423e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 3.1067e-01, -3.6031e-01,  3.1067e-01,  4.6423e-01,  4.6423e-01,
+          -1.0000e+09, -1.0000e+09]]], grad_fn=&lt;MaskedFillBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤3】计算注意力权重</span>
+注意力权重:
+ tensor([[[0.1537, 0.2319, 0.1537, 0.2304, 0.2304, 0.0000, 0.0000],
+         [0.2421, 0.2236, 0.2421, 0.1461, 0.1461, 0.0000, 0.0000],
+         [0.1537, 0.2319, 0.1537, 0.2304, 0.2304, 0.0000, 0.0000],
+         [0.1534, 0.1292, 0.1534, 0.2820, 0.2820, 0.0000, 0.0000],
+         [0.1534, 0.1292, 0.1534, 0.2820, 0.2820, 0.0000, 0.0000],
+         [0.2065, 0.1056, 0.2065, 0.2407, 0.2407, 0.0000, 0.0000],
+         [0.2065, 0.1056, 0.2065, 0.2407, 0.2407, 0.0000, 0.0000]]],
+       grad_fn=&lt;SoftmaxBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 4】 计算加权和</span>
+最终加权和:
+ tensor([[[-0.0252, -0.3829,  0.2684, -0.0838],
+         [-0.2593, -0.3968,  0.0988,  0.0171],
+         [-0.0252, -0.3829,  0.2684, -0.0838],
+         [-0.1678, -0.3657,  0.2525, -0.0782],
+         [-0.1678, -0.3657,  0.2525, -0.0782],
+         [-0.3342, -0.3710,  0.1478, -0.0166],
+         [-0.3342, -0.3710,  0.1478, -0.0166]]], grad_fn=&lt;UnsafeViewBackward0&gt;) 
+</pre></div>
+</div>
+</div>
+</div>
+<p>在步骤 3 中，我们可以看到应用了 Padding Mask 之后，每个位置对填充位置（后两个位置）的注意力权重都被处理成了 0。</p>
+</section>
+</section>
+<section id="causal-attention-mask">
+<h2><span class="section-number">19.3. </span>因果注意力掩码（Causal Attention Mask）<a class="headerlink" href="#causal-attention-mask" title="Link to this heading">#</a></h2>
+<p>Causal Attention Mask 是一种用于在自注意力机制中防止模型“看到”未来信息的掩码技术。具体来说，它通过生成一个下三角矩阵来实现，该矩阵的上三角部分为 0，而对角线及其以下部分为 1。这个矩阵的作用是将自注意力计算中的权重设置为 0，从而确保在时间步 t 的解码输出只能依赖于 t 时刻之前的输入，而不能依赖于 t 之后的信息。</p>
+<p>以 <code class="docutils literal notranslate"><span class="pre">&lt;bos&gt;101&lt;eos&gt;</span></code> 为例，它的因果注意力掩码矩阵如下：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130551.png" /></p>
+<p>在实际应用中，因果注意力掩码主要用于 Transformer 模型中的解码器部分。例如，在生成序列时，通过将当前位置之后的信息权重设置为负无穷大（或直接设置为 0），可以有效地阻止模型访问这些信息。这种机制确保了模型在生成每个新词时，只能基于已生成的词进行预测，从而保证了生成序列的自回归性质。</p>
+<p>因果注意力掩码的实现通常涉及以下步骤：</p>
+<ol class="arabic simple">
+<li><p><strong>生成掩码矩阵</strong>：根据序列长度生成一个形状为 <code class="docutils literal notranslate"><span class="pre">[batch_size,</span> <span class="pre">seq_len,</span> <span class="pre">seq_len]</span></code> 的下三角矩阵。</p></li>
+<li><p><strong>应用掩码</strong>：将该掩码矩阵与缩放点积注意力（scaled dot-product attention）的结果相乘，以屏蔽掉未来信息的影响。</p></li>
+</ol>
+<section id="id6">
+<h3><span class="section-number">19.3.1. </span>因果注意力掩码的代码实现<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="c1"># 生成因果注意力掩码矩阵</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_causal_attn_mask</span><span class="p">(</span><span class="n">input_ids</span><span class="p">):</span>
+    <span class="c1"># 生成解码时因果注意力掩码的下三角矩阵，[batch_size, tgt_len, tgt_len]</span>
+    <span class="n">causal_attn_shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_ids</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">input_ids</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">causal_attn_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">causal_attn_shape</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">causal_attn_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">causal_attn_mask</span><span class="p">)</span><span class="o">.</span><span class="n">byte</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">causal_attn_mask</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id7">
+<h3><span class="section-number">19.3.2. </span>生成因果注意力掩码<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">answer</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token</span><span class="si">}</span><span class="s2">101</span><span class="si">{</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># 对数据进行分词编码</span>
+<span class="n">encoded_result</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 生成数据的嵌入表示</span>
+<span class="n">decoder_input_ids</span> <span class="o">=</span> <span class="n">encoded_result</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">decoder_input</span> <span class="o">=</span> <span class="n">embed_layer</span><span class="p">(</span><span class="n">decoder_input_ids</span><span class="p">)</span>
+
+<span class="c1"># 生成因果注意力掩码矩阵</span>
+<span class="n">causal_attn_mask</span> <span class="o">=</span> <span class="n">create_causal_attn_mask</span><span class="p">(</span><span class="n">decoder_input_ids</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;label_input_ids：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">decoder_input_ids</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;label_input：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">decoder_input</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;causal_attn_mask：</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">causal_attn_mask</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>label_input_ids：
+ tensor([[14,  1,  0,  1, 15]]) 
+
+label_input：
+ tensor([[[ 0.4236,  0.7995, -0.6115, -2.4611],
+         [ 0.1085,  1.6926,  1.0728,  0.5288],
+         [-1.6693, -0.1664,  0.6599,  0.1362],
+         [ 0.1085,  1.6926,  1.0728,  0.5288],
+         [ 0.1950,  0.5887, -2.0544, -0.5407]]], grad_fn=&lt;EmbeddingBackward0&gt;) 
+
+causal_attn_mask：
+ tensor([[[1, 0, 0, 0, 0],
+         [1, 1, 0, 0, 0],
+         [1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 0],
+         [1, 1, 1, 1, 1]]], dtype=torch.uint8) 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="masked-attention">
+<h3><span class="section-number">19.3.3. </span>在 Masked-Attention 层中使用因果注意力掩码<a class="headerlink" href="#masked-attention" title="Link to this heading">#</a></h3>
+<p>Masked-Attention 层本质上还是一个自注意力层，只是它在计算注意力权重时，使用的是因果注意力掩码。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用单头自注意力层进行计算</span>
+<span class="n">hidden_states</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attn</span><span class="p">(</span><span class="n">q_input</span><span class="o">=</span><span class="n">decoder_input</span><span class="p">,</span> <span class="n">k_input</span><span class="o">=</span><span class="n">decoder_input</span><span class="p">,</span> <span class="n">v_input</span><span class="o">=</span><span class="n">decoder_input</span><span class="p">,</span> <span class="n">attn_mask</span><span class="o">=</span><span class="n">causal_attn_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">【步骤1】计算query、key和value向量 </span>
+
+<span class=" -Color -Color-Red">【步骤2】计算注意力分数</span>
+掩码前的scores:
+ tensor([[[-0.2059,  0.2741,  0.3620,  0.2741, -0.2577],
+         [-0.1440, -0.1930,  0.2117, -0.1930, -0.3016],
+         [-0.0952,  0.0169,  0.6253,  0.0169, -0.5253],
+         [-0.1440, -0.1930,  0.2117, -0.1930, -0.3016],
+         [-0.1689,  0.1151,  0.0835,  0.1151, -0.1969]]],
+       grad_fn=&lt;DivBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 2-2】根据掩码重设无需关注的注意力分数</span>
+掩码后的scores:
+ tensor([[[-2.0588e-01, -1.0000e+09, -1.0000e+09, -1.0000e+09, -1.0000e+09],
+         [-1.4405e-01, -1.9301e-01, -1.0000e+09, -1.0000e+09, -1.0000e+09],
+         [-9.5159e-02,  1.6892e-02,  6.2533e-01, -1.0000e+09, -1.0000e+09],
+         [-1.4405e-01, -1.9301e-01,  2.1167e-01, -1.9301e-01, -1.0000e+09],
+         [-1.6894e-01,  1.1514e-01,  8.3462e-02,  1.1514e-01, -1.9687e-01]]],
+       grad_fn=&lt;MaskedFillBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤3】计算注意力权重</span>
+注意力权重:
+ tensor([[[1.0000, 0.0000, 0.0000, 0.0000, 0.0000],
+         [0.5122, 0.4878, 0.0000, 0.0000, 0.0000],
+         [0.2396, 0.2680, 0.4924, 0.0000, 0.0000],
+         [0.2309, 0.2198, 0.3295, 0.2198, 0.0000],
+         [0.1690, 0.2245, 0.2175, 0.2245, 0.1644]]],
+       grad_fn=&lt;SoftmaxBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 4】 计算加权和</span>
+最终加权和:
+ tensor([[[ 0.1335,  0.7496, -0.7074,  0.3390],
+         [-0.5268,  0.1869, -0.5712,  0.3311],
+         [-0.2761, -0.0851, -0.0261,  0.0470],
+         [-0.4930, -0.1093, -0.1788,  0.1394],
+         [-0.4624, -0.1587, -0.3691,  0.2763]]], grad_fn=&lt;UnsafeViewBackward0&gt;) 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="cross-attention-mask">
+<h2><span class="section-number">19.4. </span>交叉注意力掩码（Cross-Attention Mask）<a class="headerlink" href="#cross-attention-mask" title="Link to this heading">#</a></h2>
+<p>在 Transformer Decoder 的交叉注意力层中，查询（Query）来自 Decoder，键（Key）和值（Value）来自 Encoder 的输出。为了过滤编码器输出的填充部分（如补零位置），确保解码器仅关注编码器输出的实际内容，忽略填充位置的噪声。所以，需要生成一个交叉注意力掩码（Cross-Attention Mask）用于屏蔽编码器输出中的填充位置。</p>
+<p>以 <code class="docutils literal notranslate"><span class="pre">1+100=101</span></code> 为例，编码器的输入为 <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">+,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">Pad,</span> <span class="pre">Pad]</span></code>，解码器的输入为 <code class="docutils literal notranslate"><span class="pre">[Bos，1,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">Eos]</span></code>。交叉注意力掩码矩阵如下图所示：</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130603.png" /></p>
+<p>生成交叉注意力掩码矩阵和生成填充掩码的代码是一样的，只是 Query 和 Key 的不同。生成填充掩码时，Query 和 Key 都是编码器的输入；而生成交叉注意力掩码时，Query 是解码器的输入，Key 是编码器的输入。</p>
+<section id="id8">
+<h3><span class="section-number">19.4.1. </span>生成交叉注意力掩码<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 编码器的输入：question = &quot;1+100&quot;，使用分词器填充了两个Token，总长度为7</span>
+<span class="c1"># 解码器的输入：answer = f&quot;{tokenizer.bos_token}101{tokenizer.eos_token}&quot;，总长度为5</span>
+<span class="n">cross_attn_pad_mask</span> <span class="o">=</span> <span class="n">create_cross_attn_pad_mask</span><span class="p">(</span><span class="n">query_ids</span><span class="o">=</span><span class="n">decoder_input_ids</span><span class="p">,</span>
+                                                 <span class="n">key_ids</span><span class="o">=</span><span class="n">encoder_input_ids</span><span class="p">,</span>
+                                                 <span class="n">pad_token_id</span><span class="o">=</span><span class="n">pad_token_id</span><span class="p">)</span>
+
+<span class="n">print_red</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;交叉注意力掩码：</span><span class="si">{</span><span class="n">cross_attn_pad_mask</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cross_attn_pad_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">交叉注意力掩码：torch.Size([1, 5, 7])</span>
+tensor([[[1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0],
+         [1, 1, 1, 1, 1, 0, 0]]], dtype=torch.uint8)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="cross-attention">
+<h3><span class="section-number">19.4.2. </span>在 Cross-Attention 层中使用交叉注意力掩码<a class="headerlink" href="#cross-attention" title="Link to this heading">#</a></h3>
+<p>Cross-Attention 层本质上也是一个自注意力层，只是它在计算时，使用的 Query、Key、Value 来源以及掩码不同而已。</p>
+<p>自注意力层的 Query、Key、Value 都是来自同一个输入，而 Cross-Attention 层的 Query 来自解码器，Key、Value 来自编码器。另外，使用交叉注意力掩码是解码器生成的结果相对编码器输入的注意力。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用单头自注意力层进行计算</span>
+<span class="n">hidden_states</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">attn</span><span class="p">(</span><span class="n">q_input</span><span class="o">=</span><span class="n">decoder_input</span><span class="p">,</span> <span class="n">k_input</span><span class="o">=</span><span class="n">encoder_input</span><span class="p">,</span> <span class="n">v_input</span><span class="o">=</span><span class="n">encoder_input</span><span class="p">,</span>
+                        <span class="n">attn_mask</span><span class="o">=</span><span class="n">cross_attn_pad_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Red">【步骤1】计算query、key和value向量 </span>
+
+<span class=" -Color -Color-Red">【步骤2】计算注意力分数</span>
+掩码前的scores:
+ tensor([[[ 0.2741, -0.2035,  0.2741,  0.3620,  0.3620, -0.0509, -0.0509],
+         [-0.1930,  0.2184, -0.1930,  0.2117,  0.2117,  0.2241,  0.2241],
+         [ 0.0169, -0.1553,  0.0169,  0.6253,  0.6253,  0.4403,  0.4403],
+         [-0.1930,  0.2184, -0.1930,  0.2117,  0.2117,  0.2241,  0.2241],
+         [ 0.1151, -0.0567,  0.1151,  0.0835,  0.0835, -0.0904, -0.0904]]],
+       grad_fn=&lt;DivBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 2-2】根据掩码重设无需关注的注意力分数</span>
+掩码后的scores:
+ tensor([[[ 2.7411e-01, -2.0353e-01,  2.7411e-01,  3.6203e-01,  3.6203e-01,
+          -1.0000e+09, -1.0000e+09],
+         [-1.9301e-01,  2.1841e-01, -1.9301e-01,  2.1167e-01,  2.1167e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 1.6892e-02, -1.5526e-01,  1.6892e-02,  6.2533e-01,  6.2533e-01,
+          -1.0000e+09, -1.0000e+09],
+         [-1.9301e-01,  2.1841e-01, -1.9301e-01,  2.1167e-01,  2.1167e-01,
+          -1.0000e+09, -1.0000e+09],
+         [ 1.1514e-01, -5.6705e-02,  1.1514e-01,  8.3462e-02,  8.3462e-02,
+          -1.0000e+09, -1.0000e+09]]], grad_fn=&lt;MaskedFillBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤3】计算注意力权重</span>
+注意力权重:
+ tensor([[[0.2082, 0.1291, 0.2082, 0.2273, 0.2273, 0.0000, 0.0000],
+         [0.1537, 0.2319, 0.1537, 0.2304, 0.2304, 0.0000, 0.0000],
+         [0.1534, 0.1292, 0.1534, 0.2820, 0.2820, 0.0000, 0.0000],
+         [0.1537, 0.2319, 0.1537, 0.2304, 0.2304, 0.0000, 0.0000],
+         [0.2092, 0.1762, 0.2092, 0.2027, 0.2027, 0.0000, 0.0000]]],
+       grad_fn=&lt;SoftmaxBackward0&gt;) 
+
+<span class=" -Color -Color-Red">【步骤 4】 计算加权和</span>
+最终加权和:
+ tensor([[[-0.3056, -0.3752,  0.1483, -0.0160],
+         [-0.0252, -0.3829,  0.2684, -0.0838],
+         [-0.1678, -0.3657,  0.2525, -0.0782],
+         [-0.0252, -0.3829,  0.2684, -0.0838],
+         [-0.2427, -0.3832,  0.1538, -0.0175]]], grad_fn=&lt;UnsafeViewBackward0&gt;) 
+</pre></div>
+</div>
+</div>
+</div>
+<p>从第 3 步中，我们可以看到，应用了交叉注意力掩码之后，解码器的每个位置只关注编码器输入中有效的部分，而忽略了填充位置。这样，就不会从输入的填充位置中引入噪声，从而提高模型的性能。</p>
+<p><img alt="image.png" src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/20260316130609.png" /></p>
+</section>
+</section>
+<section id="id9">
+<h2><span class="section-number">19.5. </span>本章小结<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<p>本章深入探讨了 Transformer 模型中的解码器模块，并动手实现了它的核心组件。详细了解了 Transformer 中使用的 3 种注意力机制：填充掩码、因果注意力掩码和交叉注意力掩码。在下一章，我们将继续动手实现完整的 Transformer 模型。</p>
+</section>
+<section id="id10">
+<h2><span class="section-number">19.6. </span>答疑讨论<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://t.zsxq.com/mAjcy" onclick="LA.track('qa'); return true;">
+    <div>
+        <div style="display: flex; align-items: center">
+            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+            <div style="margin-left: 20px">
+                <h4 class="card-title mt-3">答疑讨论</h4>
+                <p class="card-text">
+                    如果你有任何学习上的疑问，可以评论留言，和我一起讨论。我会抽空回复你的问题，也欢迎你回答其他人的问题。
+                </p>
+            </div>
+        </div>
+    </div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                    </div>
+                    
+                </main> <!-- .page__content -->
+                
+
+
+                <footer class="qe-page__footer">
+
+                </footer> <!-- .page__footer -->
+
+            </div> <!-- .page -->
+
+            
+
+            
+                <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                    <div class="qe-sidebar__header">
+
+                        目录
+
+                    </div>
+
+                    <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+
+                    </nav>
+
+                    <div class="qe-sidebar__footer">
+
+                    </div>
+
+                </div> <!-- .sidebar -->
+                
+            </div> <!-- .main -->
+
+            <div class="qe-toolbar">
+
+                <div class="qe-toolbar__inner">
+
+                    <ul class="qe-toolbar__main">
+                        <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                        <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                    </ul>
+
+                    <ul class="qe-toolbar__links">
+                        <li data-tippy-content="搜索" class="btn__search">
+                            <form action="../search.html" method="get">
+                                <input type="search" class="form-control" name="q" id="search-input"
+                                    placeholder="Search..." aria-label="Search..."
+                                    autocomplete="off" accesskey="k">
+                                <i data-feather="search" id="search-icon"></i>
+                            </form>
+                        </li>
+                        <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                        <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                        </li>
+                        <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                    </ul>
+
+                </div>
+
+            </div> <!-- .toolbar -->
+            <div id="downloadPDFModal" style="display: none;">
+                <ul class="pdf-options" style="display: block;">
+                    <li class="download-pdf-book" onClick="window.print()">
+                        <p>Lecture (PDF)</p>
+                    </li>
+                    <li class="download-pdf-file">
+                        <a href="" download>
+                            <p>Book (PDF)</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="settingsModal" style="display: none;">
+                <p class="modal-title"> Notebook Launcher </p>
+                <div class="modal-desc">
+                    <p>
+                        Choose public or private cloud service for "Launch" button.
+                    </p>
+                </div>
+                <p class="modal-subtitle">Select a server</p>
+                <ul class="modal-servers">
+                    <li class="active launcher-public">
+                        <span class="label">Public</span>
+                        <select id="launcher-public-input">
+                            
+                        </select>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                    <li class="launcher-private">
+                        <span class="label">Private</span>
+                        <input type="text" id="launcher-private-input" data-repourl=""
+                            data-urlpath="" data-branch=>
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+                <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                        Notebook</a></p>
+                <script>
+                    // QuantEcon Notebook Launcher
+                    const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                    // Highlight the server type if previous selection exists
+                    if (typeof localStorage.launcherType !== 'undefined') {
+                        for (var i = 0; i < launcherTypeElements.length; i++) {
+                            launcherTypeElements[i].classList.remove('active');
+                            if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                                launcherTypeElements[i].classList.add('active');
+                            }
+                        }
+                    }
+                    // Highlight server type on click and set local storage value
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].addEventListener('click', function () {
+                            for (var j = 0; j < launcherTypeElements.length; j++) {
+                                launcherTypeElements[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+                            if (this.classList.contains('launcher-private')) {
+                                localStorage.launcherType = 'launcher-private';
+                            } else if (this.classList.contains('launcher-public')) {
+                                localStorage.launcherType = 'launcher-public';
+                            }
+                            setLaunchServer();
+                        })
+                    }
+                    const launcherPublic = document.getElementById('launcher-public-input');
+                    const launcherPrivate = document.getElementById('launcher-private-input');
+                    const pageName = "notebooks/19实现 Transformer Decoder 组件";
+                    const repoURL = "";
+                    const urlPath = "";
+                    const branch = ""
+                    const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                    // Highlight public server option if previous selection exists
+                    if (typeof localStorage.launcherPublic !== 'undefined') {
+                        launcherPublic.value = localStorage.launcherPublic;
+                    }
+                    // Update local storage upon public server selection
+                    launcherPublic.addEventListener('change', (event) => {
+                        setLaunchServer();
+                    });
+                    // Populate private server input if previous entry exists
+                    if (typeof localStorage.launcherPrivate !== 'undefined') {
+                        launcherPrivate.value = localStorage.launcherPrivate;
+                    }
+                    // Update local storage when a private server is entered
+                    launcherPrivate.addEventListener('input', (event) => {
+                        setLaunchServer();
+                    });
+
+                    // Function to update the "Launch Notebook" link href
+                    function setLaunchServer() {
+                        launchNotebookLink.removeAttribute("style")
+                        if (localStorage.launcherType == 'launcher-private') {
+                            let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                            launcherPrivateValue = launcherPrivate.value
+                            if (!launcherPrivateValue) {
+                                launchNotebookLink.removeAttribute("href")
+                                launchNotebookLink.style.background = "grey"
+                                return
+                            }
+                            localStorage.launcherPrivate = launcherPrivateValue;
+                            privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                            if (!privateServer.includes("http")) {
+                                privateServer = "http://" + privateServer
+                            }
+                            launchNotebookLinkURL = privateServer + repoPrefix;
+                        } else if (localStorage.launcherType == 'launcher-public') {
+                            launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                            localStorage.launcherPublic = launcherPublicValue;
+                            launchNotebookLinkURL = localStorage.launcherPublic;
+                        }
+                        if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                    }
+                    // Check if user has previously selected a server
+                    if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                        setLaunchServer();
+                    }
+                </script>
+
+            </div>
+
+        </div> <!-- .wrapper-->
+  </body>
+</html>
