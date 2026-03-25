@@ -393,3 +393,56 @@ strong {
     /* border: 1px solid red; */
     border: none !important;
 }
+
+
+/* 引流栏容器 */
+.promo-bar {
+    margin-top: 330px;
+    padding: 12px 0;
+    /*border-top: 1px solid #eaecef;*/
+    overflow-y: auto;
+}
+
+/* 内部包装器：宽度占满，左右内边距与返回顶部按钮对齐 */
+.promo-bar__inner {
+    width: 100%;
+    margin: 0;
+}
+
+/* 图片列表：竖向排列，去掉默认黑点 */
+.promo-bar__list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;   /* 让每个子项宽度占满 */
+    /*gap: 16px;*/
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* 单个图片项：宽度占满，内容居中 */
+.promo-bar__item {
+    width: 100%;
+    text-align: center;
+}
+
+/* 关键修改：让链接占满整个图片项宽度，并设为块级元素 */
+.promo-bar__item a {
+    display: block;          /* 改为块级元素，宽度自动100% */
+    width: 100%;             /* 显式设置宽度，确保占满 */
+    /*transition: transform 0.2s ease;*/
+    text-align: center;      /* 文本居中（针对图片居中对齐） */
+}
+
+.promo-bar__item a:hover {
+    /*transform: scale(1.05);*/
+}
+
+/* 图片样式 - 方案一：保持原始比例，居中显示（推荐） */
+.promo-bar__item img {
+    width: auto;
+    max-width: 100%;        /* 限制最大宽度为容器宽度，防止溢出 */
+    display: inline-block;   /* 或 block，配合父级 text-align 居中 */
+    margin: 0 auto;         /* 水平居中 */
+    border-radius: 4px;
+}
