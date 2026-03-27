@@ -406,7 +406,13 @@ crossorigin="anonymous"></script>
 <h3><span class="section-number">1.4.1. </span>安装依赖<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm<span class="w"> </span>-i<span class="w"> </span>https://pypi.org/simple
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>dsxllm
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Requirement already satisfied: dsxllm in /Users/kong/opt/anaconda3/envs/dsx-ai/lib/python3.12/site-packages (0.1.6)
 </pre></div>
 </div>
 </div>
@@ -728,7 +734,7 @@ crossorigin="anonymous"></script>
         <span class="n">training_logs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
             <span class="n">epoch</span><span class="p">,</span>
             <span class="n">lemon</span><span class="p">,</span>
-            <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">-</span> <span class="n">step</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="nb">round</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">sugar_weight</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="nb">round</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="n">sugar</span><span class="p">,</span>
             <span class="nb">round</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
@@ -752,22 +758,22 @@ crossorigin="anonymous"></script>
 +-------+--------+------------+------------+------------+---------+----------+------------+
 | Epoch | 柠檬片 | 当前的糖权 | 预测放糖量 | 目标放糖量 |   误差  | 更新步长 | 更新后糖权 |
 +-------+--------+------------+------------+------------+---------+----------+------------+
-|   0   |   2    |   -9.136   |    3.76    |     16     |  -12.24 |  12.24   |   3.104    |
-|   1   |   2    |  -5.7088   |   6.208    |     16     |  -9.792 |  9.792   |   4.0832   |
-|   2   |   2    |   -2.967   |   8.1664   |     16     | -7.8336 |  7.8336  |   4.8666   |
-|   3   |   2    |  -0.7736   |   9.7331   |     16     | -6.2669 |  6.2669  |   5.4932   |
-|   4   |   2    |   0.9811   |  10.9865   |     16     | -5.0135 |  5.0135  |   5.9946   |
-|   5   |   2    |   2.3849   |  11.9892   |     16     | -4.0108 |  4.0108  |   6.3957   |
-|   10  |   2    |    6.16    |  14.6857   |     16     | -1.3143 |  1.3143  |   7.4743   |
-|   15  |   2    |   7.3971   |  15.5693   |     16     | -0.4307 |  0.4307  |   7.8277   |
-|   20  |   2    |   7.8024   |  15.8589   |     16     | -0.1411 |  0.1411  |   7.9436   |
-|   25  |   2    |   7.9353   |  15.9538   |     16     | -0.0462 |  0.0462  |   7.9815   |
-|   30  |   2    |   7.9788   |  15.9848   |     16     | -0.0152 |  0.0152  |   7.9939   |
-|   35  |   2    |   7.993    |   15.995   |     16     |  -0.005 |  0.005   |   7.998    |
-|   40  |   2    |   7.9977   |  15.9984   |     16     | -0.0016 |  0.0016  |   7.9993   |
-|   45  |   2    |   7.9993   |  15.9995   |     16     | -0.0005 |  0.0005  |   7.9998   |
-|   50  |   2    |   7.9998   |  15.9998   |     16     | -0.0002 |  0.0002  |   7.9999   |
-|   55  |   2    |   7.9999   |  15.9999   |     16     | -0.0001 |  0.0001  |    8.0     |
+|   0   |   2    |    1.88    |    3.76    |     16     |  -12.24 |  12.24   |   3.104    |
+|   1   |   2    |   3.104    |   6.208    |     16     |  -9.792 |  9.792   |   4.0832   |
+|   2   |   2    |   4.0832   |   8.1664   |     16     | -7.8336 |  7.8336  |   4.8666   |
+|   3   |   2    |   4.8666   |   9.7331   |     16     | -6.2669 |  6.2669  |   5.4932   |
+|   4   |   2    |   5.4932   |  10.9865   |     16     | -5.0135 |  5.0135  |   5.9946   |
+|   5   |   2    |   5.9946   |  11.9892   |     16     | -4.0108 |  4.0108  |   6.3957   |
+|   10  |   2    |   7.3429   |  14.6857   |     16     | -1.3143 |  1.3143  |   7.4743   |
+|   15  |   2    |   7.7847   |  15.5693   |     16     | -0.4307 |  0.4307  |   7.8277   |
+|   20  |   2    |   7.9294   |  15.8589   |     16     | -0.1411 |  0.1411  |   7.9436   |
+|   25  |   2    |   7.9769   |  15.9538   |     16     | -0.0462 |  0.0462  |   7.9815   |
+|   30  |   2    |   7.9924   |  15.9848   |     16     | -0.0152 |  0.0152  |   7.9939   |
+|   35  |   2    |   7.9975   |   15.995   |     16     |  -0.005 |  0.005   |   7.998    |
+|   40  |   2    |   7.9992   |  15.9984   |     16     | -0.0016 |  0.0016  |   7.9993   |
+|   45  |   2    |   7.9997   |  15.9995   |     16     | -0.0005 |  0.0005  |   7.9998   |
+|   50  |   2    |   7.9999   |  15.9998   |     16     | -0.0002 |  0.0002  |   7.9999   |
+|   55  |   2    |    8.0     |  15.9999   |     16     | -0.0001 |  0.0001  |    8.0     |
 |   60  |   2    |    8.0     |    16.0    |     16     |   -0.0  |   0.0    |    8.0     |
 |   65  |   2    |    8.0     |    16.0    |     16     |   -0.0  |   0.0    |    8.0     |
 |   70  |   2    |    8.0     |    16.0    |     16     |   -0.0  |   0.0    |    8.0     |
