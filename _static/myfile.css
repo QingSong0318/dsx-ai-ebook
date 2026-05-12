@@ -455,3 +455,10 @@ strong {
     margin: 0 auto; /* 水平居中 */
     border-radius: 4px;
 }
+
+.buymecoffee {
+    background-color: rgba(174, 86, 48, .125);
+    margin: 1rem 0;
+    padding: 5px;
+    text-align: center;
+}
