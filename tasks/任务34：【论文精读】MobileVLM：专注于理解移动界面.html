@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>49. 【论文精读】MobileVLM：专注于理解移动界面 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+
+<!-- <link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+    integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+    crossorigin="anonymous"></script> -->
+
+<!-- <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+crossorigin="anonymous"></script>
+<script src="https://unpkg.com/tippy.js@6.3.1/dist/tippy-bundle.umd.js"
+    integrity="sha384-bq5PNg/ZcfW7KMvFSmhjqCQJ/VFnec+6sZkctn/4ZLeubkn7U58Le4zFFSn3dhUu"
+    crossorigin="anonymous"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"
+        integrity="sha384-qEqAs1VsN9WH2myXDbiP2wGGIttL9bMRZBKCl54ZnzpDlVqbYANP9vMaoT/wvQcf"
+        crossorigin="anonymous"></script>
+
+
+<!--  访问统计  -->
+<script charset="UTF-8" id="LA_COLLECT" src="https://sdk.51.la/js-sdk-pro.min.js"></script>
+<script>LA.init({ id: "3OrQmjGXGmdC0oni", ck: "3OrQmjGXGmdC0oni", autoTrack: true })</script>
+
+<!-- 卡片翻转效果 -->
+<!-- 步骤1: 在页面底部（例如最后一个单元格）放置一次性的初始化脚本 -->
+<script id="tilt-loader">
+    // 封装成一个简单的初始化函数
+    function initTiltCards() {
+        // 如果库未加载，则动态加载
+        if (typeof VanillaTilt === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js';
+            script.onload = initCards;
+            document.head.appendChild(script);
+        } else {
+            initCards();
+        }
+
+        function initCards() {
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt'), {
+                max: 8,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+
+            VanillaTilt.init(document.querySelectorAll('.simple-tilt2'), {
+                max: 16,
+                speed: 300,
+                glare: true,
+                "max-glare": 0.2,
+                scale: 1.01
+            });
+        }
+    }
+    // 当页面内容加载完成后执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTiltCards);
+    } else {
+        initTiltCards();
+    }
+</script>
+
+
+<script>
+    MathJax = {
+        loader: { load: ['[tex]/boldsymbol', '[tex]/textmacros'] },
+        tex: {
+            packages: { '[+]': ['boldsymbol', 'textmacros'] },
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            processEscapes: true,
+            macros: {
+                "argmax": "arg\\,max",
+                "argmin": "arg\\,min",
+                "col": "col",
+                "Span": "span",
+                "epsilon": "\\varepsilon",
+                "EE": "\\mathbb{E}",
+                "PP": "\\mathbb{P}",
+                "RR": "\\mathbb{R}",
+                "NN": "\\mathbb{N}",
+                "ZZ": "\\mathbb{Z}",
+                "aA": "\\mathcal{A}",
+                "bB": "\\mathcal{B}",
+                "cC": "\\mathcal{C}",
+                "dD": "\\mathcal{D}",
+                "eE": "\\mathcal{E}",
+                "fF": "\\mathcal{F}",
+                "gG": "\\mathcal{G}",
+                "hH": "\\mathcal{H}",
+            }
+        },
+        svg: {
+            fontCache: 'global',
+            scale: 0.92,
+            displayAlign: "center",
+        },
+    };
+</script>
+
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a8cb7250" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/quantecon-book-theme.js?digest=65b86b9423025043228643fcfb616ce846cb91c1"></script>
+    <script src="../_static/scripts/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/scripts/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tasks/任务34：【论文精读】MobileVLM：专注于理解移动界面';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="50. 从零训练 GUIAgent 模型" href="%E4%BB%BB%E5%8A%A135%EF%BC%9A%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%20GUIAgent%20%E6%A8%A1%E5%9E%8B.html" />
+    <link rel="prev" title="48. 【论文精读】UI-TARS：原生代理自动化 GUI 交互" href="%E4%BB%BB%E5%8A%A133%EF%BC%9A%E3%80%90%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB%E3%80%91UI-TARS%EF%BC%9A%E5%8E%9F%E7%94%9F%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E5%8C%96%20GUI%20%E4%BA%A4%E4%BA%92.html" />
+
+<!-- Normal Meta Tags -->
+<meta name="author" context="吾辈亦有感"/>
+<meta name="keywords" content=""/>
+<meta name="description" content=【论文精读】MobileVLM：专注于理解移动界面  任务背景  任务目标  学习收获  获取源码  点击下方链接，获取任务完整源码 👇👇👇  &lt;a href=&#34;https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL&#34; onclick=&#34;LA.track(&#39;dataset&#39;)/>
+
+<!-- Twitter tags -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:site" content="@"/>
+<meta name="twitter:title" content="【论文精读】MobileVLM：专注于理解移动界面"/>
+<meta name="twitter:description" content="【论文精读】MobileVLM：专注于理解移动界面  任务背景  任务目标  学习收获  获取源码  点击下方链接，获取任务完整源码 👇👇👇  &lt;a href=&#34;https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL&#34; onclick=&#34;LA.track(&#39;dataset&#39;)">
+<meta name="twitter:creator" content="@">
+<meta name="twitter:image" content="">
+
+<!-- Opengraph tags -->
+<meta property="og:title" content="【论文精读】MobileVLM：专注于理解移动界面"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="None"/>
+<meta property="og:image" content=""/>
+<meta property="og:description" content="【论文精读】MobileVLM：专注于理解移动界面  任务背景  任务目标  学习收获  获取源码  点击下方链接，获取任务完整源码 👇👇👇  &lt;a href=&#34;https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL&#34; onclick=&#34;LA.track(&#39;dataset&#39;)"/>
+<meta property="og:site_name" content="动手学大语言模型：写给程序员的手搓LLM实战指南"/>
+<meta name="theme-color" content="#ffffff"/>
+
+  </head>
+<body>
+
+<!-- Override QuantEcon theme colors -->
+<style>
+    a {
+        color: #313131;
+    }
+
+    a:hover {
+        color: #313131;
+    }
+
+    a:visited {
+        color: #111111;
+    }
+
+    .main-index {
+        #qe-page-author-links {
+            border-bottom: 5px solid #313131;
+        }
+    }
+
+    .qe-page__header {
+        border-bottom: 5px solid #313131;
+    }
+
+    .qe-page__footer {
+        border-top: 5px solid #313131;
+    }
+
+    .toctree-wrapper {
+        .caption-text {
+            color: #111111
+        }
+    }
+</style>
+
+<span id="top"></span>
+
+<div class="qe-wrapper">
+
+    <div class="qe-main">
+
+        <div class="qe-page" id=tasks/任务34：【论文精读】MobileVLM：专注于理解移动界面>
+
+            <div class="qe-page__toc">
+
+                <div class="inner">
+
+                    
+                    <div class="qe-page__toc-header">
+                    </div>
+
+
+                    <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
+                        <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">49.1. 任务背景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">49.2. 任务目标</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">49.3. 学习收获</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">49.4. 获取源码</a></li>
+</ul>
+                    </nav>
+
+                    <div class="qe-page__toc-footer">
+                        
+                        
+                        <p><a href="#top">
+                            <button class="btn btn-light alert alert-light" style="width: 100%; margin: 0"
+                                    type="button">
+                                <svg class="svg-inline--fa fa-circle-arrow-up" aria-hidden="true"
+                                     focusable="false" data-prefix="fas" data-icon="circle-arrow-up" role="img"
+                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+                                    <path fill="currentColor"
+                                          d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM385 231c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-71-71V376c0 13.3-10.7 24-24 24s-24-10.7-24-24V193.9l-71 71c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L239 119c9.4-9.4 24.6-9.4 33.9 0L385 231z">
+                                    </path>
+                                </svg>
+                                返回顶部
+                            </button>
+                        </a></p>
+
+
+                        <!-- 引流栏 -->
+<!--                        <div class="promo-bar">-->
+<!--                            <div class="promo-bar__inner">-->
+<!--                                <ul class="promo-bar__list">-->
+<!--                                    <li class="promo-bar__item simple-tilt2">-->
+<!--                                        <a href="https://t.zsxq.com/mAjcy" onclick="LA.track('promo_bar'); return true;"-->
+<!--                                           target="_blank" rel="noopener noreferrer">-->
+<!--                                            <img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/%E6%96%87%E7%AB%A0%E5%B0%81%E9%9D%A2.png">-->
+<!--                                        </a>-->
+<!--                                    </li>-->
+<!--                                    &lt;!&ndash; 根据需要继续添加更多图片 &ndash;&gt;-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="qe-page__header alert alert-light">
+
+                <div class="qe-page__header-copy">
+                    <p class="qe-page__header-heading"><a href="../intro.html">动手学大语言模型：写给程序员的手搓LLM实战指南</a></p>
+                </div>
+
+                <!-- Authors section -->
+                <p class="qe-page__header-authors" font-size="18">
+                    <a href="http://fasterai.com" target="_blank">吾辈亦有感</a>
+
+                    更新于：2026.03.18
+                </p>
+
+                <!-- Last modified / Changelog dropdown -->
+
+                <!-- Changelog dropdown content -->
+
+            </div> <!-- .page__header -->
+
+            <!-- 封面 -->
+
+            <div class="cover-container simple-tilt">
+                
+            </div>
+
+
+            
+            <main class="qe-page__content alert alert-light" role="main">
+                
+                <div>
+                    
+  <section class="tex2jax_ignore mathjax_ignore" id="mobilevlm">
+<h1><span class="section-number">49. </span>【论文精读】MobileVLM：专注于理解移动界面<a class="headerlink" href="#mobilevlm" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2><span class="section-number">49.1. </span>任务背景<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+</section>
+<section id="id2">
+<h2><span class="section-number">49.2. </span>任务目标<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+</section>
+<section id="id3">
+<h2><span class="section-number">49.3. </span>学习收获<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+</section>
+<section id="id4">
+<h2><span class="section-number">49.4. </span>获取源码<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>点击下方链接，获取任务完整源码 👇👇👇</p>
+<div class="alert alert-light simple-tilt custom-card docutils">
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('dataset'); return true;">
+<div>
+<div style="display: flex; align-items: center">
+<img src="https://fasterai-picgo.oss-cn-beijing.aliyuncs.com/logo.png" style="width: 128px">
+<div style="margin-left: 20px">
+<h4 class="card-title mt-3">《动手学大模型：实战进阶》</h4>
+<p class="card-text">
+通过 30 个动手实战任务，将传统 2-3 年的大模型学习周期压缩至 2-3 个月，助你系统掌握大模型知识，快速拿到理想Offer 🎉
+</p>
+</div>
+</div>
+</div>
+</a>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tasks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </div>
+                
+
+                <!-- 分享引导 -->
+                <hr>
+                <p style="
+                  font-size: 13px;
+                  display: inline-block;
+                  color: #555;
+                  margin: unset;
+                ">
+                    ○ 如果你觉得这篇文章有所帮助，欢迎将<a href="https://www.fasterai.cn/intro.html">本文链接</a>推荐给更多人——无论是分享到朋友圈、博客、社群，还是任何你常逛的地方。每一次转发，都会让它在搜索结果中更容易被有需要的人看到。
+                </p>
+
+            </main> <!-- .page__content -->
+            
+
+            <!-- buymecoffee -->
+            <div class="buymecoffee alert" role="alert">
+                <p>
+                    如果你觉得这些内容对你有帮助，可以
+                    <a class="reference external" href="https://fasterai.cn/buy-me-a-coffee.html">请我喝杯咖啡 <svg class="svg-inline--fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg><!-- <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com --></a>
+                </p>
+            </div>
+
+
+            <!-- 留言模块 -->
+            <div class="alert alert-light" style="margin-top: 20px;">
+                <script src="https://giscus.app/client.js"
+                        data-repo="QingSong0318/dsx-ai-ebook-giscus"
+                        data-repo-id="R_kgDORwJzPw"
+                        data-category="General"
+                        data-category-id="DIC_kwDORwJzP84C5OY0"
+                        data-mapping="pathname"
+                        data-strict="0"
+                        data-reactions-enabled="1"
+                        data-emit-metadata="0"
+                        data-input-position="top"
+                        data-theme="fro"
+                        data-lang="zh-CN"
+                        data-loading="lazy"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+            </div>
+
+
+            <footer class="qe-page__footer">
+
+            </footer> <!-- .page__footer -->
+
+        </div> <!-- .page -->
+
+        
+
+        
+            <div class="qe-sidebar bd-sidebar inactive" id="site-navigation">
+
+                <div class="qe-sidebar__header">
+
+                    目录
+
+                </div>
+
+                <nav class="qe-sidebar__nav" id="qe-sidebar-nav" aria-label="Main navigation">
+                    <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：机器学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/01%E6%9C%BA%E5%99%A8%E4%BD%95%E4%BB%A5%E5%AD%A6%E4%B9%A0.html">
+   1. 从零开始：机器何以学习？
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/02%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%90%AF%E8%92%99.html">
+   2. 神经网络启蒙：PyTorch 入门实战
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：深度学习
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/03%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%88%9D%E6%8E%A2.html">
+   3. 深度学习初探：多分类任务实战
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/04PyTorch%20Lightning%20%E9%87%8D%E6%9E%84.html">
+   4. 工程的进化：用 PyTorch Lightning 重构
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：循环神经网络
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/05%E8%AF%AD%E8%A8%80%E7%9A%84%E5%BA%8F%E7%AB%A0.html">
+   5. 语言的序章：分词与情感分析初探
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/06%E8%A1%A8%E7%A4%BA%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   6. 表示的困境：OneHot编码与模型局限
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/07%E8%AE%B0%E5%BF%86%E7%9A%84%E8%90%8C%E8%8A%BD.html">
+   7. 记忆的萌芽：RNN与序列建模入门
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/08%E8%AF%AD%E4%B9%89%E7%9A%84%E9%A3%9E%E8%B7%83.html">
+   8. 语义的飞跃：词嵌入技术与稠密表示
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/09%E8%AE%B0%E5%BF%86%E7%9A%84%E8%BF%9B%E5%8C%96.html">
+   9. 记忆的进化：GRU与长期依赖问题
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Seq2Seq
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/10%E7%A9%B7%E4%B8%BE%E7%9A%84%E5%9B%B0%E5%A2%83.html">
+   10. 穷举的困境：无限膨胀的类别
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/11%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%88%9B%E9%80%A0.html">
+   11. 从理解到创造：初识序列生成任务
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/12%E6%8A%80%E5%B7%A7%E7%9A%84%E5%8A%9B%E9%87%8F.html">
+   12. 改进Seq2Seq模型：反转输入
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/13%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BB%B7%E5%80%BC.html">
+   13. 改进Seq2Seq模型：信息偷窥
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Transformer
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/14%E6%B3%A8%E6%84%8F%E5%8A%9B%E9%9D%A9%E5%91%BD.html">
+   14. 注意力革命：Transformer
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/15%E5%AE%9A%E4%B9%89%20Transformer%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   15. 定义 Transformer 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/16%E6%9E%84%E9%80%A0%20Transformer%20%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   16. 构造 Transformer 数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/17%E5%AE%9E%E7%8E%B0%20Transformer%20Input%20%E7%BB%84%E4%BB%B6.html">
+   17. 实现 Transformer Input 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/18%E5%AE%9E%E7%8E%B0%20Transformer%20Encoder%20%E7%BB%84%E4%BB%B6.html">
+   18. 实现 Transformer Encoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/19%E5%AE%9E%E7%8E%B0%20Transformer%20Decoder%20%E7%BB%84%E4%BB%B6.html">
+   19. 实现 Transformer Decoder 组件
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/20%E5%AE%9E%E7%8E%B0%E5%AE%8C%E6%95%B4%E7%9A%84%20Transformer%20%E6%A8%A1%E5%9E%8B.html">
+   20. 实现完整的 Transformer 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/21Transformer%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%92%8C%E8%AF%84%E4%BC%B0.html">
+   21. Transformer 模型训练和评估
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GPT
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/22%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BA%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   22. 从零构建 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/23%E5%AE%9A%E4%B9%89%20GPT%20%E5%88%86%E8%AF%8D%E5%99%A8.html">
+   23. 实现 GPT 分词器
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/24%E6%9E%84%E9%80%A0%20GPT%20%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86.html">
+   24. 构造 GPT 预训练数据集
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/25%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B5%8C%E5%85%A5%E5%B1%82.html">
+   25. 实现 GPT 嵌入层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/26%E5%AE%9E%E7%8E%B0%20GPT%20%E5%B1%82%E5%BD%92%E4%B8%80%E5%8C%96.html">
+   26. 实现 GPT 层归一化
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/27%E5%AE%9E%E7%8E%B0%20GPT%20%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B%E5%B1%82.html">
+   27. 实现 GPT 多头注意力层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/28%E5%AE%9E%E7%8E%B0%20GPT%20%E5%89%8D%E9%A6%88%E7%BD%91%E7%BB%9C%E5%B1%82.html">
+   28. 实现 GPT 前馈网络层
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/29%E5%AE%9A%E4%B9%89%20Transformer%20Block%20%E6%A8%A1%E5%9D%97.html">
+   29. 实现 Transformer Block 模块
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/30%E6%9E%84%E5%BB%BA%E5%AE%8C%E6%95%B4%E7%9A%84%20GPT%20%E6%A8%A1%E5%9E%8B.html">
+   30. 构建完整的 GPT 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/31%E5%AE%9E%E7%8E%B0%20GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   31. 实现 GPT 模型的生成策略
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/32GPT%20%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AF%84%E4%BC%B0.html">
+   32. GPT 模型的训练与评估
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../notebooks/33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
+   33. 更具多样性的生成策略
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：LLM 微调
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A118%EF%BC%9A%E5%9F%BA%E4%BA%8E%20Qwen2.5%20%E5%BE%AE%E8%B0%83%E5%8A%A0%E6%B3%95%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9E%8B.html">
+   34. 基于 Qwen2.5 微调加法计算模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A119%EF%BC%9A%E8%87%AA%E6%88%91%E8%AE%A4%E7%9F%A5%E5%BE%AE%E8%B0%83.html">
+   35. 自我认知微调
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A120%EF%BC%9A%E4%BD%BF%E7%94%A8%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F%E5%BE%AE%E8%B0%83%E6%9E%97%E9%BB%9B%E7%8E%89%E9%A3%8E%E6%A0%BC%E6%A8%A1%E5%9E%8B.html">
+   36. 使用知识蒸馏微调林黛玉风格模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A121%EF%BC%9AAIGC%20%E6%97%B6%E4%BB%A3%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4.html">
+   37. AIGC 时代大模型信息安全隐私保护
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Reranker 模型微调
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A122%EF%BC%9A%E5%88%86%E7%B1%BB%E5%BC%8F%20Reranker%20%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83.html">
+   38. 分类式 Reranker 模型微调
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A123%EF%BC%9A%E7%94%9F%E6%88%90%E5%BC%8F%20Reranker%20%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83.html">
+   39. 生成式 Reranker 模型微调
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：Agent 模型训练
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A124%EF%BC%9A%E5%BE%AE%E8%B0%83%E4%BC%9A%E4%BD%BF%E7%94%A8%E8%AE%A1%E7%AE%97%E5%B7%A5%E5%85%B7%E7%9A%84%20Agent%20%E6%A8%A1%E5%9E%8B.html">
+   40. 微调会使用计算工具的 Agent 模型
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A125%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%E5%AF%BC%E8%88%AA%E8%A7%84%E5%88%92%20Agent%20%E6%A8%A1%E5%9E%8B.html">
+   41. 训练使用工具的导航规划 Agent 模型
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：强化学习训练
+ </span>
+</p>
+<ul class="nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A126%EF%BC%9A%E4%BD%BF%E7%94%A8%20DPO%20%E8%BF%9B%E8%A1%8C%E4%BA%BA%E7%B1%BB%E5%81%8F%E5%A5%BD%E5%AF%B9%E9%BD%90%E8%AE%AD%E7%BB%83.html">
+   42. 任务1：使用 DPO 进行人类偏好对齐训练
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A127%EF%BC%9A%E4%BD%BF%E7%94%A8%20GRPO%20%E5%BC%BA%E5%8C%96%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E5%AD%A6%E6%8E%A8%E7%90%86%E8%83%BD%E5%8A%9B.html">
+   43. 使用 GRPO 强化模型的数学推理能力
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A128%EF%BC%9A%E4%BD%BF%E7%94%A8%20GRPO%20%E5%BC%BA%E5%8C%96%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%B7%A5%E5%85%B7%E8%B0%83%E5%BA%A6%E8%83%BD%E5%8A%9B.html">
+   44. 使用 GRPO 强化模型的工具调度能力
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  动手学：GUIAgent 专题
+ </span>
+</p>
+<ul class="current nav bd-sidenav nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A129%EF%BC%9A%E3%80%90%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB%E3%80%91%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%A9%B1%E5%8A%A8%E7%9A%84%20GUI-Agent%20%E7%BB%BC%E8%BF%B0.html">
+   45. 【论文精读】大模型驱动的 GUI-Agent 综述
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A130%EF%BC%9A%E3%80%90%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB%E3%80%91SeeClick%EF%BC%9A%E4%BD%BF%E7%94%A8%20VLM%20%E8%87%AA%E4%B8%BB%E6%93%8D%E4%BD%9C%E6%89%8B%E6%9C%BA.html">
+   46. 【论文精读】SeeClick：使用 VLM 自主操作手机
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A132%EF%BC%9A%E3%80%90%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB%E3%80%91SEAgent%EF%BC%9A%E8%87%AA%E6%8F%90%E5%8D%87%E7%9A%84%20CUA.html">
+   47. 【论文精读】SEAgent：自提升的 CUA
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A133%EF%BC%9A%E3%80%90%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB%E3%80%91UI-TARS%EF%BC%9A%E5%8E%9F%E7%94%9F%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E5%8C%96%20GUI%20%E4%BA%A4%E4%BA%92.html">
+   48. 【论文精读】UI-TARS：原生代理自动化 GUI 交互
+  </a>
+ </li>
+ <li class="toctree-l1 current active active">
+  <a class="current reference internal" href="#">
+   49. 【论文精读】MobileVLM：专注于理解移动界面
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="%E4%BB%BB%E5%8A%A135%EF%BC%9A%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%20GUIAgent%20%E6%A8%A1%E5%9E%8B.html">
+   50. 从零训练 GUIAgent 模型
+  </a>
+ </li>
+</ul>
+
+                </nav>
+
+                <div class="qe-sidebar__footer">
+
+                </div>
+
+            </div> <!-- .sidebar -->
+            
+        </div> <!-- .main -->
+
+        <div class="qe-toolbar">
+
+            <div class="qe-toolbar__inner">
+
+                <ul class="qe-toolbar__main">
+                    <li data-tippy-content="目录" class="btn__sidebar"><i data-feather="menu"></i></li>
+                    <li data-tippy-content="首页"><a href="../intro.html"><i data-feather="home"></i></a></li>
+                </ul>
+
+                <ul class="qe-toolbar__links">
+                    <li data-tippy-content="搜索" class="btn__search">
+                        <form action="../search.html" method="get">
+                            <input type="search" class="form-control" name="q" id="search-input"
+                                   placeholder="Search..." aria-label="Search..."
+                                   autocomplete="off" accesskey="k">
+                            <i data-feather="search" id="search-icon"></i>
+                        </form>
+                    </li>
+                    <li data-tippy-content="全屏" class="btn__fullscreen"><i data-feather="maximize"></i></li>
+                    <li data-tippy-content="增大字体" class="btn__plus"><i data-feather="plus-circle"></i>
+                    </li>
+                    <li data-tippy-content="减小字体" class="btn__minus"><i data-feather="minus-circle"></i></li>
+                </ul>
+
+            </div>
+
+        </div> <!-- .toolbar -->
+        <div id="downloadPDFModal" style="display: none;">
+            <ul class="pdf-options" style="display: block;">
+                <li class="download-pdf-book" onClick="window.print()">
+                    <p>Lecture (PDF)</p>
+                </li>
+                <li class="download-pdf-file">
+                    <a href="" download>
+                        <p>Book (PDF)</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="settingsModal" style="display: none;">
+            <p class="modal-title"> Notebook Launcher </p>
+            <div class="modal-desc">
+                <p>
+                    Choose public or private cloud service for "Launch" button.
+                </p>
+            </div>
+            <p class="modal-subtitle">Select a server</p>
+            <ul class="modal-servers">
+                <li class="active launcher-public">
+                    <span class="label">Public</span>
+                    <select id="launcher-public-input">
+                        
+                    </select>
+                    <i class="fas fa-check-circle"></i>
+                </li>
+                <li class="launcher-private">
+                    <span class="label">Private</span>
+                    <input type="text" id="launcher-private-input" data-repourl=""
+                           data-urlpath="" data-branch=>
+                    <i class="fas fa-check-circle"></i>
+                </li>
+            </ul>
+            <p class="launch"><a href="" id="advancedLaunchButton" target="_blank">Launch
+                Notebook</a></p>
+            <script>
+                // QuantEcon Notebook Launcher
+                const launcherTypeElements = document.querySelectorAll('#settingsModal .modal-servers li');
+                // Highlight the server type if previous selection exists
+                if (typeof localStorage.launcherType !== 'undefined') {
+                    for (var i = 0; i < launcherTypeElements.length; i++) {
+                        launcherTypeElements[i].classList.remove('active');
+                        if (launcherTypeElements[i].classList.contains(localStorage.launcherType)) {
+                            launcherTypeElements[i].classList.add('active');
+                        }
+                    }
+                }
+                // Highlight server type on click and set local storage value
+                for (var i = 0; i < launcherTypeElements.length; i++) {
+                    launcherTypeElements[i].addEventListener('click', function () {
+                        for (var j = 0; j < launcherTypeElements.length; j++) {
+                            launcherTypeElements[j].classList.remove('active');
+                        }
+                        this.classList.add('active');
+                        if (this.classList.contains('launcher-private')) {
+                            localStorage.launcherType = 'launcher-private';
+                        } else if (this.classList.contains('launcher-public')) {
+                            localStorage.launcherType = 'launcher-public';
+                        }
+                        setLaunchServer();
+                    })
+                }
+                const launcherPublic = document.getElementById('launcher-public-input');
+                const launcherPrivate = document.getElementById('launcher-private-input');
+                const pageName = "tasks/任务34：【论文精读】MobileVLM：专注于理解移动界面";
+                const repoURL = "";
+                const urlPath = "";
+                const branch = ""
+                const launchNotebookLink = document.getElementById('advancedLaunchButton');
+
+                // Highlight public server option if previous selection exists
+                if (typeof localStorage.launcherPublic !== 'undefined') {
+                    launcherPublic.value = localStorage.launcherPublic;
+                }
+                // Update local storage upon public server selection
+                launcherPublic.addEventListener('change', (event) => {
+                    setLaunchServer();
+                });
+                // Populate private server input if previous entry exists
+                if (typeof localStorage.launcherPrivate !== 'undefined') {
+                    launcherPrivate.value = localStorage.launcherPrivate;
+                }
+                // Update local storage when a private server is entered
+                launcherPrivate.addEventListener('input', (event) => {
+                    setLaunchServer();
+                });
+
+                // Function to update the "Launch Notebook" link href
+                function setLaunchServer() {
+                    launchNotebookLink.removeAttribute("style")
+                    if (localStorage.launcherType == 'launcher-private') {
+                        let repoPrefix = "/user-redirect/git-pull?repo=" + repoURL + "&branch=" + branch + "&urlpath=" + urlPath;
+                        launcherPrivateValue = launcherPrivate.value
+                        if (!launcherPrivateValue) {
+                            launchNotebookLink.removeAttribute("href")
+                            launchNotebookLink.style.background = "grey"
+                            return
+                        }
+                        localStorage.launcherPrivate = launcherPrivateValue;
+                        privateServer = localStorage.launcherPrivate.replace(/\/$/, "")
+                        if (!privateServer.includes("http")) {
+                            privateServer = "http://" + privateServer
+                        }
+                        launchNotebookLinkURL = privateServer + repoPrefix;
+                    } else if (localStorage.launcherType == 'launcher-public') {
+                        launcherPublicValue = launcherPublic.options[launcherPublic.selectedIndex].value;
+                        localStorage.launcherPublic = launcherPublicValue;
+                        launchNotebookLinkURL = localStorage.launcherPublic;
+                    }
+                    if (launchNotebookLinkURL) launchNotebookLink.href = launchNotebookLinkURL;
+                }
+                // Check if user has previously selected a server
+                if ((typeof localStorage.launcherPrivate !== 'undefined') || (typeof localStorage.launcherPublic !== 'undefined')) {
+                    setLaunchServer();
+                }
+            </script>
+
+        </div>
+
+    </div> <!-- .wrapper-->
+  </body>
+</html>

@@ -71,7 +71,7 @@ create_date: 2026.01.01
 
 ## 目录
 
-### 第一部分 《动手学：机器学习》
+### 第一部分  《动手学：机器学习》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -103,7 +103,7 @@ create_date: 2026.01.01
 :::
 ::::
 
-### 第二部分 《动手学：深度学习》
+### 第二部分  《动手学：深度学习》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -135,7 +135,7 @@ create_date: 2026.01.01
 :::
 ::::
 
-### 第三部分 《动手学：循环神经网络》
+### 第三部分  《动手学：循环神经网络》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -206,7 +206,7 @@ create_date: 2026.01.01
 :::
 ::::
 
-### 第四部分 《动手学：Seq2Seq》
+### 第四部分  《动手学：Seq2Seq》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -264,7 +264,7 @@ create_date: 2026.01.01
 :::
 ::::
 
-### 第五部分 《动手学：Transformer》
+### 第五部分  《动手学：Transformer》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -373,7 +373,7 @@ create_date: 2026.01.01
 
 ::::
 
-### 第六部分 《动手学：从零训练 GPT》
+### 第六部分  《动手学：从零训练 GPT》
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -526,6 +526,220 @@ create_date: 2026.01.01
 :::
 
 ::::
+
+## 进阶
+
+大模型实战难的主要原因是技术迭代快到令人窒息，官网示例代码在本地经常跑不通，你大量的时间浪费在环境配置上，真正用于理解技术本质的时间却寥寥无几。
+
+在实战部分，我会基于算法工程师的高频工作场景，提供可完整复现的模型训练过程，旨在让你学完即能快速上手真实项目，从容应对日常交付。
+
+理论部分已全部开源，实战进阶部分（非开源）请按需获取。实战内容包含经过严格验证的完整代码、逐行注释、环境配置清单等，确保你拿到即可运行，无需再为环境兼容性费心。
+
+**本专栏通过 30+ 个动手实战任务，将传统 2-3 年的学习周期压缩至 2-3 个月，助你系统掌握大模型知识，快速拿下理想Offer** 🎉
+
+### 第一部分  《动手学：LLM 微调》
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 34. 基于 Qwen2.5 微调加法计算模型
+</h4>
+<p class="text-truncate">
+本次任务将在 Qwen2.5 基座模型上进行微调，使其能够直接输出整数加法的数值结果，不包含多余的解释、标点或自然语言前缀，仅输出结果数字。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 35. 自我认知微调
+</h4>
+<p class="text-truncate">
+本次任务通过自我认知微调（Self-Cognition Fine-tuning），让模型在回答"你是谁"、"你由谁开发"、"你能做什么"等自我认知类问题时，仅输出预先设定的身份描述。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 36. 使用知识蒸馏微调林黛玉风格模型
+</h4>
+<p class="text-truncate">
+本次任务利用知识蒸馏（Knowledge Distillation）技术进行风格化微调。目标是让小模型习得林黛玉的说话方式、心理活动描写及诗词创作风格。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 37. AIGC 时代大模型信息安全隐私保护
+</h4>
+<p class="text-truncate">
+本次任务训练一个 Hide-And-Seek 模型，用于保护提示词中的隐私实体不被泄漏。
+</p>
+</div>
+</a>
+:::
+::::
+
+### 第二部分  《动手学：Reranker 模型微调》
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item}
+<a href="./tasks/https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 38. 分类式 Reranker 模型微调
+</h4>
+<p class="text-truncate">
+本任务旨在通过微调分类式 Reranker 模型，提升检索式问答系统的答案排序质量，从而提高最终答案的准确率。精排的核心目标，就是在召回结果中“优中选优”。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 39. 生成式 Reranker 模型微调
+</h4>
+<p class="text-truncate">
+本任务旨在通过微调生成式 Reranker 模型，提升检索式问答系统的答案排序质量，从而提高最终答案的准确率。精排的核心目标，就是在召回结果中“优中选优”。
+</p>
+</div>
+</a>
+:::
+::::
+
+### 第三部分  《动手学：Agent 模型训练》
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 40. 微调会使用计算工具的 Agent 模型
+</h4>
+<p class="text-truncate">
+本次任务通过 LoRA 微调，训练一个会使用计算工具的 Agent 模型，让大模型具备精确计算的能力。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 41. 训练使用工具的导航规划 Agent 模型
+</h4>
+<p class="text-truncate">
+本次任务将在大模型的基础上，通过 LoRA 微调，训练一个能够调用工具的导航规划 Agent，使大模型具备复杂意图理解与执行的能力。
+</p>
+</div>
+</a>
+:::
+::::
+
+### 第四部分  《动手学：强化学习训练》
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 42. 使用 DPO 进行人类偏好对齐训练
+</h4>
+<p class="text-truncate">
+手动从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 43. 使用 GRPO 强化模型的数学推理能力
+</h4>
+<p class="text-truncate">
+使用 PyTorch 训练第一个神经网络模型，快速掌握使用 PyTorch 处理回归任务基本流程。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 44. 使用 GRPO 强化模型工具调度能力
+</h4>
+<p class="text-truncate">
+使用 PyTorch 训练第一个神经网络模型，快速掌握使用 PyTorch 处理回归任务基本流程。
+</p>
+</div>
+</a>
+:::
+::::
+
+### 第五部分  《动手学：GUIAgent 专题》
+
+::::{grid} 1 2 2 2
+:gutter: 3
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 45. 大模型驱动的 GUI-Agent 综述
+</h4>
+<p class="text-truncate">
+手动从零构建第一个AI模型，快速掌握机器学习的本质，理解机器是何以学习的。
+</p>
+</div>
+</a>
+:::
+
+:::{grid-item}
+<a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('product_show'); return true;">
+
+<div class="alert alert-light simple-tilt2 custom-card">
+<h4 class="mt-3"> 46. 从零训练 GUIAgent 模型
+</h4>
+<p class="text-truncate">
+使用 PyTorch 训练第一个神经网络模型，快速掌握使用 PyTorch 处理回归任务基本流程。
+</p>
+</div>
+</a>
+:::
+::::
+
+
+
+
+
 
 ## 版权
 
