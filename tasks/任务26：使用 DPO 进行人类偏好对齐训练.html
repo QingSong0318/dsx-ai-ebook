@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>42. 【实战】使用 DPO 进行人类偏好对齐训练 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
+    <title>【实战】使用 DPO 进行人类偏好对齐训练 &#8212; 动手学大语言模型：写给程序员的手搓LLM实战指南</title>
 
 <!-- <link rel="preconnect" href="https://unpkg.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -143,7 +143,7 @@ crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../_static/styles/quantecon-book-theme.css?digest=22b71a9b445b7b2b6a277c0a48ea72bf6e7c90d9" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/myfile.css?v=a8cb7250" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -176,8 +176,6 @@ crossorigin="anonymous"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tasks/任务26：使用 DPO 进行人类偏好对齐训练';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="43. 【实战】使用 GRPO 强化模型的数学推理能力" href="%E4%BB%BB%E5%8A%A127%EF%BC%9A%E4%BD%BF%E7%94%A8%20GRPO%20%E5%BC%BA%E5%8C%96%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E5%AD%A6%E6%8E%A8%E7%90%86%E8%83%BD%E5%8A%9B.html" />
-    <link rel="prev" title="41. 【实战】训练使用工具的导航规划 Agent 模型" href="%E4%BB%BB%E5%8A%A125%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%E5%AF%BC%E8%88%AA%E8%A7%84%E5%88%92%20Agent%20%E6%A8%A1%E5%9E%8B.html" />
 
 <!-- Normal Meta Tags -->
 <meta name="author" context="吾辈亦有感"/>
@@ -258,10 +256,10 @@ crossorigin="anonymous"></script>
 
                     <nav id="bd-toc-nav" class="qe-page__toc-nav alert alert-light">
                         <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">42.1. 任务背景</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">42.2. 任务目标</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">42.3. 学习收获</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">42.4. 获取源码</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">任务背景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">任务目标</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">学习收获</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">获取源码</a></li>
 </ul>
                     </nav>
 
@@ -333,14 +331,14 @@ crossorigin="anonymous"></script>
                 <div>
                     
   <section class="tex2jax_ignore mathjax_ignore" id="dpo">
-<h1><span class="section-number">42. </span>【实战】使用 DPO 进行人类偏好对齐训练<a class="headerlink" href="#dpo" title="Link to this heading">#</a></h1>
+<h1>【实战】使用 DPO 进行人类偏好对齐训练<a class="headerlink" href="#dpo" title="Link to this heading">#</a></h1>
 <section id="id1">
-<h2><span class="section-number">42.1. </span>任务背景<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>任务背景<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <p>在大模型训练过程中，监督微调（Supervised Fine-Tuning，SFT）通常用于让基础模型快速具备特定任务能力和基本指令对齐能力，是模型从”能生成”走向”会回答”的关键步骤。然而，SFT 让模型学会了”说人话”和遵循指令格式，但它本质上是在模仿训练数据中的文本分布，当我们想要在更泛化的场景下评判回答优劣时就会力不从心——它只能判断”像不像范例”，却无法区分两个合格回答中哪个更符合人类真实偏好。</p>
 <p>因此需要引入直接偏好优化（Direct Preference Optimization，DPO），通过人类标注的”好/坏”对比数据，直接教会模型”答得好”而非仅仅”答得对”，从而在开放场景中输出真正受用户欢迎的结果。</p>
 </section>
 <section id="id2">
-<h2><span class="section-number">42.2. </span>任务目标<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<h2>任务目标<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p>本次任务将在 Qwen2.5-0.5B 基座模型上，通过 DPO 训练让模型在问答中更倾向于生成人类偏好（带有 emoji）的结果，使得模型的问答结果更显生动、活泼、友好。</p>
 <ul class="simple">
 <li><p>基础模型：Qwen2.5-0.5B-Instruct</p></li>
@@ -359,7 +357,7 @@ crossorigin="anonymous"></script>
 </div></blockquote>
 </section>
 <section id="id3">
-<h2><span class="section-number">42.3. </span>学习收获<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<h2>学习收获<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p>完成本次任务，你将能够：</p>
 <ul class="simple">
 <li><p><strong>理解 DPO 的核心原理</strong>：掌握如何利用人类偏好数据引导模型对齐优化，清晰辨析 DPO 与 SFT 在训练目标上的本质差异。</p></li>
@@ -369,7 +367,7 @@ crossorigin="anonymous"></script>
 </ul>
 </section>
 <section id="id4">
-<h2><span class="section-number">42.4. </span>获取源码<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<h2>获取源码<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>点击下方链接，获取任务完整源码 👇👇👇</p>
 <div class="alert alert-light simple-tilt custom-card docutils">
 <a href="https://note.mowen.cn/intro/9PqPCMHa1UTFRuV5JxsDL" onclick="LA.track('dataset'); return true;">
@@ -427,33 +425,33 @@ crossorigin="anonymous"></script>
             
 
             <!-- buymecoffee -->
-            <div class="buymecoffee alert" role="alert">
-                <p>
-                    如果你觉得这些内容对你有帮助，可以
-                    <a class="reference external" href="https://fasterai.cn/buy-me-a-coffee.html">请我喝杯咖啡 <svg class="svg-inline--fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg><!-- <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com --></a>
-                </p>
-            </div>
+<!--            <div class="buymecoffee alert" role="alert">-->
+<!--                <p>-->
+<!--                    如果你觉得这些内容对你有帮助，可以-->
+<!--                    <a class="reference external" href="https://fasterai.cn/buy-me-a-coffee.html">请我喝杯咖啡 <svg class="svg-inline&#45;&#45;fa fa-mug-hot" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="mug-hot" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M88 0C74.7 0 64 10.7 64 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C120.5 112.3 128 119.9 128 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C119.5 47.7 112 40.1 112 24c0-13.3-10.7-24-24-24zM32 192c-17.7 0-32 14.3-32 32V416c0 53 43 96 96 96H288c53 0 96-43 96-96h16c61.9 0 112-50.1 112-112s-50.1-112-112-112H352 32zm352 64h16c26.5 0 48 21.5 48 48s-21.5 48-48 48H384V256zM224 24c0-13.3-10.7-24-24-24s-24 10.7-24 24c0 38.9 23.4 59.4 39.1 73.1l1.1 1C232.5 112.3 240 119.9 240 136c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C231.5 47.7 224 40.1 224 24z"></path></svg>&lt;!&ndash; <i class="fa-solid fa-mug-hot"></i> Font Awesome fontawesome.com &ndash;&gt;</a>-->
+<!--                </p>-->
+<!--            </div>-->
 
 
             <!-- 留言模块 -->
-            <div class="alert alert-light" style="margin-top: 20px;">
-                <script src="https://giscus.app/client.js"
-                        data-repo="QingSong0318/dsx-ai-ebook-giscus"
-                        data-repo-id="R_kgDORwJzPw"
-                        data-category="General"
-                        data-category-id="DIC_kwDORwJzP84C5OY0"
-                        data-mapping="pathname"
-                        data-strict="0"
-                        data-reactions-enabled="1"
-                        data-emit-metadata="0"
-                        data-input-position="top"
-                        data-theme="fro"
-                        data-lang="zh-CN"
-                        data-loading="lazy"
-                        crossorigin="anonymous"
-                        async>
-                </script>
-            </div>
+<!--            <div class="alert alert-light" style="margin-top: 20px;">-->
+<!--                <script src="https://giscus.app/client.js"-->
+<!--                        data-repo="QingSong0318/dsx-ai-ebook-giscus"-->
+<!--                        data-repo-id="R_kgDORwJzPw"-->
+<!--                        data-category="General"-->
+<!--                        data-category-id="DIC_kwDORwJzP84C5OY0"-->
+<!--                        data-mapping="pathname"-->
+<!--                        data-strict="0"-->
+<!--                        data-reactions-enabled="1"-->
+<!--                        data-emit-metadata="0"-->
+<!--                        data-input-position="top"-->
+<!--                        data-theme="fro"-->
+<!--                        data-lang="zh-CN"-->
+<!--                        data-loading="lazy"-->
+<!--                        crossorigin="anonymous"-->
+<!--                        async>-->
+<!--                </script>-->
+<!--            </div>-->
 
 
             <footer class="qe-page__footer">
@@ -678,106 +676,6 @@ crossorigin="anonymous"></script>
  <li class="toctree-l1">
   <a class="reference internal" href="../notebooks/33%E6%9B%B4%E5%85%B7%E5%A4%9A%E6%A0%B7%E6%80%A7%E7%9A%84%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5.html">
    33. 更具多样性的生成策略
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  动手学：LLM 微调
- </span>
-</p>
-<ul class="nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A118%EF%BC%9A%E5%9F%BA%E4%BA%8E%20Qwen2.5%20%E5%BE%AE%E8%B0%83%E5%8A%A0%E6%B3%95%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9E%8B.html">
-   34. 【实战】基于 Qwen2.5 微调加法计算模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A119%EF%BC%9A%E8%87%AA%E6%88%91%E8%AE%A4%E7%9F%A5%E5%BE%AE%E8%B0%83.html">
-   35. 【实战】自我认知微调
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A120%EF%BC%9A%E4%BD%BF%E7%94%A8%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F%E5%BE%AE%E8%B0%83%E6%9E%97%E9%BB%9B%E7%8E%89%E9%A3%8E%E6%A0%BC%E6%A8%A1%E5%9E%8B.html">
-   36. 【实战】使用知识蒸馏微调林黛玉风格模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A121%EF%BC%9AAIGC%20%E6%97%B6%E4%BB%A3%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E9%9A%90%E7%A7%81%E4%BF%9D%E6%8A%A4.html">
-   37. 【实战】AIGC 时代大模型信息安全隐私保护
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  动手学：Reranker 模型微调
- </span>
-</p>
-<ul class="nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A122%EF%BC%9A%E5%88%86%E7%B1%BB%E5%BC%8F%20Reranker%20%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83.html">
-   38. 【实战】分类式 Reranker 模型微调
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A123%EF%BC%9A%E7%94%9F%E6%88%90%E5%BC%8F%20Reranker%20%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83.html">
-   39. 【实战】生成式 Reranker 模型微调
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  动手学：Agent 模型训练
- </span>
-</p>
-<ul class="nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A124%EF%BC%9A%E5%BE%AE%E8%B0%83%E4%BC%9A%E4%BD%BF%E7%94%A8%E8%AE%A1%E7%AE%97%E5%B7%A5%E5%85%B7%E7%9A%84%20Agent%20%E6%A8%A1%E5%9E%8B.html">
-   40. 【实战】微调会使用计算工具的 Agent 模型
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A125%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%E5%AF%BC%E8%88%AA%E8%A7%84%E5%88%92%20Agent%20%E6%A8%A1%E5%9E%8B.html">
-   41. 【实战】训练使用工具的导航规划 Agent 模型
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  动手学：强化学习训练
- </span>
-</p>
-<ul class="current nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1 current active active">
-  <a class="current reference internal" href="#">
-   42. 【实战】使用 DPO 进行人类偏好对齐训练
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A127%EF%BC%9A%E4%BD%BF%E7%94%A8%20GRPO%20%E5%BC%BA%E5%8C%96%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E5%AD%A6%E6%8E%A8%E7%90%86%E8%83%BD%E5%8A%9B.html">
-   43. 【实战】使用 GRPO 强化模型的数学推理能力
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A128%EF%BC%9A%E4%BD%BF%E7%94%A8%20GRPO%20%E5%BC%BA%E5%8C%96%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%B7%A5%E5%85%B7%E8%B0%83%E5%BA%A6%E8%83%BD%E5%8A%9B.html">
-   44. 【实战】使用 GRPO 强化模型的工具调度能力
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  动手学：GUIAgent 专题
- </span>
-</p>
-<ul class="nav bd-sidenav nav sidenav_l1">
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A129%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%A9%B1%E5%8A%A8%E7%9A%84%20GUI-Agent%20%E7%BB%BC%E8%BF%B0.html">
-   45. 【实战】大模型驱动的 GUI-Agent 综述
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="%E4%BB%BB%E5%8A%A130%EF%BC%9A%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%20GUIAgent%20%E6%A8%A1%E5%9E%8B.html">
-   46. 【实战】从零训练 GUIAgent 模型
   </a>
  </li>
 </ul>
